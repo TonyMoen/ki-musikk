@@ -1,0 +1,27 @@
+# BMAD Session Logger Configuration
+# Version: 1.0.0
+# Generated: 2025-01-15
+
+# Database settings
+database_path: "{project-root}/.bmad/data/session-db"
+collection_name: "bmad_sessions"
+
+# Embedding settings
+embedding_model: "all-MiniLM-L6-v2"
+embedding_device: "cpu"  # or "cuda" for GPU
+
+# Capture settings
+auto_capture_on_exit: true
+preprocess_conversations: true
+
+# Query settings
+context_on_start: false  # Set true to enable auto-context loading on agent start
+max_context_sessions: 3
+min_relevance_threshold: 0.3
+default_query_results: 5
+
+# Performance settings
+model_cache_dir: "{project-root}/.bmad/data/models"
+
+# Logging settings
+log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
