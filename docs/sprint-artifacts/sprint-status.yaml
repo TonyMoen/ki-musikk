@@ -1,0 +1,140 @@
+# Sprint Status Tracking File
+# Generated: 2025-11-19
+# Project: ibe160 (Musikkfabrikken)
+
+# generated: 2025-11-19
+# project: ibe160
+# project_key: ibe160-musikkfabrikken
+# tracking_system: file-system
+# story_location: docs/sprint-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic exists in epic file but not contexted
+#   - contexted: Epic tech context created by *epic-tech-context (required before drafting stories)
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - drafted: Story file created in stories folder by *create-story
+#   - ready-for-dev: Draft approved and story context created by *story-ready
+#   - in-progress: Developer actively working on implementation by *dev-story
+#   - review: Implementation complete, ready for review by *code-review
+#   - done: Story completed by *story-done
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - completed: Retrospective has been done by *retrospective
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epics should be 'contexted' before stories can be 'drafted'
+# - SM typically drafts next story ONLY after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
+# - Recommended Sprint 1: Epic 1 (Foundation) - Stories 1.1 through 1.6
+# - Recommended Sprint 2: Epic 2 (Auth & Credits) - Stories 2.1 through 2.6
+# - Recommended Sprint 3-4: Epic 3 (Norwegian Song Creation) - Core value proposition
+# - Epic 8 (Resilience) stories should be integrated throughout sprints, not saved for end
+
+generated: 2025-11-19
+project: ibe160
+project_key: ibe160-musikkfabrikken
+tracking_system: file-system
+story_location: docs/sprint-artifacts
+
+development_status:
+  # Epic 1: Foundation & Infrastructure (6 stories)
+  # Establishes technical foundation for all subsequent development
+  epic-1: backlog
+  1-1-initialize-nextjs-project-with-core-dependencies: backlog
+  1-2-configure-tailwind-with-playful-nordic-theme: backlog
+  1-3-set-up-supabase-project-and-environment-variables: backlog
+  1-4-install-shadcn-ui-and-core-components: backlog
+  1-5-configure-deployment-on-vercel: backlog
+  1-6-set-up-database-schema-with-supabase-migrations: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: User Authentication & Credit System (6 stories)
+  # Enables user accounts, Google login, and credit-based payment system
+  # BLOCKS: Epic 3-6 (features require authentication)
+  epic-2: backlog
+  2-1-implement-google-oauth-authentication: backlog
+  2-2-display-user-profile-with-credit-balance: backlog
+  2-3-implement-credit-purchase-flow-with-stripe-checkout: backlog
+  2-4-display-credit-transaction-history: backlog
+  2-5-implement-credit-balance-warnings: backlog
+  2-6-implement-atomic-credit-deduction-with-rollback: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Norwegian Song Creation (CORE) (10 stories)
+  # THE CORE VALUE PROPOSITION - Norwegian pronunciation optimization
+  # Largest epic with critical features for MVP success
+  epic-3: backlog
+  3-1-create-genre-carousel-component: backlog
+  3-2-implement-ai-lyric-generation-with-song-concept-input: backlog
+  3-3-build-norwegian-pronunciation-optimizer-with-gpt4: backlog
+  3-4-create-phonetic-diff-viewer-component: backlog
+  3-5-implement-song-generation-api-with-suno-integration: backlog
+  3-6-create-ai-generation-progress-modal-component: backlog
+  3-7-implement-webhook-handler-for-suno-completion: backlog
+  3-8-build-song-player-card-component: backlog
+  3-9-implement-free-30-second-preview-generation: backlog
+  3-10-add-genre-prompt-templates-to-database: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Song Library & Management (7 stories)
+  # Enables users to manage, replay, download, and organize their songs
+  epic-4: backlog
+  4-1-create-my-songs-page-with-track-list: backlog
+  4-2-implement-song-detail-modal-with-full-player: backlog
+  4-3-implement-song-download-functionality: backlog
+  4-4-implement-song-deletion-with-confirmation: backlog
+  4-5-implement-song-rename-functionality: backlog
+  4-6-implement-14-day-deletion-warning-system: backlog
+  4-7-implement-batch-download-functionality: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Social Sharing & Viral Features (5 stories)
+  # Enables viral growth through social media sharing
+  epic-5: backlog
+  5-1-create-social-share-sheet-component: backlog
+  5-2-implement-tiktok-and-facebook-share-functionality: backlog
+  5-3-generate-shareable-song-links: backlog
+  5-4-add-musikkfabrikken-watermark-to-free-previews: backlog
+  5-5-track-share-analytics-and-attribution: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Premium Features (6 stories)
+  # Canvas generation, mastering service, extended storage
+  epic-6: backlog
+  6-1-implement-canvas-generation-with-google-video-api: backlog
+  6-2-implement-canvas-preview-and-download: backlog
+  6-3-create-mastering-service-booking-flow: backlog
+  6-4-implement-mastering-completion-and-delivery: backlog
+  6-5-implement-sla-miss-auto-refund: backlog
+  6-6-implement-extended-storage-for-premium-users: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: User Experience & Help (5 stories)
+  # Polishes UX with tooltips, onboarding, help docs, examples
+  epic-7: backlog
+  7-1-add-contextual-tooltips-throughout-app: backlog
+  7-2-create-onboarding-flow-for-first-time-users: backlog
+  7-3-create-faq-and-help-documentation-page: backlog
+  7-4-add-example-songs-showcase-page: backlog
+  7-5-implement-friendly-error-messages-with-recovery-actions: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8: System Resilience & Operations (8 stories)
+  # Error handling, monitoring, API health, admin dashboard
+  # NOTE: These stories should be integrated throughout sprints, not saved for end
+  epic-8: backlog
+  8-1-implement-comprehensive-error-logging: backlog
+  8-2-implement-suno-api-health-monitoring: backlog
+  8-3-implement-api-cost-monitoring-and-alerts: backlog
+  8-4-implement-automatic-retry-logic-for-api-failures: backlog
+  8-5-implement-session-state-persistence-during-downtime: backlog
+  8-6-implement-webhook-polling-fallback-mechanism: backlog
+  8-7-prevent-double-charging-on-concurrent-requests: backlog
+  8-8-create-founder-admin-dashboard: backlog
+  epic-8-retrospective: optional
