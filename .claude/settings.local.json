@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls \"C:\\Users\\tony-\\.bmad\\bmm\"\" 2>&1 || echo \"Directory not found \")"
+      "Bash(epics.md)",
+      "mcp__ide__executeCode",
+      "Bash(\"C:\\Users\\tony-\\AppData\\Local\\Python\\pythoncore-3.11-64\\python.exe\" \"C:\\Users\\tony-\\SG-Tony\\.bmad\\temp_save_session.py\")"
     ],
     "deny": [],
     "ask": []
