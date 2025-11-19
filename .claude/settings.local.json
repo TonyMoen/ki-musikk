@@ -1,24 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\docs\" mkdir \"C:\\Users\\tony-\\SG-Tony\\docs\")",
-      "Bash(mkdir -p \"C:\\Users\\tony-\\SG-Tony\\docs\")",
-      "WebSearch",
-      "Bash(python3 -m pip install chromadb==1.0.15 sentence-transformers pyyaml)",
-      "Bash(python test_session_logger.py)",
-      "Bash(pip --version)",
-      "Bash(python -m pip install chromadb==1.0.15 sentence-transformers pyyaml)",
-      "Bash(python -m pip install chromadb sentence-transformers pyyaml)",
-      "Bash(py -3.11 test_session_logger.py)",
-      "Bash(py -3.11 -m pip list)",
-      "Bash(findstr chromadb)",
-      "Bash(\"C:\\Users\\tony-\\AppData\\Local\\Python\\pythoncore-3.11-64\\python.exe\" -m pip install chromadb==1.0.15 sentence-transformers pyyaml)",
-      "Bash(\"C:\\Users\\tony-\\AppData\\Local\\Python\\pythoncore-3.11-64\\python.exe\" test_session_logger.py)",
-      "Bash(dir \"C:\\Users\\tony-\\SG-Tony\\docs\" /b)",
-      "mcp__ide__executeCode",
-      "Bash(\"C:\\Users\\tony-\\AppData\\Local\\Python\\pythoncore-3.11-64\\python.exe\" save_current_session.py)",
-      "Bash(\"C:\\Users\\tony-\\AppData\\Local\\Python\\pythoncore-3.11-64\\python.exe\" -c \"\nfrom hooks import on_agent_exit\n\nconversation = ''''''User: Invoked /bmad:bmm:workflows:architecture\n\nSystem: Architecture workflow started, loaded configuration and workflow files.\n\nWorkflow: Executing Step 0 - Validate workflow readiness\n- Checked for workflow status file: Not found\n- Checked for PRD files: Not found\n- Found existing architecture documents\n\nWorkflow: Presented options to user regarding PRD requirements\n\nUser: Switched to analyst agent - /bmad:bmm:agents:analyst\n\nAssistant (Mary): Loaded analyst persona, greeted user BIP, displayed main menu\n\nUser: Asked about analyst purpose\n\nAssistant (Mary): Explained role as Strategic Business Analyst and Requirements Expert\n\nUser: Invoked /save-session command''''''\n\nsession_id = on_agent_exit(\n    agent_name=''analyst'',\n    persona=''Mary (Business Analyst)'',\n    workflow=''architecture-attempted'',\n    project_name=''ibe160'',\n    conversation=conversation,\n    topics=[''architecture-workflow'', ''prd-requirements'', ''workflow-validation'', ''agent-introduction'', ''analyst-role''],\n    artifacts=[]\n)\n\nprint(f''✓ Session saved to vector database!'')\nprint(f''  Session ID: {session_id}'')\nprint(f''  Agent: analyst (Mary)'')\nprint(f''  Workflow: architecture-attempted'')\nprint(f''  Database: .bmad/data/session-db/'')\n\")",
-      "Bash(\"C:\\Users\\tony-\\AppData\\Local\\Python\\pythoncore-3.11-64\\python.exe\" -c \"from hooks import on_agent_exit; session_id = on_agent_exit(agent_name=''analyst'', persona=''Mary (Business Analyst)'', workflow=''architecture-attempted'', project_name=''ibe160'', conversation=''User: Invoked architecture workflow. System: Checked for PRD and workflow status - both missing. Recommended next steps. User: Switched to analyst agent. Assistant: Introduced analyst role and capabilities. User: Invoked save-session.'', topics=[''architecture-workflow'', ''prd-requirements'', ''workflow-validation'', ''agent-introduction''], artifacts=[]); print(''Session saved!''); print(f''Session ID: {session_id}''); print(''Database: .bmad/data/session-db/'')\")"
+      "Bash(ls \"C:\\Users\\tony-\\.bmad\\bmm\"\" 2>&1 || echo \"Directory not found \")"
     ],
     "deny": [],
     "ask": []
