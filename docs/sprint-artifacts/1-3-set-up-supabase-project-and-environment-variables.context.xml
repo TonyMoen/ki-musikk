@@ -1,0 +1,173 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.3</storyId>
+    <title>Set Up Supabase Project and Environment Variables</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-20</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-3-set-up-supabase-project-and-environment-variables.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>Supabase backend infrastructure configured with PostgreSQL database, authentication, and storage</iWant>
+    <soThat>the application has secure data persistence, user authentication, and file storage capabilities for all future features</soThat>
+    <tasks>
+      - Create Supabase project in EU region with PostgreSQL 17
+      - Configure Google OAuth authentication provider
+      - Create storage buckets (songs, canvases) with private access
+      - Install Supabase dependencies (@supabase/supabase-js, @supabase/auth-helpers-nextjs)
+      - Configure environment variables locally (.env.local) and in Vercel
+      - Create .env.example template file
+      - Implement browser Supabase client (/src/lib/supabase/client.ts)
+      - Implement server Supabase client (/src/lib/supabase/server.ts)
+      - Test connection from client and server contexts
+      - Verify security (service role key never exposed to client)
+      - Configure Vercel environment variables
+      - Clean up test files and verify build succeeds
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">Supabase Project Created: New Supabase project created in EU region with PostgreSQL 17 database</criterion>
+    <criterion id="AC2">Google OAuth Enabled: Google OAuth provider configured in Supabase Auth settings with authorized callback URLs</criterion>
+    <criterion id="AC3">Storage Buckets Created: Two private storage buckets created: `songs` (for audio files) and `canvases` (for canvas images)</criterion>
+    <criterion id="AC4">Environment Variables Configured: All Supabase credentials stored in `.env.local` (local) and Vercel dashboard (production)</criterion>
+    <criterion id="AC5">Supabase Clients Implemented: Browser client (`/src/lib/supabase/client.ts`) and server client (`/src/lib/supabase/server.ts`) created with TypeScript types</criterion>
+    <criterion id="AC6">Connection Verified: Test connection to Supabase succeeds from both client and server contexts</criterion>
+    <criterion id="AC7">Security Verified: Service role key never exposed to client code, only anon key in client-side code</criterion>
+    <criterion id="AC8">Documentation Updated: `.env.example` file created with placeholder values for all required environment variables</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" title="Musikkfabrikken - Architecture Document" section="Supabase Integration">
+        ADR-002: Supabase selected for all-in-one backend (PostgreSQL 17 + Auth + Storage). Integration via official Auth Helpers for Next.js. Browser client for React components, server client for Server Components and API routes. Environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY (client-safe), SUPABASE_SERVICE_ROLE_KEY (server-only).
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - Security" section="API Key Protection">
+        All sensitive API keys never exposed to client. NEXT_PUBLIC_ prefix only for safe public keys. Server-only keys accessed only in API routes and Server Components. .env.local gitignored, .env.example with placeholders.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - Storage" section="Supabase Storage">
+        Storage buckets: 'songs' (audio files, 14-day retention) and 'canvases' (images, 14-day retention). Private access, authentication required. Signed URLs for secure download with 24-hour validity.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-1.md" title="Epic 1 Technical Specification" section="External Service Dependencies">
+        Supabase configuration: EU region for GDPR compliance. Free tier for development. Auth providers: Google OAuth enabled. Credentials required: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY. Storage buckets with private access and RLS policies.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-1.md" title="Epic 1 Tech Spec" section="Integration Patterns">
+        Supabase integration pattern: Client-side uses createClientComponentClient, server-side uses createServerComponentClient with cookies. RLS automatically applied based on auth.uid(). Environment variable access: NEXT_PUBLIC_ vars safe for client, server-only vars never in client components.
+      </doc>
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Authentication">
+        Google OAuth as primary authentication method. Simple sign-in flow with Google button. User profile displays after authentication.
+      </doc>
+    </docs>
+    <code>
+      <file path="tailwind.config.ts" kind="config" symbol="Config" lines="1-62" reason="Tailwind theme configured in Story 1.2, ready for use. Playful Nordic colors and design system established."></file>
+      <file path="src/app/layout.tsx" kind="layout" symbol="RootLayout" lines="*" reason="Root layout component - may need metadata updates for Norwegian language (lang='nb') established in Story 1.1."></file>
+      <file path="src/app/page.tsx" kind="page" symbol="Home" lines="*" reason="Home page component - currently default Next.js starter, will be replaced with actual app UI in future stories."></file>
+      <file path=".gitignore" kind="config" symbol="N/A" lines="34" reason="Verify .env* files are gitignored (line 34: '.env*'). Security requirement AC7."></file>
+    </code>
+    <dependencies>
+      <ecosystem name="Node.js (npm)">
+        <package name="next" version="^14.2.3" />
+        <package name="react" version="^18.2.0" />
+        <package name="react-dom" version="^18.2.0" />
+        <package name="typescript" version="^5" />
+        <package name="tailwindcss" version="^3.4.1" />
+        <package name="eslint" version="^8" />
+        <package name="eslint-config-next" version="14.2.3" />
+        <package name="@types/node" version="^20" />
+        <package name="@types/react" version="^18" />
+        <package name="@types/react-dom" version="^18" />
+        <package name="postcss" version="^8" />
+        <package name="autoprefixer" version="^10.0.1" />
+        <toInstall name="@supabase/supabase-js" version="^2.39.0" reason="Core Supabase SDK for database and auth" />
+        <toInstall name="@supabase/auth-helpers-nextjs" version="^0.8.0" reason="Next.js integration helpers for Supabase Auth" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="security">Service role key (SUPABASE_SERVICE_ROLE_KEY) must NEVER be exposed to client code. Only use in API routes and Server Components. Verify with codebase search.</constraint>
+    <constraint type="security">All Supabase connections over TLS/HTTPS (enforced by Supabase). Environment variables in .env.local must be gitignored.</constraint>
+    <constraint type="architecture">Use browser client (client.ts) for React Client Components, server client (server.ts) for Server Components and API routes. Never mix contexts.</constraint>
+    <constraint type="naming">Follow architecture naming conventions: kebab-case for files (client.ts, server.ts), PascalCase for exports (createClient, createServerClient).</constraint>
+    <constraint type="testing">Create test pages in src/app/test-*/page.tsx for verification. Delete test pages before story completion (established pattern from Stories 1.1, 1.2).</constraint>
+    <constraint type="language">All test pages must use Norwegian language (HTML lang='nb', Norwegian content) per DEVELOPMENT_GUIDELINES.md from Story 1.1.</constraint>
+    <constraint type="build">Run 'npm run build' to verify no errors before story completion. Build must succeed with exit code 0.</constraint>
+    <constraint type="region">Supabase project MUST be in EU region for GDPR compliance (Norway is European market). Decision from Epic 1 Tech Spec.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="createClient" kind="function signature">
+      <signature>
+        // Browser client for React Client Components
+        import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+        import type { Database } from '@/types/supabase';
+
+        export const createClient = () => createClientComponentClient&lt;Database&gt;();
+      </signature>
+      <path>src/lib/supabase/client.ts</path>
+      <note>Database type will be generated in Story 1.6. For now, omit type parameter or use 'any'.</note>
+    </interface>
+    <interface name="createServerClient" kind="function signature">
+      <signature>
+        // Server client for Server Components and API routes
+        import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+        import { cookies } from 'next/headers';
+        import type { Database } from '@/types/supabase';
+
+        export const createServerClient = () => createServerComponentClient&lt;Database&gt;({ cookies });
+      </signature>
+      <path>src/lib/supabase/server.ts</path>
+      <note>Automatically applies RLS based on auth.uid() from session cookies.</note>
+    </interface>
+    <interface name="Environment Variables" kind="configuration">
+      <signature>
+        # Required Supabase variables
+        NEXT_PUBLIC_SUPABASE_URL=https://&lt;project-ref&gt;.supabase.co
+        NEXT_PUBLIC_SUPABASE_ANON_KEY=&lt;anon-key&gt;  # Safe for client, RLS enforced
+        SUPABASE_SERVICE_ROLE_KEY=&lt;service-key&gt;  # Server-only, bypasses RLS
+
+        # Future variables (prepared in .env.example, not active yet)
+        # NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=&lt;stripe-pk&gt;
+        # STRIPE_SECRET_KEY=&lt;stripe-sk&gt;
+        # OPENAI_API_KEY=&lt;openai-key&gt;
+        # SUNO_API_KEY=&lt;suno-key&gt;
+        # GOOGLE_AI_API_KEY=&lt;google-key&gt;
+      </signature>
+      <path>.env.local (gitignored), .env.example (committed)</path>
+    </interface>
+    <interface name="Supabase Storage Bucket Policies" kind="RLS policy">
+      <signature>
+        For 'songs' and 'canvases' buckets:
+        - SELECT policy: auth.uid() = owner (users read their own files)
+        - INSERT policy: Users can upload files as owner
+        - UPDATE policy: Disabled (files immutable after upload)
+        - DELETE policy: auth.uid() = owner (for 14-day retention)
+      </signature>
+      <path>Configured in Supabase Dashboard → Storage</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      No automated testing framework established yet (Epic 1 is infrastructure-only). Testing approach: Manual verification with test pages. Create test page at src/app/test-supabase/page.tsx to verify connection from both client and server contexts. Test pages must use Norwegian language per DEVELOPMENT_GUIDELINES.md. Delete test pages before story completion. Run 'npm run build' to verify no TypeScript/ESLint errors.
+    </standards>
+    <locations>
+      - Test pages: src/app/test-*/page.tsx (temporary, deleted after verification)
+      - Future tests: src/__tests__/ or co-located *.test.ts files (Epic 2+)
+    </locations>
+    <ideas>
+      <idea ac="AC1">Manual verification: Log into Supabase dashboard, verify project exists in EU region with PostgreSQL 17</idea>
+      <idea ac="AC2">Manual verification: Supabase dashboard → Authentication → Providers → Google (enabled with credentials)</idea>
+      <idea ac="AC3">Manual verification: Supabase dashboard → Storage → Buckets (songs, canvases exist with private access)</idea>
+      <idea ac="AC4">Manual verification: Check .env.local exists locally, Vercel dashboard shows all 3 env vars for all environments</idea>
+      <idea ac="AC5">Create test page importing both clients. Verify TypeScript compilation succeeds, no import errors.</idea>
+      <idea ac="AC6">Test page: Client-side test query (supabase.from('_test').select('*')). Server Component test query. Both should connect successfully (or return 'relation does not exist' - acceptable until Story 1.6).</idea>
+      <idea ac="AC7">Codebase search for 'SUPABASE_SERVICE_ROLE_KEY'. Verify only appears in server.ts or API routes, never in client.ts or Client Components.</idea>
+      <idea ac="AC8">Verify .env.example exists, contains all Supabase variables with placeholder values and comments</idea>
+      <idea ac="all">Build verification: Run 'npm run build' and verify exit code 0, no errors</idea>
+    </ideas>
+  </tests>
+</story-context>

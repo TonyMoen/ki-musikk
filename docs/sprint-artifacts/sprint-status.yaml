@@ -48,9 +48,9 @@ development_status:
   epic-1: contexted
   1-1-initialize-nextjs-project-with-core-dependencies: done
   1-2-configure-tailwind-with-playful-nordic-theme: done
-  1-3-set-up-supabase-project-and-environment-variables: backlog
-  1-4-install-shadcn-ui-and-core-components: backlog
-  1-5-configure-deployment-on-vercel: backlog
+  1-3-set-up-supabase-project-and-environment-variables: in-progress
+  1-4-install-shadcn-ui-and-core-components: ready-for-dev
+  1-5-configure-deployment-on-vercel: drafted
   1-6-set-up-database-schema-with-supabase-migrations: backlog
   epic-1-retrospective: optional
 

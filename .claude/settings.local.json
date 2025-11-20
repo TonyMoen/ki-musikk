@@ -21,7 +21,12 @@
       "Bash(npm run lint:*)",
       "Bash(npx tsc:*)",
       "Bash(tree:*)",
-      "SlashCommand(/run-agent-task sm create-story \"Create story file for 1.2-configure-tailwind-with-playful-nordic-theme from epic-1-foundation-infrastructure.md\")"
+      "SlashCommand(/run-agent-task sm create-story \"Create story file for 1.2-configure-tailwind-with-playful-nordic-theme from epic-1-foundation-infrastructure.md\")",
+      "SlashCommand(/bmad:bmm:workflows:dev-story)",
+      "SlashCommand(/bmad:bmm:agents:sm)",
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\" mkdir \"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\")",
+      "Bash(nul)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []
