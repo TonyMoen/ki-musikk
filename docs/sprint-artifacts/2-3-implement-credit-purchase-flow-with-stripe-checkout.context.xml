@@ -1,0 +1,505 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>3</storyId>
+    <title>Implement Credit Purchase Flow with Stripe Checkout</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-22</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/2-3-implement-credit-purchase-flow-with-stripe-checkout.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to purchase credit packages via Stripe</iWant>
+    <soThat>I can generate songs using my purchased credits</soThat>
+    <tasks>
+- Task 1: Install Stripe dependencies (AC: Stripe integration)
+  - Install Stripe SDK: `npm install stripe @stripe/stripe-js`
+  - Verify installations in package.json
+  - Set up environment variables in .env.local (STRIPE_SECRET_KEY, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, STRIPE_WEBHOOK_SECRET)
+
+- Task 2: Define credit package constants (AC: Package options)
+  - Create /src/lib/constants.ts if not exists
+  - Define CREDIT_PACKAGES array with 3 packages:
+    - Starter: { id: 'starter', name: 'Starter', price: 1500 (cents), credits: 500, description: '~50 songs' }
+    - Pro: { id: 'pro', name: 'Pro', price: 2500, credits: 1000, description: '~100 songs', badge: 'MOST POPULAR' }
+    - Premium: { id: 'premium', name: 'Premium', price: 5000, credits: 2500, description: '~250 songs' }
+  - Define CREDIT_COSTS constant with SONG_GENERATION: 10
+  - Export types: CreditPackage interface
+
+- Task 3: Create Stripe client initialization (AC: Stripe integration)
+  - Create /src/lib/stripe.ts for server-side Stripe client
+  - Initialize Stripe with STRIPE_SECRET_KEY
+  - Export stripe client instance
+  - Add type safety with TypeScript
+
+- Task 4: Create credit purchase API route (AC: Select package → redirect to Stripe)
+  - Create /src/app/api/credits/purchase/route.ts as POST handler
+  - Validate user is authenticated (session check)
+  - Validate request body with Zod schema (packageId must be 'starter'|'pro'|'premium')
+  - Look up selected package from CREDIT_PACKAGES
+  - Create Stripe Checkout session with metadata and redirect URLs
+  - Return JSON: { data: { checkoutUrl: string } }
+  - Handle errors: 400 Bad Request (invalid packageId), 401 Unauthorized
+
+- Task 5: Create Stripe webhook handler (AC: Credits added after payment)
+  - Create /src/app/api/webhooks/stripe/route.ts as POST handler
+  - Verify webhook signature using STRIPE_WEBHOOK_SECRET
+  - Parse Stripe event from raw request body
+  - Handle event type 'checkout.session.completed'
+  - Check for duplicate stripe_session_id (idempotency)
+  - Atomically update user_profile.credit_balance += credits
+  - Create credit_transaction record
+  - Return 200 OK: { received: true }
+  - Handle errors: 400 Bad Request (invalid signature), 500 on DB errors
+
+- Task 6: Create credit purchase modal UI (AC: Package selection UI)
+  - Create /src/components/credit-purchase-modal.tsx
+  - Use shadcn/ui Dialog component
+  - Display 3 credit packages as cards with "MOST POPULAR" badge on Pro
+  - Implement onClick handler for each package
+  - Call POST /api/credits/purchase with selected packageId
+  - Redirect to Stripe Checkout URL
+  - Add loading state during API call
+  - Style with Tailwind (Playful Nordic theme)
+
+- Task 7: Integrate purchase modal into Settings page (AC: Click "Purchase Credits")
+  - Import CreditPurchaseModal into /src/app/settings/page.tsx
+  - Add state to control modal visibility (useState)
+  - Enable "Purchase Credits" button (currently disabled from Story 2.2)
+  - Attach onClick handler to show modal
+  - Render modal conditionally based on state
+
+- Task 8: Handle payment success/cancel redirects (AC: Success toast, balance update)
+  - In Settings page, check URL query params for ?payment=success or ?payment=cancelled
+  - If success: Display success toast, call useCreditsStore refreshBalance(), clear query param
+  - If cancelled: Display info toast, clear query param
+  - Use shadcn/ui Toast component for notifications
+
+- Task 9: Test Stripe integration end-to-end (AC: All)
+  - Configure Stripe webhook in Stripe Dashboard (test mode)
+  - Test full flow with Stripe test card (4242 4242 4242 4242)
+  - Verify redirect, credit balance update, success toast, transaction record
+  - Test webhook signature verification and idempotency
+
+- Task 10: Build and verify production readiness (AC: All)
+  - Run `npm run build` to verify TypeScript compilation
+  - Run `npm run lint` to check code quality
+  - Verify all Stripe environment variables configured
+  - Document Stripe setup in Dev Notes
+  - Test error handling: insufficient credits, invalid package ID, webhook failure
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+**Given** I am on the Settings page viewing my credit balance
+**When** I click "Purchase Credits"
+**Then** I see credit package options:
+  - Starter: $15 (500 credits, ~50 songs)
+  - Pro: $25 (1000 credits, ~100 songs) - Badge: "MOST POPULAR"
+  - Premium: $50 (2500 credits, ~250 songs)
+**And** When I select a package, I am redirected to Stripe Checkout
+**And** After successful payment, I am redirected back to Musikkfabrikken
+**And** My credit balance is updated immediately
+**And** I see a success toast: "✓ Credits added to your account!"
+**And** A transaction record is created in `credit_transaction` table
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- PRD - Credit System Requirements -->
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document - Credit System</title>
+        <section>FR28-FR34: Credit System &amp; Payments</section>
+        <snippet>FR29: Users can purchase credit packages via Stripe (Starter/Pro/Premium tiers). FR31: Transaction history. FR28: Credit balance updates immediately after purchase. Pre-paid credit system creates financial buffer against API costs (Suno: $0.06/song, OpenAI: ~$0.03/request).</snippet>
+      </doc>
+
+      <!-- Architecture - Stripe Checkout Integration -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document - ADR-008: Stripe Checkout</title>
+        <section>ADR-008: Stripe Checkout for Payment Processing</section>
+        <snippet>Use Stripe Checkout (hosted payment page) instead of Stripe Elements. PCI compliance handled by Stripe, mobile-optimized checkout, supports multiple payment methods. Webhook for payment confirmation (secure, reliable). Rationale: No PCI compliance burden, fraud protection included.</snippet>
+      </doc>
+
+      <!-- Architecture - Credit System -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document - ADR-005: Pre-Paid Credit System</title>
+        <section>ADR-005: Pre-Paid Credit System for API Cost Management</section>
+        <snippet>Implement pre-paid credit packages ($15/$45/$99) instead of pay-per-song. Revenue collected upfront buffers API costs. Atomic credit deduction with rollback on failure. 14-day retention reduces storage costs. Positive cash flow and predictable user costs.</snippet>
+      </doc>
+
+      <!-- Tech Spec - Credit Purchase Flow Workflow -->
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-2.md</path>
+        <title>Epic 2 Technical Specification - Credit Purchase Flow</title>
+        <section>Workflows and Sequencing: Workflow 2: Credit Purchase Flow</section>
+        <snippet>10-step workflow: User clicks Purchase Credits → Modal displays packages → POST /api/credits/purchase → Stripe Checkout session created → User redirects to Stripe → Payment processed → Webhook to /api/webhooks/stripe → Validates signature → Atomically updates credit_balance → Creates credit_transaction record → Redirects to /settings?payment=success → Success toast + balance refresh.</snippet>
+      </doc>
+
+      <!-- Tech Spec - Database Models -->
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-2.md</path>
+        <title>Epic 2 Technical Specification - Data Models</title>
+        <section>Data Models and Contracts</section>
+        <snippet>credit_transaction table: id, user_id, amount (positive for purchase), balance_after, transaction_type (purchase/deduction/refund), description, stripe_session_id (for idempotency), song_id, created_at. CREDIT_PACKAGES: Starter ($15/500cr/~50 songs), Pro ($25/1000cr/~100 songs, MOST POPULAR), Premium ($50/2500cr/~250 songs). CREDIT_COSTS: SONG_GENERATION=10.</snippet>
+      </doc>
+
+      <!-- Epic 2 Story 2.3 Acceptance Criteria -->
+      <doc>
+        <path>docs/epics/epic-2-user-authentication-credit-system.md</path>
+        <title>Epic 2 - Story 2.3 Acceptance Criteria</title>
+        <section>Story 2.3: Implement Credit Purchase Flow with Stripe Checkout</section>
+        <snippet>Given I am on Settings page, When I click "Purchase Credits", Then I see 3 packages (Starter/Pro/Premium), select package redirects to Stripe Checkout, after payment redirects back, credit balance updated immediately, success toast shown, transaction record created. Prerequisites: Story 2.2 (User profile display).</snippet>
+      </doc>
+
+      <!-- Architecture - API Response Format -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document - API Response Format</title>
+        <section>Implementation Patterns: API Response Format</section>
+        <snippet>Success: { data: T, meta?: {...} }. Error: { error: { code: string, message: string, details?: any } }. Status codes: 200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 403 Forbidden (insufficient credits), 404 Not Found, 500 Internal Server Error.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <!-- Existing Credits Store (Story 2.2) -->
+      <artifact>
+        <path>src/stores/credits-store.ts</path>
+        <kind>zustand-store</kind>
+        <symbol>useCreditsStore</symbol>
+        <lines>1-24</lines>
+        <reason>Global credit balance state management. Story 2.3 will call refreshBalance() after successful Stripe payment to update UI immediately.</reason>
+      </artifact>
+
+      <!-- Existing Settings Page (Story 2.2) -->
+      <artifact>
+        <path>src/app/settings/page.tsx</path>
+        <kind>page-component</kind>
+        <symbol>SettingsPage</symbol>
+        <lines>132-136</lines>
+        <reason>Contains disabled "Purchase Credits" button. Story 2.3 will enable this button and add onClick handler to open credit purchase modal. Also handles ?payment=success redirect from Stripe.</reason>
+      </artifact>
+
+      <!-- Existing Credit Balance API (Story 2.2) -->
+      <artifact>
+        <path>src/app/api/credits/balance/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET</symbol>
+        <lines>1-52</lines>
+        <reason>Returns user profile and credit balance. Story 2.3 will use this pattern for authentication checks (session validation) in new credit purchase API route.</reason>
+      </artifact>
+
+      <!-- Supabase Server Client -->
+      <artifact>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>utility</kind>
+        <symbol>createClient</symbol>
+        <lines>36-61</lines>
+        <reason>Creates authenticated Supabase client for server-side operations. Story 2.3 will use this in webhook handler to update user_profile.credit_balance and insert credit_transaction records.</reason>
+      </artifact>
+
+      <!-- Database Types -->
+      <artifact>
+        <path>src/types/supabase.ts</path>
+        <kind>types</kind>
+        <symbol>Database.public.Tables.credit_transaction</symbol>
+        <lines>110-160</lines>
+        <reason>TypeScript types for credit_transaction table. Includes transaction_type enum ('purchase'|'deduction'|'refund'), stripe_session_id for idempotency, and all required fields for audit trail.</reason>
+      </artifact>
+
+      <!-- shadcn/ui Dialog Component -->
+      <artifact>
+        <path>src/components/ui/dialog.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Dialog</symbol>
+        <lines>all</lines>
+        <reason>Modal component for credit purchase package selection. Story 2.3 will create credit-purchase-modal.tsx using this Dialog primitive to display 3 credit packages.</reason>
+      </artifact>
+
+      <!-- shadcn/ui Toast Component -->
+      <artifact>
+        <path>src/components/ui/toast.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Toast</symbol>
+        <lines>all</lines>
+        <reason>Toast notification component. Story 2.3 will use for success toast "✓ Credits added to your account!" after Stripe payment completion.</reason>
+      </artifact>
+
+      <!-- shadcn/ui Card Component -->
+      <artifact>
+        <path>src/components/ui/card.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Card</symbol>
+        <lines>all</lines>
+        <reason>Card component for displaying credit packages in modal. Each package (Starter/Pro/Premium) will be a Card with package details and Select button.</reason>
+      </artifact>
+
+      <!-- shadcn/ui Badge Component -->
+      <artifact>
+        <path>src/components/ui/badge.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Badge</symbol>
+        <lines>all</lines>
+        <reason>Badge component for "MOST POPULAR" label on Pro package. Yellow accent badge to highlight recommended package.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <package>stripe</package>
+        <version>latest</version>
+        <purpose>Server-side Stripe SDK for creating Checkout sessions and verifying webhook signatures</purpose>
+        <status>not-installed</status>
+        <install>npm install stripe</install>
+      </node>
+      <node>
+        <package>@stripe/stripe-js</package>
+        <version>latest</version>
+        <purpose>Client-side Stripe SDK for redirecting to Stripe Checkout</purpose>
+        <status>not-installed</status>
+        <install>npm install @stripe/stripe-js</install>
+      </node>
+      <node>
+        <package>zod</package>
+        <version>^4.1.12</version>
+        <purpose>Input validation for API route request bodies (packageId validation)</purpose>
+        <status>installed</status>
+      </node>
+      <node>
+        <package>zustand</package>
+        <version>^5.0.8</version>
+        <purpose>Credit balance state management (already in use from Story 2.2)</purpose>
+        <status>installed</status>
+      </node>
+      <node>
+        <package>@supabase/supabase-js</package>
+        <version>^2.84.0</version>
+        <purpose>Database client for updating credit_balance and inserting credit_transaction</purpose>
+        <status>installed</status>
+      </node>
+      <node>
+        <package>next</package>
+        <version>^14.2.3</version>
+        <purpose>Next.js framework for API routes and server components</purpose>
+        <status>installed</status>
+      </node>
+      <env-vars>
+        <var>
+          <name>NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</name>
+          <example>pk_test_...</example>
+          <required>true</required>
+          <description>Stripe publishable key for client-side Checkout redirect (test mode for development)</description>
+        </var>
+        <var>
+          <name>STRIPE_SECRET_KEY</name>
+          <example>sk_test_...</example>
+          <required>true</required>
+          <description>Stripe secret key for server-side Checkout session creation (NEVER expose to client)</description>
+        </var>
+        <var>
+          <name>STRIPE_WEBHOOK_SECRET</name>
+          <example>whsec_...</example>
+          <required>true</required>
+          <description>Webhook signing secret for verifying Stripe webhook authenticity (from Stripe Dashboard)</description>
+        </var>
+        <var>
+          <name>NEXT_PUBLIC_APP_URL</name>
+          <example>http://localhost:3000</example>
+          <required>true</required>
+          <description>App URL for Stripe Checkout success/cancel redirect URLs (must be absolute URL)</description>
+        </var>
+      </env-vars>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <!-- Architecture Constraints from ADR-008 -->
+    <constraint>
+      <source>Architecture ADR-008</source>
+      <rule>MUST use Stripe Checkout (hosted payment page), NOT Stripe Elements custom form</rule>
+      <rationale>PCI compliance handled by Stripe, mobile-optimized, supports multiple payment methods</rationale>
+    </constraint>
+
+    <!-- Architecture Constraints from ADR-005 -->
+    <constraint>
+      <source>Architecture ADR-005</source>
+      <rule>Credit packages: Starter ($15/500cr), Pro ($25/1000cr), Premium ($50/2500cr). CREDIT_COSTS.SONG_GENERATION = 10 credits.</rule>
+      <rationale>Updated pricing from tech spec - more generous to encourage adoption. Credit cost = ~$0.30 per song (covers $0.09 API cost with margin).</rationale>
+    </constraint>
+
+    <!-- Database Constraint -->
+    <constraint>
+      <source>Database Schema (Story 1.6)</source>
+      <rule>credit_transaction table MUST have stripe_session_id for idempotency checks (prevent duplicate credit additions on webhook retry)</rule>
+      <rationale>Stripe retries webhooks on failure. Without idempotency check, credits could be added multiple times for single payment.</rationale>
+    </constraint>
+
+    <!-- Security Constraint -->
+    <constraint>
+      <source>Architecture: Security Architecture</source>
+      <rule>Webhook handler MUST verify Stripe signature using stripe.webhooks.constructEvent() before processing</rule>
+      <rationale>Prevents fraudulent webhook requests from adding credits without actual payment</rationale>
+    </constraint>
+
+    <!-- Atomicity Constraint -->
+    <constraint>
+      <source>Tech Spec: Workflows</source>
+      <rule>Credit balance updates MUST be atomic (single database transaction or SQL UPDATE statement)</rule>
+      <rationale>Prevents race conditions where balance could be corrupted by concurrent updates</rationale>
+    </constraint>
+
+    <!-- API Response Format Constraint -->
+    <constraint>
+      <source>Architecture: Implementation Patterns</source>
+      <rule>All API routes MUST return consistent format: Success { data: T }, Error { error: { code, message } }</rule>
+      <rationale>Frontend expects this format (used in existing /api/credits/balance route)</rationale>
+    </constraint>
+
+    <!-- Environment Variable Constraint -->
+    <constraint>
+      <source>Architecture: Secrets Management</source>
+      <rule>STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET MUST NEVER be exposed to client-side code (use only in API routes)</rule>
+      <rationale>Security - these keys grant full access to Stripe account</rationale>
+    </constraint>
+
+    <!-- Redirect URL Constraint -->
+    <constraint>
+      <source>Stripe Documentation</source>
+      <rule>success_url and cancel_url MUST be absolute URLs (include full domain), NOT relative paths</rule>
+      <rationale>Stripe Checkout requires absolute URLs for redirects after payment</rationale>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <!-- Stripe Checkout Session Creation -->
+    <interface>
+      <name>stripe.checkout.sessions.create</name>
+      <kind>Stripe API</kind>
+      <signature>
+        await stripe.checkout.sessions.create({
+          line_items: [{ price_data: { currency: 'usd', product_data: { name, description }, unit_amount: priceInCents }, quantity: 1 }],
+          mode: 'payment',
+          success_url: `${APP_URL}/settings?payment=success`,
+          cancel_url: `${APP_URL}/settings?payment=cancelled`,
+          metadata: { userId, packageId, credits: credits.toString() }
+        })
+      </signature>
+      <path>External - Stripe API</path>
+    </interface>
+
+    <!-- Stripe Webhook Verification -->
+    <interface>
+      <name>stripe.webhooks.constructEvent</name>
+      <kind>Stripe SDK Function</kind>
+      <signature>
+        const event = stripe.webhooks.constructEvent(rawBody: string, signature: string, webhookSecret: string)
+      </signature>
+      <path>External - Stripe SDK</path>
+    </interface>
+
+    <!-- Supabase Credit Balance Update -->
+    <interface>
+      <name>supabase.from('user_profile').update</name>
+      <kind>Database Update</kind>
+      <signature>
+        await supabase.from('user_profile').update({ credit_balance: newBalance }).eq('id', userId)
+      </signature>
+      <path>src/lib/supabase/server.ts</path>
+    </interface>
+
+    <!-- Supabase Transaction Insert -->
+    <interface>
+      <name>supabase.from('credit_transaction').insert</name>
+      <kind>Database Insert</kind>
+      <signature>
+        await supabase.from('credit_transaction').insert({ user_id, amount, balance_after, transaction_type: 'purchase', description, stripe_session_id })
+      </signature>
+      <path>src/lib/supabase/server.ts</path>
+    </interface>
+
+    <!-- Credits Store Refresh -->
+    <interface>
+      <name>useCreditsStore.refreshBalance</name>
+      <kind>Zustand Store Method</kind>
+      <signature>
+        const { refreshBalance } = useCreditsStore()
+        await refreshBalance() // Fetches from /api/credits/balance and updates store
+      </signature>
+      <path>src/stores/credits-store.ts</path>
+    </interface>
+
+    <!-- Toast Notification -->
+    <interface>
+      <name>toast</name>
+      <kind>React Hook (shadcn/ui)</kind>
+      <signature>
+        import { useToast } from '@/hooks/use-toast'
+        const { toast } = useToast()
+        toast({ title: '✓ Credits added!', description: 'Your account has been credited.' })
+      </signature>
+      <path>src/hooks/use-toast.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+Unit tests using Jest and React Testing Library for component logic and API route handlers. Integration tests using Playwright for Stripe Checkout flow with test mode. E2E tests for complete purchase flow: select package → Stripe Checkout → webhook → balance update. Test webhook signature verification (invalid signature should return 400). Test idempotency (duplicate stripe_session_id should not add credits twice). Coverage target: &gt;80% for credit purchase logic modules.
+    </standards>
+
+    <locations>
+      <location>src/app/api/credits/purchase/__tests__/route.test.ts</location>
+      <location>src/app/api/webhooks/stripe/__tests__/route.test.ts</location>
+      <location>src/components/__tests__/credit-purchase-modal.test.tsx</location>
+      <location>e2e/credit-purchase.spec.ts</location>
+    </locations>
+
+    <ideas>
+      <!-- AC-based test ideas -->
+      <test-idea ac="Package Selection UI">
+        <description>Unit: Render CreditPurchaseModal, verify 3 packages displayed with correct prices (Starter $15, Pro $25, Premium $50) and "MOST POPULAR" badge on Pro package</description>
+      </test-idea>
+
+      <test-idea ac="Stripe Checkout Redirect">
+        <description>Integration: POST /api/credits/purchase with packageId='pro', mock Stripe session creation, verify response contains checkoutUrl starting with 'https://checkout.stripe.com'</description>
+      </test-idea>
+
+      <test-idea ac="Webhook Credit Fulfillment">
+        <description>Integration: Simulate Stripe webhook event 'checkout.session.completed' with metadata {userId, credits: 1000}, verify user_profile.credit_balance increased by 1000 and credit_transaction record created</description>
+      </test-idea>
+
+      <test-idea ac="Success Toast Display">
+        <description>E2E: Complete purchase with Stripe test card (4242 4242 4242 4242), verify redirect to /settings?payment=success, verify toast notification "✓ Credits added to your account!" appears</description>
+      </test-idea>
+
+      <test-idea ac="Balance Update Immediately">
+        <description>Integration: After webhook processing, verify refreshBalance() called, credit balance in UI updated from 0 to 1000 credits without manual refresh</description>
+      </test-idea>
+
+      <!-- Security test ideas -->
+      <test-idea ac="Webhook Signature Verification">
+        <description>Unit: POST /api/webhooks/stripe with invalid signature header, verify 400 Bad Request returned and credits NOT added</description>
+      </test-idea>
+
+      <test-idea ac="Idempotency Check">
+        <description>Integration: Send same webhook event twice (same stripe_session_id), verify credits added only once (check for existing transaction before inserting)</description>
+      </test-idea>
+
+      <!-- Error handling test ideas -->
+      <test-idea ac="Invalid Package ID">
+        <description>Unit: POST /api/credits/purchase with packageId='invalid', verify 400 Bad Request with error code 'INVALID_PACKAGE'</description>
+      </test-idea>
+
+      <test-idea ac="Unauthenticated Request">
+        <description>Unit: POST /api/credits/purchase without session cookie, verify 401 Unauthorized returned</description>
+      </test-idea>
+
+      <test-idea ac="Stripe API Failure">
+        <description>Integration: Mock Stripe session creation to throw error, verify API returns 500 Internal Server Error and user sees friendly error message</description>
+      </test-idea>
+    </ideas>
+  </tests>
+</story-context>
