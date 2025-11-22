@@ -1,0 +1,258 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.1</storyId>
+    <title>Implement Google OAuth Authentication</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-21</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts\2-1-implement-google-oauth-authentication.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to sign up and log in using my Google account</iWant>
+    <soThat>I can access Musikkfabrikken without creating a new password</soThat>
+    <tasks>
+- [ ] Task 1: Install Supabase Auth dependencies and configure OAuth (AC: All)
+  - [ ] Install @supabase/ssr package for auth helpers (replacing deprecated auth-helpers-nextjs)
+  - [ ] Verify Google OAuth provider enabled in Supabase dashboard (completed in Story 1.3)
+  - [ ] Configure OAuth redirect URLs in Supabase settings (http://localhost:3000/auth/callback for dev)
+  - [ ] Review Supabase Auth documentation for Next.js App Router patterns
+
+- [ ] Task 2: Create Supabase client utilities for authentication (AC: All)
+  - [ ] Verify /src/lib/supabase/client.ts exists with createBrowserClient (from Story 1.3)
+  - [ ] Verify /src/lib/supabase/server.ts exists with createServerClient (from Story 1.3)
+  - [ ] Create /src/lib/supabase/middleware.ts for Next.js middleware auth handling
+  - [ ] Implement updateSession() helper for middleware to refresh tokens
+
+- [ ] Task 3: Create authentication middleware for route protection (AC: Session persistence)
+  - [ ] Create /src/middleware.ts at project root
+  - [ ] Import createServerClient and updateSession from lib/supabase/middleware
+  - [ ] Implement middleware logic: check session, refresh token if needed, redirect to /auth/login if unauthenticated
+  - [ ] Configure matcher to protect routes: /songs, /settings (but NOT /auth/*)
+  - [ ] Test middleware redirects unauthenticated users to login page
+
+- [ ] Task 4: Create login page with Google OAuth button (AC: User clicks "Sign in with Google")
+  - [ ] Create /src/app/auth/login/page.tsx
+  - [ ] Import createBrowserClient from lib/supabase/client
+  - [ ] Create login UI: Google sign-in button with Google logo/icon
+  - [ ] Implement signInWithOAuth() handler using Supabase client
+  - [ ] Configure OAuth options: { redirectTo: '/auth/callback', provider: 'google' }
+  - [ ] Style button with shadcn/ui Button component (primary red color from theme)
+  - [ ] Add loading state during OAuth redirect
+
+- [ ] Task 5: Create OAuth callback route handler (AC: User profile creation, JWT token)
+  - [ ] Create /src/app/auth/callback/route.ts as API route handler
+  - [ ] Import createServerClient from lib/supabase/server
+  - [ ] Extract code and next query parameters from request URL
+  - [ ] Exchange code for session using supabase.auth.exchangeCodeForSession(code)
+  - [ ] On success: redirect to / (home page) or next parameter if provided
+  - [ ] On error: redirect to /auth/login?error=auth_failed with error message
+  - [ ] Verify session cookie set automatically by Supabase client
+
+- [ ] Task 6: Create user profile on first login (AC: User profile created with 0 credits)
+  - [ ] In /src/app/auth/callback/route.ts, after successful OAuth exchange
+  - [ ] Query user_profile table to check if profile exists for authenticated user
+  - [ ] If NOT exists: Insert new user_profile record with { id: user.id, credit_balance: 0, display_name: user.user_metadata.full_name }
+  - [ ] Use INSERT ... ON CONFLICT DO NOTHING to handle race conditions
+  - [ ] Verify user_profile creation works with RLS policies (auth.uid() = id)
+
+- [ ] Task 7: Create logout functionality (AC: Session management)
+  - [ ] Create /src/app/api/auth/logout/route.ts as API route handler
+  - [ ] Import createServerClient from lib/supabase/server
+  - [ ] Call supabase.auth.signOut() to invalidate session
+  - [ ] Clear session cookie
+  - [ ] Return { success: true } or redirect to /auth/login
+  - [ ] Test logout clears session and redirects to login
+
+- [ ] Task 8: Test authentication flow end-to-end (AC: All)
+  - [ ] Start dev server (npm run dev)
+  - [ ] Navigate to protected route /songs (should redirect to /auth/login)
+  - [ ] Click "Sign in with Google" button
+  - [ ] Complete Google OAuth consent screen (use test Google account)
+  - [ ] Verify redirect back to app at /auth/callback, then to / (home)
+  - [ ] Check browser cookies: verify HTTP-only session cookie set
+  - [ ] Verify user_profile created in Supabase dashboard with credit_balance = 0
+  - [ ] Open new browser tab, navigate to /songs (should remain authenticated)
+  - [ ] Close and reopen browser, navigate to /songs (session should persist)
+  - [ ] Test logout functionality, verify redirected to login
+
+- [ ] Task 9: Handle authentication edge cases and errors (AC: Error handling)
+  - [ ] Test OAuth cancellation: Cancel Google consent screen, verify friendly error message
+  - [ ] Test expired session: Force session expiration, verify automatic token refresh
+  - [ ] Test invalid callback code: Simulate invalid OAuth code, verify error handling
+  - [ ] Add user-friendly error messages for common auth failures
+  - [ ] Log authentication errors server-side for debugging
+
+- [ ] Task 10: Build verification and security review (AC: All)
+  - [ ] Run npm run build and verify success (no TypeScript errors)
+  - [ ] Verify JWT tokens stored in HTTP-only cookies (not accessible via JavaScript)
+  - [ ] Verify cookies have Secure flag (HTTPS only) and SameSite=Lax (CSRF protection)
+  - [ ] Review middleware logic: ensure no sensitive data exposed to client
+  - [ ] Verify RLS policies work: authenticated user can only access own profile
+  - [ ] Test with multiple Google accounts to verify multi-user isolation
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+**Given** I am on the home page without authentication
+**When** I click "Sign in with Google" button
+**Then** I am redirected to Google OAuth consent screen
+**And** After granting permission, I am redirected back to Musikkfabrikken
+**And** My user session is established with JWT token in HTTP-only cookie
+**And** My user profile is created in `user_profile` table with default 0 credits
+**And** I am redirected to the main "Create Song" page
+**And** Session persists across browser tabs and page refreshes
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- Documentation references with project-relative paths -->
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-2.md</path>
+        <title>Epic Technical Specification: User Authentication & Credit System</title>
+        <section>Overview</section>
+        <snippet>Epic 2 establishes the foundational authentication and monetization infrastructure for Musikkfabrikken. This epic enables users to create accounts via Google OAuth, view their credit balance, purchase credit packages through Stripe Checkout, and ensures atomic credit transactions with automatic rollback on generation failures.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-2.md</path>
+        <title>Epic Technical Specification: User Authentication & Credit System</title>
+        <section>Workflows: User Registration & Login (Google OAuth)</section>
+        <snippet>1. User clicks "Sign in with Google" on /auth/login → 2. Frontend redirects to Google OAuth consent screen → 3. User grants permission → 4. Google redirects to /auth/callback?code=&lt;oauth_code&gt; → 5. Backend exchanges code for JWT token via Supabase Auth → 6. Backend checks if user_profile exists, creates if not with credit_balance=0 → 7. Backend sets HTTP-only cookie with session token (7-day expiration) → 8. Backend redirects to / (home page)</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken - Architecture Document</title>
+        <section>ADR-002: Use Supabase for Backend Services</section>
+        <snippet>Use Supabase (PostgreSQL 17 + Auth + Storage) for backend services. Google OAuth built-in, Row Level Security ensures data isolation, Next.js integration via official @supabase/ssr auth helpers.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken - Architecture Document</title>
+        <section>Authentication Pattern</section>
+        <snippet>Middleware Protection: /src/middleware.ts checks auth state, redirects unauthenticated users to /auth/login. Protected routes: /songs, /settings. Getting Current User: Use createServerClient with cookies for Server Components/API Routes.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken - Architecture Document</title>
+        <section>Database Schema - user_profile table</section>
+        <snippet>CREATE TABLE user_profile (id UUID PRIMARY KEY REFERENCES auth.users(id), display_name TEXT, credit_balance INTEGER DEFAULT 0 CHECK (credit_balance >= 0), preferences JSONB DEFAULT '{}'::jsonb, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());</snippet>
+      </artifact>
+    </docs>
+    <code>
+      <!-- Existing code artifacts relevant to this story -->
+      <artifact>
+        <path>src/lib/supabase/client.ts</path>
+        <kind>service</kind>
+        <symbol>createClient</symbol>
+        <lines>25-30</lines>
+        <reason>Existing browser Supabase client for OAuth flow in login page</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>service</kind>
+        <symbol>createClient</symbol>
+        <lines>36-61</lines>
+        <reason>Existing server Supabase client for OAuth callback and API routes</reason>
+      </artifact>
+      <artifact>
+        <path>src/types/supabase.ts</path>
+        <kind>types</kind>
+        <symbol>Database</symbol>
+        <lines>1-end</lines>
+        <reason>TypeScript types for user_profile table and RLS policies</reason>
+      </artifact>
+      <artifact>
+        <path>package.json</path>
+        <kind>config</kind>
+        <symbol>dependencies</symbol>
+        <lines>11-29</lines>
+        <reason>@supabase/ssr already installed, @radix-ui components for Button available</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <!-- NPM dependencies with versions -->
+      <node>
+        <package name="@supabase/ssr" version="^0.7.0" status="installed" />
+        <package name="@supabase/supabase-js" version="^2.84.0" status="installed" />
+        <package name="@radix-ui/react-slot" version="^1.2.4" status="installed" />
+        <package name="next" version="^14.2.3" status="installed" />
+        <package name="react" version="^18.2.0" status="installed" />
+        <package name="lucide-react" version="^0.554.0" status="installed" />
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <!-- Development constraints from architecture and tech spec -->
+    <constraint type="security">JWT tokens must be stored in HTTP-only cookies (XSS protection)</constraint>
+    <constraint type="security">Cookies must have Secure flag (HTTPS only) and SameSite=Lax (CSRF protection)</constraint>
+    <constraint type="architecture">Use @supabase/ssr package (replaces deprecated @supabase/auth-helpers-nextjs)</constraint>
+    <constraint type="architecture">OAuth callback route: /auth/callback</constraint>
+    <constraint type="architecture">Middleware protects authenticated routes, excludes /auth/*</constraint>
+    <constraint type="database">User profile creation automatic on first login with credit_balance = 0</constraint>
+    <constraint type="database">Use INSERT ... ON CONFLICT DO NOTHING to handle race conditions on profile creation</constraint>
+    <constraint type="pattern">createBrowserClient for Client Components, createServerClient for Server Components/API routes</constraint>
+    <constraint type="testing">npm run build must pass with zero TypeScript errors before story completion</constraint>
+  </constraints>
+
+  <interfaces>
+    <!-- API/interface signatures to implement or integrate with -->
+    <interface>
+      <name>signInWithOAuth</name>
+      <kind>Supabase Auth API</kind>
+      <signature>supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: '/auth/callback' } })</signature>
+      <path>src/app/auth/login/page.tsx</path>
+    </interface>
+    <interface>
+      <name>exchangeCodeForSession</name>
+      <kind>Supabase Auth API</kind>
+      <signature>supabase.auth.exchangeCodeForSession(code: string)</signature>
+      <path>src/app/auth/callback/route.ts</path>
+    </interface>
+    <interface>
+      <name>signOut</name>
+      <kind>Supabase Auth API</kind>
+      <signature>supabase.auth.signOut()</signature>
+      <path>src/app/api/auth/logout/route.ts</path>
+    </interface>
+    <interface>
+      <name>getSession</name>
+      <kind>Supabase Auth API</kind>
+      <signature>await supabase.auth.getSession()</signature>
+      <path>src/middleware.ts</path>
+    </interface>
+    <interface>
+      <name>user_profile RLS Policy</name>
+      <kind>Database Policy</kind>
+      <signature>CREATE POLICY user_profile_select ON user_profile FOR SELECT USING (auth.uid() = id)</signature>
+      <path>Database (already created in Story 1.6)</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+Story testing follows Next.js App Router patterns with Supabase Auth. Create test pages in /src/app/test-*/page.tsx for manual verification, then delete before story completion. Unit tests use Jest with mocked Supabase client. Integration tests use real Supabase dev project with test Google account. E2E tests use Playwright with headless browser. All authentication flows must pass security review: HTTP-only cookies, Secure flag, RLS policies enforced.
+    </standards>
+    <locations>
+      <location>src/app/auth/login/__tests__/</location>
+      <location>src/app/auth/callback/__tests__/</location>
+      <location>src/middleware.test.ts</location>
+      <location>e2e/auth-flow.spec.ts</location>
+    </locations>
+    <ideas>
+      <!-- Test ideas mapped to acceptance criteria -->
+      <idea ac="AC1-3">E2E Test: Complete OAuth flow - Click "Sign in with Google" → Complete consent → Verify redirected to / with session cookie set</idea>
+      <idea ac="AC4">Unit Test: Verify session cookie has HTTP-only, Secure, SameSite=Lax flags</idea>
+      <idea ac="AC5">Integration Test: After OAuth callback, verify user_profile created with credit_balance=0 in database</idea>
+      <idea ac="AC6">E2E Test: Session persistence - Login → Close browser → Reopen → Navigate to /songs → Verify still authenticated</idea>
+      <idea ac="All">Integration Test: Middleware redirects unauthenticated user to /auth/login when accessing /songs</idea>
+      <idea ac="Error Handling">Unit Test: OAuth cancellation - Verify friendly error message when user cancels Google consent</idea>
+      <idea ac="Error Handling">Integration Test: Invalid OAuth code - Verify graceful error handling and redirect to /auth/login?error=auth_failed</idea>
+      <idea ac="Security">Manual Test: Verify RLS policies - User A cannot query User B's profile using browser Supabase client</idea>
+      <idea ac="Security">Manual Test: Inspect cookies in browser DevTools - Verify JWT not accessible via JavaScript</idea>
+      <idea ac="Build">CI Test: npm run build succeeds with zero TypeScript errors</idea>
+    </ideas>
+  </tests>
+</story-context>

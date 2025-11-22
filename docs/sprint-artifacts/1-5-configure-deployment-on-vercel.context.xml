@@ -1,0 +1,232 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>5</storyId>
+    <title>Configure Deployment on Vercel</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-20</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-5-configure-deployment-on-vercel.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>the application automatically deployed to Vercel with continuous deployment from Git</iWant>
+    <soThat>every commit to main triggers a production deployment and the application is publicly accessible via HTTPS</soThat>
+    <tasks>
+- Task 1: Create Vercel Account and Connect GitHub (AC: #1)
+  - Sign up or log in to Vercel (https://vercel.com)
+  - Click "Add New Project"
+  - Connect GitHub account if not already connected
+  - Authorize Vercel to access GitHub repositories
+  - Select the Musikkfabrikken repository (ibe160)
+
+- Task 2: Configure Vercel Project (AC: #2)
+  - Verify Framework Preset: Next.js (should auto-detect)
+  - Verify Root Directory: `.` (project root)
+  - Verify Build Command: `npm run build` (default for Next.js)
+  - Verify Output Directory: `.next` (default for Next.js)
+  - Verify Install Command: `npm install` (default)
+  - Set Node.js Version: 20.x (or 18.x LTS)
+  - Name the project: `musikkfabrikken` (or similar)
+
+- Task 3: Configure Environment Variables (AC: #3)
+  - Navigate to Project Settings → Environment Variables
+  - Add `NEXT_PUBLIC_SUPABASE_URL` with value from Story 1.3
+  - Add `NEXT_PUBLIC_SUPABASE_ANON_KEY` with value from Story 1.3
+  - Add `SUPABASE_SERVICE_ROLE_KEY` with value from Story 1.3 (mark as Sensitive)
+  - Verify all 3 environment variables are saved for Production, Preview, Development
+
+- Task 4: Trigger Initial Deployment (AC: #4)
+  - Click "Deploy" button in Vercel dashboard
+  - Monitor build logs in real-time
+  - Verify build succeeds with exit code 0
+
+- Task 5: Verify Production Deployment (AC: #6)
+  - Copy production URL from Vercel dashboard
+  - Open production URL in browser
+  - Verify HTTPS is active
+  - Verify application loads without errors
+  - Verify environment variables are accessible
+
+- Task 6: Test Automatic Deployment (AC: #4, #8)
+  - Make a small change locally
+  - Commit and push to main branch
+  - Watch Vercel dashboard for automatic deployment trigger
+  - Verify new deployment shows "Ready" status
+
+- Task 7: Test Preview Deployment (AC: #5)
+  - Create a new branch for testing
+  - Make a test change
+  - Push branch and create Pull Request
+  - Verify Vercel bot comments on PR with preview URL
+
+- Task 8: Review Deployment Settings (AC: #7)
+  - Review build logs in Vercel dashboard
+  - Verify no errors or warnings
+  - Check deployment details
+
+- Task 9: Document Deployment Process
+  - Update README.md with deployment information
+  - Document production URL and deployment settings
+</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. **Vercel Account Connected**: GitHub repository connected to Vercel account with deployment permissions
+2. **Project Configured**: Vercel project created with Next.js framework preset and correct build settings
+3. **Environment Variables Set**: All Supabase environment variables configured in Vercel dashboard for Production, Preview, and Development
+4. **Automatic Deployment Works**: Push to main branch triggers automatic build and deployment to production URL
+5. **Preview Deployments Active**: Pull requests automatically create preview deployments with unique URLs
+6. **Production URL Accessible**: Application accessible via HTTPS at Vercel-provided URL (*.vercel.app)
+7. **Build Logs Available**: Vercel dashboard shows build logs and deployment status
+8. **Deployment Verified**: Test deployment by pushing a commit, verify build succeeds and site is live
+</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" section="Deployment Architecture">
+        Vercel hosting with seamless Next.js integration. Regions: US/EU (closest to Supabase), Edge Functions globally. CI/CD: Git push to main → Automatic deployment. Preview deployments for PRs with unique URLs. Rollback capability: One-click rollback to previous deployments. Environment Management: Production, Preview, Development environments.
+      </doc>
+      <doc path="docs/architecture.md" section="Environment Variables">
+        Required variables: NEXT_PUBLIC_SUPABASE_URL (public, safe for client), NEXT_PUBLIC_SUPABASE_ANON_KEY (public, RLS enforced), SUPABASE_SERVICE_ROLE_KEY (server-only, sensitive, admin access). All environments (Production, Preview, Development) should have same variables. Sensitive keys marked as "Sensitive" in Vercel UI.
+      </doc>
+      <doc path="docs/architecture.md" section="Build Configuration">
+        Vercel auto-detects Next.js: Build Command: npm run build, Output Directory: .next, Install Command: npm install, Node.js Version: 18.x or 20.x (LTS). Target build time: &lt;2 minutes. Next.js automatic optimizations: code splitting, image optimization.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-1.md" section="Story 1.5 - Vercel Configuration">
+        Deployment strategy: Production (main branch) → musikkfabrikken.vercel.app, Staging (staging branch) optional, Development (local), Preview (PR branches) → unique preview URLs. Monitoring: Vercel Analytics automatic, Build logs in dashboard, Console logs → Vercel Logs.
+      </doc>
+      <doc path="docs/sprint-artifacts/1-3-set-up-supabase-project-and-environment-variables.md" section="Environment Variables">
+        PREREQUISITE: Story 1-3 must be completed BEFORE deploying to Vercel. Reason: Vercel deployment needs Supabase environment variables. Without these variables, application will fail to connect to Supabase in production.
+      </doc>
+      <doc path="README.md" section="Deployment Documentation">
+        Current setup: Development server uses Turbopack. Build scripts: npm run dev (development), npm run build (production build), npm start (production server). Documentation needs update with Vercel deployment info after Story 1.5 completion.
+      </doc>
+    </docs>
+    <code>
+      <artifact path="package.json" kind="config" symbol="scripts" lines="5-9" reason="Build and deployment scripts that Vercel will execute: npm run build for production builds">
+        Build command configured as "next build", development uses Turbopack with "next dev --turbo". These scripts are what Vercel executes during deployment.
+      </artifact>
+      <artifact path="next.config.js" kind="config" symbol="nextConfig" lines="1-6" reason="Next.js configuration that affects Vercel build">
+        Basic Next.js config with reactStrictMode enabled. Vercel will read this during build to configure deployment settings.
+      </artifact>
+      <artifact path="src/app/layout.tsx" kind="component" symbol="RootLayout" reason="Root layout with Norwegian locale (lang=nb) that must work in production">
+        Root layout component with Norwegian language configuration. Must render correctly on Vercel with proper metadata and font loading.
+      </artifact>
+      <artifact path="src/app/page.tsx" kind="component" symbol="Home" reason="Home page that will be the landing page on production URL">
+        Main landing page component. This is what users will see when visiting the Vercel production URL.
+      </artifact>
+      <artifact path=".gitignore" kind="config" reason="Ensures Vercel-generated .vercel directory is excluded from Git">
+        Should contain .vercel/ directory to prevent committing Vercel configuration to repository.
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package name="next" version="^14.2.3" reason="Framework that Vercel is optimized for, requires specific build configuration" />
+        <package name="react" version="^18.2.0" reason="Required peer dependency for Next.js, must be compatible with Next.js 14" />
+        <package name="react-dom" version="^18.2.0" reason="Required for React rendering in Next.js" />
+        <package name="typescript" version="^5" reason="TypeScript compilation during build must succeed for deployment" />
+        <package name="@supabase/supabase-js" version="^2.84.0" reason="Supabase client requires environment variables configured in Vercel" />
+        <package name="@supabase/ssr" version="^0.7.0" reason="Supabase SSR helpers for Next.js App Router" />
+      </node>
+      <buildTools>
+        <tool name="Vercel Build System" reason="Executes npm run build, requires Node.js 18.x or 20.x" />
+        <tool name="Next.js Compiler" reason="Compiles TypeScript and React components during build" />
+        <tool name="Tailwind CSS JIT" reason="Generates optimized CSS bundle during build" />
+      </buildTools>
+      <nodeVersion>
+        <requirement>18.17+ or 20.x LTS</requirement>
+        <configured>Should be set to 20.x in Vercel project settings</configured>
+      </nodeVersion>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint priority="critical">
+      PREREQUISITE: Story 1-3 (Supabase setup) MUST be completed before deploying to Vercel. Vercel deployment requires Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY) to be configured.
+    </constraint>
+    <constraint priority="high">
+      Build must succeed: npm run build must complete with exit code 0, no TypeScript errors, no ESLint errors (warnings acceptable).
+    </constraint>
+    <constraint priority="high">
+      Environment variables MUST be set for all three environments: Production, Preview, and Development. This ensures consistency across deployment environments.
+    </constraint>
+    <constraint priority="medium">
+      Node.js version should be set to 20.x (or 18.x LTS minimum) in Vercel project settings to match local development environment.
+    </constraint>
+    <constraint priority="medium">
+      .vercel directory must be in .gitignore to prevent committing Vercel configuration to repository.
+    </constraint>
+    <constraint priority="low">
+      Custom domain (musikkfabrikken.no) is out-of-scope for Epic 1. Default Vercel subdomain (*.vercel.app) is sufficient for MVP.
+    </constraint>
+  </constraints>
+  <interfaces>
+    <interface name="Vercel Deployment API" kind="CI/CD Platform">
+      <signature>Git push → Webhook → Build trigger → npm install → npm run build → Deploy to CDN</signature>
+      <path>GitHub repository connected to Vercel dashboard</path>
+      <usage>Automatic deployment triggered by Git push to main branch. Preview deployments triggered by PRs.</usage>
+    </interface>
+    <interface name="Vercel Environment Variables" kind="Configuration">
+      <signature>Key-value pairs configured in Vercel dashboard, accessible via process.env in Next.js</signature>
+      <path>Vercel Dashboard → Project Settings → Environment Variables</path>
+      <usage>Required: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY. Future: Stripe, OpenAI, Suno, Google AI keys.</usage>
+    </interface>
+    <interface name="Vercel Build Logs" kind="Observability">
+      <signature>Real-time build output (stdout/stderr) showing install, build, and deployment steps</signature>
+      <path>Vercel Dashboard → Deployments → [Deployment] → Build Logs</path>
+      <usage>Troubleshooting build failures, verifying successful deployments, monitoring build times</usage>
+    </interface>
+    <interface name="Next.js Build Output" kind="Build Artifact">
+      <signature>.next directory containing compiled pages, server functions, static assets</signature>
+      <path>.next/ (generated during build, gitignored)</path>
+      <usage>Vercel serves this compiled output via CDN. Build must produce valid .next directory.</usage>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+      Epic 1 is infrastructure-focused and primarily uses manual verification testing (70%) with limited automated checks (10%). Testing validates deployment pipeline, environment configuration, and build success rather than feature functionality. Manual tests documented in PR descriptions or Story completion notes. Build logs automatically captured by Vercel dashboard. Lighthouse reports for accessibility checks (optional screenshots to /docs/test-results/).
+    </standards>
+    <locations>
+      <location type="manual">Vercel Dashboard → Deployments tab for build logs and deployment status</location>
+      <location type="manual">Browser testing at production URL (*.vercel.app) for HTTPS and application loading</location>
+      <location type="manual">GitHub for PR preview deployment URL comments from Vercel bot</location>
+      <location type="automated">Local: npm run build to verify build succeeds</location>
+      <location type="automated">CI: Vercel automatic build on every push</location>
+      <location type="config">Vercel Dashboard → Project Settings → Environment Variables for configuration verification</location>
+    </locations>
+    <ideas>
+      <test id="AC1" criterion="Vercel Account Connected">
+        Manual test: Verify GitHub repository appears in Vercel dashboard after connection. Verify Vercel has deployment permissions by checking Integration settings in GitHub.
+      </test>
+      <test id="AC2" criterion="Project Configured">
+        Manual test: Check Vercel project settings show Framework: Next.js, Build Command: npm run build, Output Directory: .next, Node.js: 20.x. Verify auto-detection worked correctly.
+      </test>
+      <test id="AC3" criterion="Environment Variables Set">
+        Manual test: Navigate to Project Settings → Environment Variables, verify all 3 Supabase variables exist with checkmarks for Production, Preview, and Development environments. Verify SUPABASE_SERVICE_ROLE_KEY is marked as "Sensitive".
+      </test>
+      <test id="AC4" criterion="Automatic Deployment Works">
+        Manual test: Make trivial change (add comment to page.tsx), commit to main, push. Watch Vercel dashboard for automatic trigger. Verify deployment completes with "Ready" status. Test both initial deployment and subsequent automatic deployment.
+      </test>
+      <test id="AC5" criterion="Preview Deployments Active">
+        Manual test: Create test branch, make change, push and create PR. Verify Vercel bot comments on PR with preview URL within 1-2 minutes. Visit preview URL and verify it's separate from production. Close PR and verify preview is marked as "Canceled".
+      </test>
+      <test id="AC6" criterion="Production URL Accessible">
+        Manual test: Copy production URL from Vercel dashboard (e.g., musikkfabrikken.vercel.app), open in browser. Verify: (1) HTTPS padlock icon visible, (2) No SSL warnings, (3) Application loads without 404 or 500 errors, (4) Check browser console for errors (should be clean).
+      </test>
+      <test id="AC7" criterion="Build Logs Available">
+        Manual test: Click on latest deployment in Vercel dashboard, review build logs. Verify logs show: (1) npm install output, (2) npm run build output with Next.js compilation steps, (3) No red error messages, (4) Deployment timestamp and region. Check build time is under 2 minutes.
+      </test>
+      <test id="AC8" criterion="Deployment Verified">
+        Integration test: Run local build first (npm run build) to ensure it works. Then push commit to trigger Vercel deployment. Compare local build output to Vercel build logs. Verify production site matches local development. Check that environment variables are accessible (test Supabase connection if Story 1-3 complete).
+      </test>
+      <test id="ROLLBACK" criterion="Rollback Capability">
+        Exploratory test: After successful deployment, locate previous deployment in Vercel dashboard. Click "..." menu and verify "Promote to Production" option exists. (Don't actually rollback unless testing recovery scenario.)
+      </test>
+      <test id="README" criterion="Documentation Updated">
+        Manual test: After deployment success, verify README.md has been updated with section containing: Production URL, Deployment strategy (automatic on push to main), Preview deployment info, Environment variable configuration note.
+      </test>
+    </ideas>
+  </tests>
+</story-context>

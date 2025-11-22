@@ -1,0 +1,455 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.6</storyId>
+    <title>Set Up Database Schema with Supabase Migrations</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-20</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-6-set-up-database-schema-with-supabase-migrations.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a developer</asA>
+    <iWant>the core database schema created with Row Level Security enabled and TypeScript types generated</iWant>
+    <soThat>user data is properly isolated, tables support all application features, and database queries are type-safe throughout the codebase</soThat>
+    <tasks>
+- Task 1: Review and prepare database schema SQL (AC: #1, #2)
+  - Read complete database schema from `/docs/architecture.md` section "Data Architecture"
+  - Review all 5 table definitions: user_profile, song, credit_transaction, genre, mastering_request
+  - Verify column types, constraints, foreign keys, defaults match architecture spec
+  - Note: Complete SQL provided in architecture doc - no invention required
+
+- Task 2: Create database migration file (AC: #1, #2)
+  - Create migration directory if not exists: `/supabase/migrations/`
+  - Create migration file: `/supabase/migrations/20250120_initial_schema.sql` (use current date)
+  - Copy table creation SQL from architecture doc into migration file
+  - Add comments for clarity (table purposes, important constraints)
+  - Format SQL for readability
+
+- Task 3: Apply database schema to Supabase (AC: #1, #2, #5)
+  - Connect to Supabase project via dashboard SQL Editor
+  - Run migration SQL to create all tables
+  - Verify all 5 tables created: Check Supabase dashboard Table Editor
+  - Verify indexes created: Query `pg_indexes` table or check Supabase dashboard
+  - Verify foreign key constraints active
+  - Verify CHECK constraints work (e.g., credit_balance >= 0)
+
+- Task 4: Enable Row Level Security on tables (AC: #3)
+  - Enable RLS on `user_profile` table
+  - Enable RLS on `song` table
+  - Enable RLS on `credit_transaction` table
+  - Enable RLS on `mastering_request` table
+  - Note: `genre` table does NOT need RLS (reference data, publicly readable)
+  - Verify RLS enabled: Check Supabase dashboard or query `pg_tables`
+
+- Task 5: Create RLS policies for user_profile (AC: #4)
+  - Create policy: `user_profile_select` - Users can SELECT their own profile (`auth.uid() = id`)
+  - Create policy: `user_profile_update` - Users can UPDATE their own profile (`auth.uid() = id`)
+  - Note: No INSERT policy needed (user profiles created by auth system)
+  - Note: No DELETE policy (account deletion handled separately)
+  - Test policy: Attempt to query another user's profile (should return empty)
+
+- Task 6: Create RLS policies for song table (AC: #4)
+  - Create policy: `song_select` - Users can SELECT their own songs (`auth.uid() = user_id`)
+  - Create policy: `song_insert` - Users can INSERT songs for themselves (`auth.uid() = user_id`)
+  - Create policy: `song_update` - Users can UPDATE their own songs (`auth.uid() = user_id`)
+  - Create policy: `song_delete` - Users can DELETE their own songs (`auth.uid() = user_id`)
+  - Test policy: Attempt to access another user's songs (should fail)
+
+- Task 7: Create RLS policies for credit_transaction (AC: #4)
+  - Create policy: `credit_transaction_select` - Users can SELECT their own transactions (`auth.uid() = user_id`)
+  - Note: No INSERT/UPDATE/DELETE policies (transactions created by system functions only)
+  - Test policy: Attempt to view another user's transactions (should return empty)
+
+- Task 8: Create RLS policies for mastering_request (AC: #4)
+  - Create policy: `mastering_request_select` - Users can SELECT their own requests (`auth.uid() = user_id`)
+  - Create policy: `mastering_request_insert` - Users can INSERT requests for themselves (`auth.uid() = user_id`)
+  - Create policy: `mastering_request_update` - Users can UPDATE their own requests (`auth.uid() = user_id`)
+  - Test policy: Attempt to access another user's mastering requests (should fail)
+
+- Task 9: Create deduct_credits stored procedure (AC: #6)
+  - Copy `deduct_credits()` function SQL from architecture doc
+  - Create function in Supabase SQL Editor
+  - Function should:
+    - Lock user profile row (FOR UPDATE)
+    - Validate sufficient credits (RAISE EXCEPTION if insufficient)
+    - Deduct credits from user balance
+    - Record transaction in credit_transaction table
+    - Return transaction record
+  - Test function manually: Create test user, add credits, call deduct_credits()
+  - Test insufficient credits scenario: Verify exception raised
+
+- Task 10: Load genre seed data (AC: #9)
+  - Create seed data SQL for genre table
+  - Include minimum genres:
+    - Country Rock (emoji: 🎸, Suno template: "Country, rock, anthem, twangy guitar, catchy fiddle, drum, bass")
+    - Norwegian Pop (emoji: 🎤, Suno template: "Norwegian pop, catchy, upbeat, modern")
+    - Folk Ballad (emoji: 🪕, Suno template: "Folk, ballad, acoustic, storytelling, Norwegian tradition")
+    - Party Anthem (emoji: 🎉, Suno template: "Party, anthem, energetic, celebratory, Norwegian lyrics")
+  - Add additional genres from architecture spec if desired
+  - Run seed SQL in Supabase SQL Editor
+  - Verify genres inserted: SELECT * FROM genre
+
+- Task 11: Generate TypeScript types from database schema (AC: #7)
+  - Install Supabase CLI if not installed: `npm install -g supabase`
+  - Get Supabase project ref ID from Supabase dashboard settings
+  - Run type generation: `npx supabase gen types typescript --project-id <project-ref> > src/types/supabase.ts`
+  - Alternative: Use Supabase dashboard API to generate types
+  - Verify generated file contains interfaces for all 5 tables
+  - Check TypeScript interfaces match table schemas (user_profile, song, credit_transaction, genre, mastering_request)
+
+- Task 12: Update Supabase client to use typed queries (AC: #7, #10)
+  - Open `/src/lib/supabase/client.ts`
+  - Import Database type: `import { Database } from '@/types/supabase'`
+  - Type the createClient call: `createClientComponentClient<Database>()`
+  - Open `/src/lib/supabase/server.ts`
+  - Import Database type and type the server client similarly
+  - Verify TypeScript autocomplete works for table names and columns
+
+- Task 13: Create test query to verify RLS (AC: #8)
+  - Create temporary test file: `/src/app/test-database/page.tsx`
+  - Import Supabase client
+  - Query user_profile table: `supabase.from('user_profile').select('*')`
+  - Query song table: `supabase.from('song').select('*')`
+  - Run dev server, authenticate with Google OAuth (from story 1.3)
+  - Verify queries work for authenticated user
+  - Verify TypeScript autocomplete works for column names
+  - Note RLS behavior: Empty results expected if no data for authenticated user
+
+- Task 14: Build verification and cleanup (AC: #10)
+  - Run `npm run build` and verify success (exit code 0)
+  - Check for TypeScript errors related to Supabase types (should be none)
+  - Delete test file: `/src/app/test-database/page.tsx`
+  - Run `npm run build` again to verify clean build
+  - Document Supabase project ref ID in `.env.example` for team reference
+  - Commit migration files and generated types</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. **Core Tables Created**: All 5 core tables exist in Supabase database: `user_profile`, `song`, `credit_transaction`, `genre`, `mastering_request`
+2. **Schema Structure Verified**: All table columns match architecture specification with correct data types, constraints, and default values
+3. **Row Level Security Enabled**: RLS is enabled on all user-facing tables (user_profile, song, credit_transaction, mastering_request)
+4. **RLS Policies Implemented**: RLS policies enforce `auth.uid() = user_id` access control for SELECT, INSERT, UPDATE, DELETE operations
+5. **Indexes Created**: Performance indexes exist on: user_id, created_at DESC, status columns across relevant tables
+6. **Stored Procedure Functional**: `deduct_credits()` function exists and correctly performs atomic credit deduction with insufficient balance validation
+7. **TypeScript Types Generated**: `/src/types/supabase.ts` file contains auto-generated types for all database tables with proper TypeScript interfaces
+8. **RLS Testing Verified**: Manual RLS testing confirms users can only access their own data and attempts to access other users' data fail
+9. **Genre Seed Data Loaded**: Initial genre reference data populated (at minimum: Country Rock, Norwegian Pop, Folk Ballad, Party Anthem)
+10. **Build Verification**: Application builds successfully with new Supabase types, no TypeScript errors related to database queries</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- Database Schema Definition -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document - Data Architecture</title>
+        <section>Data Architecture</section>
+        <snippet>Complete PostgreSQL 17 schema with 5 core tables (user_profile, song, credit_transaction, genre, mastering_request). Includes Row Level Security policies enforcing auth.uid() = user_id isolation, atomic deduct_credits() stored procedure for race condition prevention, indexes on user_id/created_at/status, and TIMESTAMPTZ columns for timezone handling.</snippet>
+      </doc>
+
+      <!-- RLS Security Pattern -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document - Security Architecture</title>
+        <section>Security Architecture - Authentication & Authorization</section>
+        <snippet>Row Level Security (RLS) enforces data isolation at database level. Users can only access their own data via auth.uid() = user_id policies. JWT tokens in HTTP-only cookies, service role key bypasses RLS for admin operations. Critical for GDPR compliance and multi-tenant security.</snippet>
+      </doc>
+
+      <!-- Database Patterns -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document - Implementation Patterns</title>
+        <section>Implementation Patterns - Database Patterns</section>
+        <snippet>Every table has created_at TIMESTAMPTZ DEFAULT NOW(). Mutable tables add updated_at. Soft deletes use deleted_at TIMESTAMPTZ. Transactions via Supabase for atomic operations (credit deduction + song creation). Naming: singular snake_case tables, snake_case columns, {table}_id foreign keys.</snippet>
+      </doc>
+
+      <!-- Credit System Atomic Operations -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document - Credit System Patterns</title>
+        <section>Implementation Patterns - Credit System Patterns</section>
+        <snippet>deduct_credits() stored procedure ensures: (1) Atomic transaction all-or-nothing, (2) Row locking FOR UPDATE prevents race conditions, (3) RAISE EXCEPTION if insufficient credits, (4) Automatic credit_transaction audit trail, (5) Transaction integrity with rollback on failure.</snippet>
+      </doc>
+
+      <!-- Epic Tech Spec Database Requirements -->
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic 1 Tech Spec - Database Schema</title>
+        <section>Detailed Design - Data Models and Contracts</section>
+        <snippet>5 core entities with complete TypeScript interfaces. user_profile extends Supabase auth.users with credit_balance (CHECK >= 0) and JSONB preferences. song table has soft delete deleted_at for 14-day retention, status enum ('generating'|'completed'|'failed'), phonetic_enabled boolean. Indexes on user_id, status, created_at DESC for performance.</snippet>
+      </doc>
+
+      <!-- Supabase Integration Patterns -->
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic 1 Tech Spec - Supabase Integration</title>
+        <section>Dependencies and Integrations - Integration Patterns</section>
+        <snippet>Client-side: createClient() from /src/lib/supabase/client.ts with RLS enforced. Server-side: createServerClient() from /src/lib/supabase/server.ts with automatic RLS based on auth.uid(). Environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY (client-safe), SUPABASE_SERVICE_ROLE_KEY (server-only, bypasses RLS).</snippet>
+      </doc>
+
+      <!-- ADR-002 Supabase Rationale -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Decision Record - ADR-002 Supabase</title>
+        <section>ADR-002: Use Supabase for Backend Services</section>
+        <snippet>Chosen for all-in-one PostgreSQL 17 + Auth + Storage solution. RLS ensures data isolation by default. Real-time subscriptions available for future. Automatic backups. Trade-off: vendor lock-in but PostgreSQL is portable. Free tier for MVP, $25/month Pro for production. 99.9% SLA on paid tier.</snippet>
+      </doc>
+
+      <!-- Previous Story Learnings: 1.3 Supabase Setup -->
+      <doc>
+        <path>docs/sprint-artifacts/1-6-set-up-database-schema-with-supabase-migrations.md</path>
+        <title>Story 1.6 Dev Notes - Learnings from Story 1.3</title>
+        <section>Learnings from Previous Story - Story 1.3</section>
+        <snippet>Supabase Project Ready: PostgreSQL 17 database provisioned, Google OAuth enabled in Auth settings, Storage buckets 'songs' and 'canvases' created, environment variables configured in .env.local, Supabase client initialization working in client and server contexts. Database access: Client-side uses createClient() with RLS enforced, Server-side uses createServerClient() with RLS, Admin uses service role key bypassing RLS.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <!-- Existing Supabase Client Implementation -->
+      <artifact>
+        <path>src/lib/supabase/client.ts</path>
+        <kind>service</kind>
+        <symbol>createClient</symbol>
+        <lines>24-29</lines>
+        <reason>Browser-side Supabase client factory function. Must be updated to include Database type from generated types for type-safe queries. Currently uses createBrowserClient from @supabase/ssr with NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.</reason>
+      </artifact>
+
+      <!-- Existing Supabase Server Client Implementation -->
+      <artifact>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>service</kind>
+        <symbol>createClient</symbol>
+        <lines>35-60</lines>
+        <reason>Server-side Supabase client factory function for Server Components and API routes. Must be updated to include Database type from generated types. Currently uses createServerClient from @supabase/ssr with cookie management for auth session handling.</reason>
+      </artifact>
+
+      <!-- Project Dependencies -->
+      <artifact>
+        <path>package.json</path>
+        <kind>config</kind>
+        <symbol>dependencies</symbol>
+        <lines>11-30</lines>
+        <reason>Project has @supabase/ssr@^0.7.0 and @supabase/supabase-js@^2.84.0 installed from Story 1.3. These provide the Supabase SDK for database operations. TypeScript 5 in devDependencies ensures type-safe generated types will work correctly.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>@supabase/supabase-js</package>
+        <version>^2.84.0</version>
+        <purpose>Supabase JavaScript client SDK for database queries, authentication, and storage operations</purpose>
+      </node>
+      <node>
+        <package>@supabase/ssr</package>
+        <version>^0.7.0</version>
+        <purpose>Supabase Server-Side Rendering utilities for Next.js App Router, provides createBrowserClient and createServerClient with cookie handling</purpose>
+      </node>
+      <node>
+        <package>next</package>
+        <version>^14.2.3</version>
+        <purpose>Next.js framework providing App Router, Server Components, and build system for the application</purpose>
+      </node>
+      <node>
+        <package>typescript</package>
+        <version>^5</version>
+        <purpose>TypeScript compiler for type checking generated Supabase types and ensuring type-safe database queries</purpose>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <!-- Database Schema Constraints -->
+    <constraint>
+      <type>architecture</type>
+      <description>Complete SQL schema is provided in docs/architecture.md Data Architecture section. Do NOT invent or modify table structures - use architecture specification exactly as written. All 5 tables (user_profile, song, credit_transaction, genre, mastering_request) must match spec precisely including column names, types, constraints, defaults.</description>
+    </constraint>
+
+    <!-- Row Level Security Requirements -->
+    <constraint>
+      <type>security</type>
+      <description>Row Level Security (RLS) MUST be enabled on all user-facing tables (user_profile, song, credit_transaction, mastering_request). RLS policies MUST enforce auth.uid() = user_id pattern for SELECT/INSERT/UPDATE/DELETE to ensure multi-tenant data isolation. Genre table is reference data and does NOT require RLS (publicly readable).</description>
+    </constraint>
+
+    <!-- Naming Conventions -->
+    <constraint>
+      <type>coding-standard</type>
+      <description>Database naming conventions per architecture: Tables are singular snake_case (user_profile not user_profiles, song not songs). Columns are snake_case. Foreign keys follow {table}_id pattern (user_id, song_id). Timestamps use TIMESTAMPTZ type with created_at and updated_at columns.</description>
+    </constraint>
+
+    <!-- Migration File Pattern -->
+    <constraint>
+      <type>architecture</type>
+      <description>Database migrations must be versioned files in /supabase/migrations/ directory with format YYYYMMDD_description.sql (e.g., 20250120_initial_schema.sql). This enables reproducibility, rollback capability, and team collaboration. Apply migrations via Supabase dashboard SQL Editor or Supabase CLI.</description>
+    </constraint>
+
+    <!-- Type Generation Requirement -->
+    <constraint>
+      <type>architecture</type>
+      <description>TypeScript types MUST be auto-generated from finalized database schema using npx supabase gen types typescript --project-id command. Output to src/types/supabase.ts. Generated types must be imported and applied to Supabase client initialization in both client.ts and server.ts files for type-safe queries.</description>
+    </constraint>
+
+    <!-- Testing Pattern from Previous Stories -->
+    <constraint>
+      <type>testing</type>
+      <description>Testing pattern from Story 1.4: Create test pages in src/app/test-*/page.tsx for manual verification, test functionality locally, then delete test pages before marking story complete. For this story: create src/app/test-database/page.tsx to verify RLS and typed queries, then delete before completion.</description>
+    </constraint>
+
+    <!-- Build Verification Required -->
+    <constraint>
+      <type>architecture</type>
+      <description>Story completion requires successful npm run build with exit code 0 and zero TypeScript errors. This ensures generated Supabase types integrate correctly with existing codebase and no type mismatches exist.</description>
+    </constraint>
+
+    <!-- Soft Delete Pattern -->
+    <constraint>
+      <type>architecture</type>
+      <description>Song table uses soft delete pattern with deleted_at TIMESTAMPTZ column for 14-day retention policy. Queries must filter WHERE deleted_at IS NULL. This is critical for cost management (storage cleanup) and user experience (recovery window).</description>
+    </constraint>
+
+    <!-- Atomic Credit Deduction Pattern -->
+    <constraint>
+      <type>architecture</type>
+      <description>Credit deduction MUST use atomic stored procedure deduct_credits() with row locking (FOR UPDATE) to prevent race conditions. Procedure must validate sufficient credits and RAISE EXCEPTION if insufficient. This is critical for credit system integrity and preventing double-charging bugs.</description>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <!-- Supabase Client Type Interface -->
+    <interface>
+      <name>Supabase Client with Database Type</name>
+      <kind>function-signature</kind>
+      <signature>import { Database } from '@/types/supabase';
+createBrowserClient&lt;Database&gt;(url, key);
+createServerClient&lt;Database&gt;(url, key, options);</signature>
+      <path>src/lib/supabase/client.ts, src/lib/supabase/server.ts</path>
+      <reason>After generating types, both client factory functions must be typed with Database interface to enable TypeScript autocomplete and type checking for table names, column names, and query results.</reason>
+    </interface>
+
+    <!-- deduct_credits Stored Procedure Interface -->
+    <interface>
+      <name>deduct_credits</name>
+      <kind>database-function</kind>
+      <signature>FUNCTION deduct_credits(
+  p_user_id UUID,
+  p_amount INTEGER,
+  p_description TEXT,
+  p_song_id UUID DEFAULT NULL
+) RETURNS credit_transaction</signature>
+      <path>Supabase database (PostgreSQL function)</path>
+      <reason>Atomic credit deduction function that locks user profile row, validates balance, deducts credits, records transaction, and returns transaction record. Raises exception if insufficient credits. Called from server-side code via supabase.rpc('deduct_credits', {...}).</reason>
+    </interface>
+
+    <!-- Database Schema Type Interface -->
+    <interface>
+      <name>Database Type Definition</name>
+      <kind>typescript-interface</kind>
+      <signature>export interface Database {
+  public: {
+    Tables: {
+      user_profile: { Row, Insert, Update },
+      song: { Row, Insert, Update },
+      credit_transaction: { Row, Insert, Update },
+      genre: { Row, Insert, Update },
+      mastering_request: { Row, Insert, Update }
+    }
+  }
+}</signature>
+      <path>src/types/supabase.ts (to be generated)</path>
+      <reason>Auto-generated TypeScript types from database schema provide compile-time type safety for all database queries. Each table gets Row (SELECT result), Insert (INSERT payload), and Update (UPDATE payload) types matching exact column definitions.</reason>
+    </interface>
+
+    <!-- RLS Policy Pattern Interface -->
+    <interface>
+      <name>Row Level Security Policy Pattern</name>
+      <kind>database-policy</kind>
+      <signature>CREATE POLICY table_name_operation ON table_name
+  FOR operation USING (auth.uid() = user_id);
+
+-- Example for SELECT:
+CREATE POLICY song_select ON song
+  FOR SELECT USING (auth.uid() = user_id);</signature>
+      <path>Supabase database (PostgreSQL policies)</path>
+      <reason>Standard RLS policy pattern enforcing user-specific data access. auth.uid() returns authenticated user's UUID from JWT token, compared against user_id foreign key. Policies must be created for SELECT, INSERT, UPDATE, DELETE operations on each user-facing table.</reason>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+Epic 1 uses primarily manual verification testing for infrastructure setup, as documented in tech-spec-epic-1.md Test Strategy section.
+
+**Manual Verification (Primary):**
+- SQL queries in Supabase dashboard SQL Editor to verify tables, indexes, RLS policies, and stored procedures exist
+- Browser DevTools console to verify Supabase client connections and query execution
+- TypeScript compilation check (npx tsc --noEmit) to verify generated types integrate correctly
+- Build verification (npm run build) to ensure zero TypeScript errors
+
+**Testing Pattern from Story 1.4:**
+- Create temporary test page src/app/test-database/page.tsx with Supabase queries
+- Test RLS behavior by attempting to query data as authenticated user
+- Verify TypeScript autocomplete works for table and column names
+- Delete test page before story completion
+
+**Accessibility Testing:**
+- Not applicable for database story (no UI components)
+
+**Automated Checks:**
+- npm run build must succeed with exit code 0
+- npx tsc --noEmit must report no TypeScript errors
+- npm run lint must report no ESLint errors (warnings acceptable)
+</standards>
+    <locations>
+- supabase/migrations/ - Database migration SQL files (versioned schema changes)
+- src/types/supabase.ts - Auto-generated TypeScript types from database schema
+- src/lib/supabase/client.ts - Browser client (must be updated with Database type)
+- src/lib/supabase/server.ts - Server client (must be updated with Database type)
+- src/app/test-database/page.tsx - Temporary test page for RLS verification (create then delete)
+- Supabase dashboard SQL Editor - Primary tool for running migrations and verification queries
+</locations>
+    <ideas>
+<!-- Test Ideas Mapped to Acceptance Criteria -->
+
+**AC1-AC2: Core Tables and Schema Structure**
+- Test: Query information_schema.tables to verify all 5 tables exist (user_profile, song, credit_transaction, genre, mastering_request)
+- Test: Query information_schema.columns for each table to verify column names, types, constraints match architecture spec
+- Test: Attempt to insert invalid data (e.g., negative credit_balance) to verify CHECK constraints are active
+- Test: Verify foreign key constraints by attempting to insert song with non-existent user_id (should fail)
+
+**AC3-AC4: Row Level Security and Policies**
+- Test: Enable RLS on user_profile, verify query without auth context returns error or empty result
+- Test: Create two test users via Google OAuth, attempt to query user A's data while authenticated as user B (should return empty)
+- Test: Verify INSERT policy works by creating a song as authenticated user, verify song.user_id matches auth.uid()
+- Test: Query pg_policies table to verify all required policies exist (SELECT, INSERT, UPDATE, DELETE where applicable)
+
+**AC5: Indexes**
+- Test: Query pg_indexes to verify indexes exist on user_id, created_at DESC, status columns
+- Test: EXPLAIN ANALYZE on common query patterns (e.g., SELECT * FROM song WHERE user_id = X ORDER BY created_at DESC) to verify index usage
+
+**AC6: deduct_credits Stored Procedure**
+- Test: Create test user with 100 credits, call deduct_credits(user_id, 10, 'test'), verify balance becomes 90
+- Test: Verify credit_transaction record created with amount = -10, balance_after = 90
+- Test: Call deduct_credits with amount > balance, verify exception raised with message "Insufficient credits"
+- Test: Concurrent test (advanced): Attempt to deduct credits from same user simultaneously, verify atomic behavior prevents negative balance
+
+**AC7: TypeScript Types Generated**
+- Test: Verify src/types/supabase.ts file exists and contains Database interface with all 5 table definitions
+- Test: Import Database type in VS Code, verify IntelliSense shows Tables.user_profile, Tables.song, etc.
+- Test: Write test query with supabase.from('song').select('*'), verify TypeScript autocomplete suggests column names (title, genre, audio_url, etc.)
+
+**AC8: RLS Testing Verified**
+- Test: Create test page src/app/test-database/page.tsx with queries to user_profile and song tables
+- Test: Run npm run dev, authenticate with Google OAuth (from Story 1.3), verify queries work without errors
+- Test: Verify TypeScript autocomplete works for table names when typing supabase.from('...')
+- Test: Check browser DevTools console for query results (expect empty arrays if no data for authenticated user)
+
+**AC9: Genre Seed Data Loaded**
+- Test: Query SELECT * FROM genre to verify at least 4 genres exist (Country Rock, Norwegian Pop, Folk Ballad, Party Anthem)
+- Test: Verify each genre has required fields populated (name, display_name, emoji, suno_prompt_template)
+- Test: Verify suno_prompt_template values match examples from architecture doc
+
+**AC10: Build Verification**
+- Test: Run npm run build, verify exit code 0 and "Compiled successfully" message
+- Test: Check build output for TypeScript errors related to src/types/supabase.ts (should be none)
+- Test: Run npx tsc --noEmit, verify no type errors reported
+- Test: After deleting test-database page, run npm run build again to verify clean build
+</ideas>
+  </tests>
+</story-context>

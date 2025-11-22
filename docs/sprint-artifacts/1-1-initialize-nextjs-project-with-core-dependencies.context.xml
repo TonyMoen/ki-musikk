@@ -1,0 +1,171 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1</storyId>
+    <title>Initialize Next.js Project with Core Dependencies</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-20</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-1-initialize-nextjs-project-with-core-dependencies.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>the project initialized with Next.js 14+, TypeScript, and Tailwind CSS</iWant>
+    <soThat>I have a type-safe, performant foundation for building the mobile-first web application</soThat>
+    <tasks>
+- Task 1: Initialize Next.js Project (AC: #1, #3, #4)
+  - Verify Node.js 18+ installed: `node --version`
+  - Run initialization command: `npx create-next-app@latest musikkfabrikken --typescript --tailwind --app --eslint --src-dir --import-alias "@/*"`
+  - Verify project directory `musikkfabrikken` created successfully
+  - Verify file structure includes: src/app/, package.json, tsconfig.json, tailwind.config.ts, .eslintrc.json
+  - Check package.json versions: next@14.2+, react@18+, typescript@5.3+, tailwindcss@3.4+
+
+- Task 2: Install Dependencies and Verify Configuration (AC: #1, #2, #4)
+  - Run `npm install` to ensure all dependencies install correctly
+  - Verify tsconfig.json has path aliases: `"@/*": ["./src/*"]`
+  - Verify tsconfig.json has strict mode enabled: `"strict": true`
+  - Verify tailwind.config.ts content paths include src directory
+  - Verify .eslintrc.json has Next.js rules configured
+
+- Task 3: Test Development Environment (AC: #2, #3)
+  - Start development server: `npm run dev`
+  - Verify server starts successfully on http://localhost:3000
+  - Open browser to localhost:3000, verify default Next.js welcome page renders
+  - Verify no console errors in browser or terminal
+  - Stop dev server (Ctrl+C)
+
+- Task 4: Test Build Process (AC: #2)
+  - Run production build: `npm run build`
+  - Verify build completes successfully with exit code 0
+  - Verify no TypeScript compilation errors reported
+  - Verify no ESLint errors reported (warnings acceptable)
+  - Check build output shows optimized bundle sizes
+
+- Task 5: Initialize Git Repository (AC: #6)
+  - Check if Git repository already initialized (create-next-app may auto-init)
+  - If not initialized, run: `git init`
+  - Verify .gitignore exists and includes: node_modules/, .next/, .env.local, .vercel/
+  - Stage all files: `git add .`
+  - Create initial commit: `git commit -m "feat: initialize Next.js 14+ project with TypeScript, Tailwind CSS, and ESLint"`
+
+- Task 6: Create Environment Configuration Template (AC: #1)
+  - Create `.env.example` file with placeholder environment variables
+  - Add commented sections for future env vars: Supabase, Stripe, OpenAI, Suno, Google AI
+  - Verify `.env.local` is in .gitignore (should be by default)
+  - Document env var setup in README
+
+- Task 7: Update Documentation (AC: #5)
+  - Update or create README.md with project setup instructions
+  - Document Node.js version requirement: 18.17+ or 20.x LTS
+  - Document setup commands: `npm install`, `npm run dev`, `npm run build`
+  - Add link to Next.js documentation and architecture document
+  - Document import alias usage: `import { Component } from '@/components/Component'`
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. **Project Created**: New Next.js 14+ project created with App Router, TypeScript, Tailwind CSS, ESLint, and src directory structure
+2. **Build Succeeds**: Project builds successfully with `npm run build` (exit code 0, no errors)
+3. **Development Server Starts**: Development server starts with `npm run dev` on localhost:3000
+4. **Starter Template Defaults Active**: Turbopack enabled, import aliases (@/*) configured and functional
+5. **Node.js Version Verified**: Project requires Node.js 18+ (documented in README)
+6. **Git Repository Initialized**: Project is in Git repository with initial commit
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" title="Architecture Document">
+        <section name="Project Initialization">
+          The first implementation story must execute: `npx create-next-app@latest musikkfabrikken --typescript --tailwind --app --eslint --src-dir --import-alias "@/*"`. This provides Next.js 14+ with App Router, TypeScript, Tailwind CSS, ESLint, /src directory structure, import aliases (@/*), and Turbopack for fast development.
+        </section>
+        <section name="Project Structure">
+          Expected directory structure after initialization: musikkfabrikken/ with .next/, .eslintrc.json, next.config.js, package.json, postcss.config.js, tailwind.config.ts, tsconfig.json, public/, src/app/ (layout.tsx, page.tsx, globals.css).
+        </section>
+        <section name="ADR-001: Use create-next-app Starter Template">
+          Decision to use official create-next-app starter with TypeScript, Tailwind, and App Router. Rationale: Fast project initialization, battle-tested defaults from Vercel, automatic updates via Next.js releases, matches PRD requirements.
+        </section>
+      </doc>
+      <doc path="docs/prd.md" title="Product Requirements Document">
+        <section name="Project Classification">
+          Architecture: Next.js 14+ full-stack web application with serverless API routes. Platform: Web-based (responsive, mobile-friendly), deployed on Vercel. Technical Characteristics: API orchestration platform, intelligent prompt engineering layer, real-time song generation with async completion webhooks.
+        </section>
+        <section name="Non-Functional Requirements - Performance">
+          Page Load Time: <2 seconds on 4G connection for all core pages. UI Responsiveness: All user interactions respond within 200ms. Build Performance Target: Initial build should complete in <2 minutes.
+        </section>
+      </doc>
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification">
+        <section name="Design System Foundation">
+          Selected Design System: shadcn/ui (will be installed in Story 1.4). Typography: Inter or system default font. Mobile-first approach with bottom navigation bar.
+        </section>
+      </doc>
+      <doc path="docs/epics/epic-1-foundation-infrastructure.md" title="Epic 1: Foundation & Infrastructure">
+        <section name="Story 1.1 Details">
+          First story in epic. Prerequisites: None. Technical Notes: Execute create-next-app command, verify package.json versions (next@14.2+, react@18+, typescript@5.3+, tailwindcss@3.4+), verify file structure per architecture, Node.js 18+ required.
+        </section>
+      </doc>
+    </docs>
+    <code>
+      <!-- No existing code - greenfield project. Story 1.1 creates the initial codebase. -->
+    </code>
+    <dependencies>
+      <!-- Dependencies will be installed by create-next-app command -->
+      <node>
+        <package name="next" version="^14.2.3" type="production">Next.js framework with App Router</package>
+        <package name="react" version="^18.2.0" type="production">React library</package>
+        <package name="react-dom" version="^18.2.0" type="production">React DOM rendering</package>
+        <package name="typescript" version="^5" type="development">TypeScript compiler</package>
+        <package name="eslint" version="^8" type="development">ESLint linter</package>
+        <package name="eslint-config-next" version="14.2.3" type="development">Next.js ESLint rules</package>
+        <package name="tailwindcss" version="^3.4.1" type="development">Tailwind CSS framework</package>
+        <package name="postcss" version="^8" type="development">PostCSS for Tailwind</package>
+        <package name="autoprefixer" version="^10.0.1" type="development">CSS autoprefixer</package>
+        <package name="@types/node" version="^20" type="development">Node.js types</package>
+        <package name="@types/react" version="^18" type="development">React types</package>
+        <package name="@types/react-dom" version="^18" type="development">React DOM types</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Use /src directory structure for all source code (not root-level pages/components)</constraint>
+    <constraint type="architecture">Import aliases must use @/* pattern (e.g., import Button from '@/components/ui/button')</constraint>
+    <constraint type="architecture">Enable TypeScript strict mode for type safety critical to AI-agent development</constraint>
+    <constraint type="architecture">App Router (not Pages Router) - enables Server Components and better performance</constraint>
+    <constraint type="performance">Initial build must complete in under 2 minutes</constraint>
+    <constraint type="performance">Development server must start and respond within reasonable time on localhost:3000</constraint>
+    <constraint type="tooling">Use Turbopack (Next.js bundler) for faster development builds</constraint>
+    <constraint type="tooling">ESLint must be configured with Next.js recommended rules</constraint>
+    <constraint type="naming">Files use kebab-case: page.tsx, layout.tsx, globals.css</constraint>
+    <constraint type="naming">Components use PascalCase: GenreCarousel.tsx, SongPlayer.tsx</constraint>
+    <constraint type="git">Initialize Git repository with initial commit after project setup</constraint>
+    <constraint type="git">.gitignore must include: node_modules/, .next/, .env.local, .vercel/</constraint>
+    <constraint type="environment">Create .env.example template for future environment variables (Supabase, Stripe, OpenAI, Suno, Google AI)</constraint>
+    <constraint type="environment">.env.local must be in .gitignore to prevent secret commits</constraint>
+  </constraints>
+  <interfaces>
+    <!-- No interfaces yet - first story creates project foundation -->
+  </interfaces>
+  <tests>
+    <standards>
+      Build Verification: Run `npm run build` and verify "Compiled successfully" message with exit code 0. No TypeScript errors, no ESLint errors (warnings acceptable). Development Server Test: Run `npm run dev` and verify server starts on http://localhost:3000. Default Next.js landing page should display. Hot reload should work when editing files. Type Checking: Run `npx tsc --noEmit` to verify no type errors with strict mode enabled. Linting: Run `npm run lint` to verify ESLint configuration works (warnings acceptable for starter template).
+    </standards>
+    <locations>
+      Tests co-located with source files when added in future stories. Pattern: {filename}.test.ts or {filename}.spec.ts. No test files in Story 1.1 (infrastructure setup only).
+    </locations>
+    <ideas>
+      <idea ac-id="1">Verify project directory structure matches architecture spec: src/app/, package.json, tsconfig.json, tailwind.config.ts, .eslintrc.json present</idea>
+      <idea ac-id="1">Verify package.json dependencies: next@14.2+, react@18+, typescript@5.3+, tailwindcss@3.4+</idea>
+      <idea ac-id="2">Test production build completes successfully: npm run build exits with code 0</idea>
+      <idea ac-id="2">Verify build output shows optimized bundle sizes and no errors</idea>
+      <idea ac-id="3">Test development server starts: npm run dev responds on localhost:3000</idea>
+      <idea ac-id="3">Verify default Next.js welcome page renders in browser</idea>
+      <idea ac-id="4">Verify tsconfig.json path aliases configured: "@/*": ["./src/*"]</idea>
+      <idea ac-id="4">Verify tsconfig.json strict mode enabled</idea>
+      <idea ac-id="4">Verify Turbopack enabled in next.config.js or package.json scripts</idea>
+      <idea ac-id="5">Verify README documents Node.js 18+ requirement</idea>
+      <idea ac-id="6">Verify Git repository initialized with .gitignore including node_modules/, .next/, .env.local</idea>
+      <idea ac-id="6">Verify initial commit created with all starter files</idea>
+    </ideas>
+  </tests>
+</story-context>

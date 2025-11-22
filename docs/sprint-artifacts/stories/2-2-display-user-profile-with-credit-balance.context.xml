@@ -1,0 +1,247 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2</storyId>
+    <title>Display User Profile with Credit Balance</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-22</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/2-2-display-user-profile-with-credit-balance.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to view my account profile with current credit balance</iWant>
+    <soThat>I know how many credits I have available for song generation</soThat>
+    <tasks>
+      - Task 1: Install additional dependencies (zustand, zod)
+      - Task 2: Create credit balance Zustand store
+      - Task 3: Create API route to fetch user profile and credit balance
+      - Task 4: Create Settings page with user profile display
+      - Task 5: Display credit balance prominently on Settings page
+      - Task 6: Add "Purchase Credits" button (placeholder for Story 2.3)
+      - Task 7: Add logout functionality to Settings page
+      - Task 8: Integrate Zustand store for real-time credit balance updates
+      - Task 9: Add bottom navigation with Settings tab
+      - Task 10: Test Settings page end-to-end and verify all acceptance criteria
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    **Given** I am logged in
+    **When** I navigate to the Settings page (bottom nav: "Settings")
+    **Then** I see my profile information: Display name, Email (from Google), Account created date
+    **And** I see my current credit balance prominently displayed (large number, accent yellow color)
+    **And** I see a "Purchase Credits" button (primary red)
+    **And** Credit balance updates in real-time when credits are added or deducted
+    **And** I can log out from this page
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>ADR-003: Use Zustand for Client-Side State Management</section>
+        <snippet>Use Zustand for minimal global state. Zustand provides ~1KB bundle, simple API, works seamlessly with React Server Components. Only use for truly global state (credit balance and current user).</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>State Management Patterns</section>
+        <snippet>Server Components (default) fetch data. Client State for component-specific (useState) and lightweight global (Zustand for credit balance, auth user). URL state for shareable state.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>API Response Format</section>
+        <snippet>Success: { data: T, meta?: {...} }. Error: { error: { code: string, message: string, details?: any } }. Status codes: 200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 500 Internal Server Error.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>Authentication Pattern</section>
+        <snippet>Middleware protection at /src/middleware.ts checks auth state. Protected routes include /songs and /settings. Getting current user in Server Component: use createClient() from @/lib/supabase/server, then getSession().</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>Project Structure</section>
+        <snippet>Settings page at /src/app/settings/page.tsx. API routes at /src/app/api/. Zustand stores at /src/stores/. Shadcn/ui components at /src/components/ui/. Bottom navigation at /src/components/layout/bottom-navigation.tsx.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-2-user-authentication-credit-system.md</path>
+        <title>Epic 2: User Authentication & Credit System</title>
+        <section>Story 2.2: Display User Profile with Credit Balance</section>
+        <snippet>Settings page shows profile (display name, email, account created), credit balance (large yellow accent), Purchase Credits button (primary red), and logout functionality. Credit balance uses Zustand for real-time updates.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>server utility</kind>
+        <symbol>createClient</symbol>
+        <lines>36-61</lines>
+        <reason>Server-side Supabase client for fetching user profile and credit balance in Settings page and API routes. Uses cookies for auth context.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/supabase/client.ts</path>
+        <kind>client utility</kind>
+        <symbol>createClient</symbol>
+        <lines>25-30</lines>
+        <reason>Browser-side Supabase client for Client Components. Will be used in Zustand store's refreshBalance() to call API endpoint.</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/api/auth/logout/route.ts</path>
+        <kind>API route</kind>
+        <symbol>POST, GET</symbol>
+        <lines>19-53</lines>
+        <reason>Existing logout API route from Story 2.1. Settings page will call POST /api/auth/logout to end user session.</reason>
+      </artifact>
+      <artifact>
+        <path>src/types/supabase.ts</path>
+        <kind>type definitions</kind>
+        <symbol>Database, user_profile table types</symbol>
+        <lines>1-100</lines>
+        <reason>TypeScript types for user_profile table (id, display_name, credit_balance, preferences, created_at, updated_at). Used for type-safe queries.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/button.tsx</path>
+        <kind>UI component</kind>
+        <symbol>Button</symbol>
+        <lines>all</lines>
+        <reason>Shadcn/ui Button component for "Purchase Credits" and "Log Out" buttons. Already installed in Story 1.4.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/card.tsx</path>
+        <kind>UI component</kind>
+        <symbol>Card, CardHeader, CardTitle, CardContent</symbol>
+        <lines>all</lines>
+        <reason>Shadcn/ui Card component for profile and credit balance display sections. Already installed in Story 1.4.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <existing>
+          - next: ^14.2.3
+          - react: ^18.2.0
+          - @supabase/ssr: ^0.7.0
+          - @supabase/supabase-js: ^2.84.0
+          - lucide-react: ^0.554.0 (for navigation icons)
+          - tailwind-merge: ^3.4.0
+          - class-variance-authority: ^0.7.1
+          - clsx: ^2.1.1
+          - @radix-ui/* (shadcn/ui dependencies already installed)
+        </existing>
+        <to-install>
+          - zustand (lightweight state management for credit balance, ~1KB)
+          - zod (input validation for API routes, used in future stories)
+        </to-install>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - Use Zustand for credit balance state management (ADR-003: lightweight, ~1KB, works with RSC)
+    - Settings page accessible via bottom navigation (mobile-first UX pattern)
+    - Credit balance displayed with yellow accent color (#FFC93C from Playful Nordic theme)
+    - Real-time balance updates via Zustand store (subscription or polling)
+    - Fetch user profile from Supabase user_profile table with RLS enforcement
+    - Protected route: /settings requires authentication (enforced by middleware.ts from Story 2.1)
+    - Use Server Components by default, Client Components only for interactive parts (credit balance display with Zustand)
+    - Follow API response format: { data: {...} } for success, { error: { code, message } } for errors
+    - Use existing logout API route from Story 2.1: POST /api/auth/logout
+    - Query user_profile table: .from('user_profile').select('*').eq('id', user.id).single()
+    - Date formatting: Use date-fns library (already installed via shadcn/ui dependencies)
+    - Purchase Credits button should be disabled/placeholder until Story 2.3 (tooltip: "Credit purchase coming in Story 2.3")
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>GET /api/credits/balance</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Response: { data: { profile: { id, display_name, email, credit_balance, created_at }, balance: number } }
+        Error: { error: { code: 'UNAUTHENTICATED' | 'DATABASE_ERROR', message: string } }
+        Status: 200 OK | 401 Unauthorized | 500 Internal Server Error
+      </signature>
+      <path>src/app/api/credits/balance/route.ts (to be created)</path>
+    </interface>
+    <interface>
+      <name>POST /api/auth/logout</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Response: { success: true }
+        Error: { error: string }
+        Status: 200 OK | 500 Internal Server Error
+      </signature>
+      <path>src/app/api/auth/logout/route.ts (exists from Story 2.1)</path>
+    </interface>
+    <interface>
+      <name>useCreditsStore (Zustand hook)</name>
+      <kind>React hook / state store</kind>
+      <signature>
+        interface CreditsStore {
+          balance: number
+          setBalance: (balance: number) => void
+          refreshBalance: () => Promise&lt;void&gt;
+        }
+        Usage: const { balance, refreshBalance } = useCreditsStore()
+      </signature>
+      <path>src/stores/credits-store.ts (to be created)</path>
+    </interface>
+    <interface>
+      <name>user_profile table (Supabase)</name>
+      <kind>database table</kind>
+      <signature>
+        Columns: id (UUID, PK), display_name (TEXT nullable), credit_balance (INTEGER default 0), preferences (JSONB), created_at (TIMESTAMPTZ), updated_at (TIMESTAMPTZ)
+        RLS: SELECT policy allows auth.uid() = id, UPDATE policy allows auth.uid() = id
+      </signature>
+      <path>Database schema created in Story 1.6</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing approach for this story:
+      - Manual end-to-end testing in browser (dev server)
+      - Verify all acceptance criteria met
+      - Test authentication flows (logged in state required)
+      - Test UI responsiveness (mobile-first, bottom navigation)
+      - Verify credit balance updates when store.setBalance() called
+      - Test logout flow (session cleared, redirect to /auth/login)
+      - Run npm run build to verify no TypeScript errors
+      - Future: Consider adding integration tests for API routes (Jest/Vitest)
+    </standards>
+    <locations>
+      - Tests co-located with source files (future): src/app/api/credits/balance/route.test.ts
+      - Manual testing checklist in story file Dev Notes section
+    </locations>
+    <ideas>
+      <idea ac="Profile information display">
+        Test: Navigate to /settings while logged in, verify display name (from Google full_name), email (from user metadata), and account created date (formatted) are all visible.
+      </idea>
+      <idea ac="Credit balance displayed prominently">
+        Test: Verify credit balance shows as large number (text-6xl or text-7xl) with yellow accent (text-yellow-400 or text-amber-400) and "credits" label.
+      </idea>
+      <idea ac="Purchase Credits button">
+        Test: Verify button is visible with primary red color (bg-red-600) and disabled state. Tooltip should show "Credit purchase coming in Story 2.3".
+      </idea>
+      <idea ac="Logout functionality">
+        Test: Click "Log Out" button, verify POST /api/auth/logout is called, session cleared, redirect to /auth/login occurs, and subsequent navigation to /settings requires re-authentication.
+      </idea>
+      <idea ac="Real-time balance updates">
+        Test: Manually call useCreditsStore.getState().setBalance(999) in browser console, verify UI updates immediately to show new balance.
+      </idea>
+      <idea ac="Bottom navigation">
+        Test: Verify Settings tab in bottom navigation (fixed at bottom on mobile viewport), active tab highlighted, credit balance badge shows on Settings icon.
+      </idea>
+      <idea ac="Mobile responsiveness">
+        Test: Use DevTools to test at 375px width (iPhone SE), verify bottom navigation is fixed at bottom, all content is readable and accessible.
+      </idea>
+      <idea ac="TypeScript compilation">
+        Test: Run npm run build, verify no TypeScript errors related to new files (Settings page, API route, Zustand store, bottom navigation).
+      </idea>
+    </ideas>
+  </tests>
+</story-context>

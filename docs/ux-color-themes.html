@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musikkfabrikken - Color Theme Explorer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        h1 { text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 40px; }
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .theme-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .theme-header { margin-bottom: 20px; }
+        .theme-name { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .theme-desc { color: #666; font-size: 14px; margin-bottom: 12px; }
+        .theme-personality {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #444;
+        }
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .color-swatch {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 8px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .swatch-label { opacity: 0.9; }
+        .components-preview { margin-top: 20px; }
+        .preview-title { font-weight: 600; margin-bottom: 12px; font-size: 14px; }
+        .buttons { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .card-demo {
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        /* Theme 1: Playful Nordic */
+        .theme1-primary { background: #E94560; }
+        .theme1-secondary { background: #0F3460; }
+        .theme1-accent { background: #FFC93C; }
+        .theme1-success { background: #06D6A0; }
+        .theme1-error { background: #EF476F; }
+        .theme1-bg { background: #F8F9FA; }
+
+        /* Theme 2: Energetic Party */
+        .theme2-primary { background: #FF6B6B; }
+        .theme2-secondary { background: #4ECDC4; }
+        .theme2-accent { background: #FFE66D; }
+        .theme2-success { background: #95E1D3; }
+        .theme2-error { background: #FF6B9D; }
+        .theme2-bg { background: #FFFBF0; }
+
+        /* Theme 3: Modern Minimal */
+        .theme3-primary { background: #6C63FF; }
+        .theme3-secondary { background: #2D3142; }
+        .theme3-accent { background: #FF9F1C; }
+        .theme3-success { background: #52B788; }
+        .theme3-error { background: #D62828; }
+        .theme3-bg { background: #FFFFFF; }
+
+        /* Theme 4: Warm Norwegian */
+        .theme4-primary { background: #D97706; }
+        .theme4-secondary { background: #1E3A8A; }
+        .theme4-accent { background: #F59E0B; }
+        .theme4-success { background: #10B981; }
+        .theme4-error { background: #DC2626; }
+        .theme4-bg { background: #FEF3C7; }
+    </style>
+</head>
+<body>
+    <h1>🎨 Musikkfabrikken Color Theme Explorer</h1>
+    <p class="subtitle">4 Complete Theme Options - Compare visually and pick your favorite</p>
+
+    <div class="themes-grid">
+        <!-- Theme 1: Playful Nordic -->
+        <div class="theme-card">
+            <div class="theme-header">
+                <div class="theme-name" style="color: #E94560;">1. Playful Nordic</div>
+                <div class="theme-desc">Norwegian heritage meets playful energy</div>
+                <span class="theme-personality">Friendly & Approachable</span>
+            </div>
+
+            <div class="color-palette">
+                <div class="color-swatch theme1-primary">
+                    <span class="swatch-label">Primary</span>
+                    <span>#E94560</span>
+                </div>
+                <div class="color-swatch theme1-secondary">
+                    <span class="swatch-label">Secondary</span>
+                    <span>#0F3460</span>
+                </div>
+                <div class="color-swatch theme1-accent">
+                    <span class="swatch-label">Accent</span>
+                    <span>#FFC93C</span>
+                </div>
+                <div class="color-swatch theme1-success">
+                    <span class="swatch-label">Success</span>
+                    <span>#06D6A0</span>
+                </div>
+            </div>
+
+            <div class="components-preview">
+                <div class="preview-title">Live Component Examples:</div>
+                <div class="buttons">
+                    <button class="btn" style="background: #E94560; color: white;">Create Song</button>
+                    <button class="btn" style="background: #0F3460; color: white;">Share</button>
+                    <button class="btn" style="border: 2px solid #E94560; color: #E94560; background: white;">Cancel</button>
+                </div>
+                <div class="card-demo" style="background: #F8F9FA; border-left: 4px solid #E94560;">
+                    <strong>Your Song is Ready!</strong><br>
+                    <small style="color: #666;">Tap to play or share with friends</small>
+                </div>
+                <div class="alert" style="background: #06D6A026; border-left: 4px solid #06D6A0; color: #065F46;">
+                    ✓ Norwegian pronunciation optimized successfully
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme 2: Energetic Party -->
+        <div class="theme-card">
+            <div class="theme-header">
+                <div class="theme-name" style="color: #FF6B6B;">2. Energetic Party</div>
+                <div class="theme-desc">Bold and vibrant for celebrations</div>
+                <span class="theme-personality">Exciting & Fun</span>
+            </div>
+
+            <div class="color-palette">
+                <div class="color-swatch theme2-primary">
+                    <span class="swatch-label">Primary</span>
+                    <span>#FF6B6B</span>
+                </div>
+                <div class="color-swatch theme2-secondary">
+                    <span class="swatch-label">Secondary</span>
+                    <span>#4ECDC4</span>
+                </div>
+                <div class="color-swatch theme2-accent">
+                    <span class="swatch-label">Accent</span>
+                    <span>#FFE66D</span>
+                </div>
+                <div class="color-swatch theme2-success">
+                    <span class="swatch-label">Success</span>
+                    <span>#95E1D3</span>
+                </div>
+            </div>
+
+            <div class="components-preview">
+                <div class="preview-title">Live Component Examples:</div>
+                <div class="buttons">
+                    <button class="btn" style="background: #FF6B6B; color: white;">Create Song</button>
+                    <button class="btn" style="background: #4ECDC4; color: white;">Share</button>
+                    <button class="btn" style="border: 2px solid #FF6B6B; color: #FF6B6B; background: white;">Cancel</button>
+                </div>
+                <div class="card-demo" style="background: #FFFBF0; border-left: 4px solid #FF6B6B;">
+                    <strong>Your Song is Ready!</strong><br>
+                    <small style="color: #666;">Tap to play or share with friends</small>
+                </div>
+                <div class="alert" style="background: #95E1D326; border-left: 4px solid #95E1D3; color: #065F46;">
+                    ✓ Norwegian pronunciation optimized successfully
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme 3: Modern Minimal -->
+        <div class="theme-card">
+            <div class="theme-header">
+                <div class="theme-name" style="color: #6C63FF;">3. Modern Minimal</div>
+                <div class="theme-desc">Clean and sophisticated</div>
+                <span class="theme-personality">Professional & Trustworthy</span>
+            </div>
+
+            <div class="color-palette">
+                <div class="color-swatch theme3-primary">
+                    <span class="swatch-label">Primary</span>
+                    <span>#6C63FF</span>
+                </div>
+                <div class="color-swatch theme3-secondary">
+                    <span class="swatch-label">Secondary</span>
+                    <span>#2D3142</span>
+                </div>
+                <div class="color-swatch theme3-accent">
+                    <span class="swatch-label">Accent</span>
+                    <span>#FF9F1C</span>
+                </div>
+                <div class="color-swatch theme3-success">
+                    <span class="swatch-label">Success</span>
+                    <span>#52B788</span>
+                </div>
+            </div>
+
+            <div class="components-preview">
+                <div class="preview-title">Live Component Examples:</div>
+                <div class="buttons">
+                    <button class="btn" style="background: #6C63FF; color: white;">Create Song</button>
+                    <button class="btn" style="background: #2D3142; color: white;">Share</button>
+                    <button class="btn" style="border: 2px solid #6C63FF; color: #6C63FF; background: white;">Cancel</button>
+                </div>
+                <div class="card-demo" style="background: #FFFFFF; border: 1px solid #E5E7EB; border-left: 4px solid #6C63FF;">
+                    <strong>Your Song is Ready!</strong><br>
+                    <small style="color: #666;">Tap to play or share with friends</small>
+                </div>
+                <div class="alert" style="background: #52B78826; border-left: 4px solid #52B788; color: #065F46;">
+                    ✓ Norwegian pronunciation optimized successfully
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme 4: Warm Norwegian -->
+        <div class="theme-card">
+            <div class="theme-header">
+                <div class="theme-name" style="color: #D97706;">4. Warm Norwegian</div>
+                <div class="theme-desc">Earthy tones inspired by Norwegian nature</div>
+                <span class="theme-personality">Warm & Authentic</span>
+            </div>
+
+            <div class="color-palette">
+                <div class="color-swatch theme4-primary">
+                    <span class="swatch-label">Primary</span>
+                    <span>#D97706</span>
+                </div>
+                <div class="color-swatch theme4-secondary">
+                    <span class="swatch-label">Secondary</span>
+                    <span>#1E3A8A</span>
+                </div>
+                <div class="color-swatch theme4-accent">
+                    <span class="swatch-label">Accent</span>
+                    <span>#F59E0B</span>
+                </div>
+                <div class="color-swatch theme4-success">
+                    <span class="swatch-label">Success</span>
+                    <span>#10B981</span>
+                </div>
+            </div>
+
+            <div class="components-preview">
+                <div class="preview-title">Live Component Examples:</div>
+                <div class="buttons">
+                    <button class="btn" style="background: #D97706; color: white;">Create Song</button>
+                    <button class="btn" style="background: #1E3A8A; color: white;">Share</button>
+                    <button class="btn" style="border: 2px solid #D97706; color: #D97706; background: white;">Cancel</button>
+                </div>
+                <div class="card-demo" style="background: #FEF3C7; border-left: 4px solid #D97706;">
+                    <strong>Your Song is Ready!</strong><br>
+                    <small style="color: #666;">Tap to play or share with friends</small>
+                </div>
+                <div class="alert" style="background: #10B98126; border-left: 4px solid #10B981; color: #065F46;">
+                    ✓ Norwegian pronunciation optimized successfully
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="max-width: 800px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; text-align: center;">
+        <h3 style="margin-bottom: 12px;">Which theme feels right for Musikkfabrikken?</h3>
+        <p style="color: #666; font-size: 14px;">Consider: Which one best captures "Delighted & Amused" while feeling authentically Norwegian?</p>
+    </div>
+</body>
+</html>

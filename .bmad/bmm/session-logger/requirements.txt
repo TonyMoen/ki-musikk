@@ -1,0 +1,15 @@
+# BMAD Session Logger Dependencies
+# Install with: pip install -r requirements.txt
+
+# Vector database
+chromadb==1.0.15
+
+# Embeddings (local sentence transformers)
+sentence-transformers>=2.0.0
+
+# Configuration file parsing
+pyyaml>=6.0
+
+# Testing (optional, for development)
+pytest>=7.0.0
+pytest-cov>=4.0.0

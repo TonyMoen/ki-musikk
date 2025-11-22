@@ -1,0 +1,352 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>4</storyId>
+    <title>Install shadcn/ui and Core Components</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-20</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-4-install-shadcn-ui-and-core-components.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>shadcn/ui design system installed with base accessible components customized to the Playful Nordic theme</iWant>
+    <soThat>all future UI development uses consistent, accessible, and theme-aligned components throughout the application</soThat>
+    <tasks>
+- [ ] Task 1: Initialize shadcn/ui (AC: #1)
+  - [ ] Run `npx shadcn-ui@latest init` in project root
+  - [ ] Select configuration options:
+    - TypeScript: Yes
+    - Style: Default
+    - Base color: Slate (will be overridden by Playful Nordic theme)
+    - CSS variables: Yes (for easier theme customization)
+    - Tailwind config: tailwind.config.ts (already exists)
+    - Components location: src/components/ui
+    - Utils location: src/lib/utils.ts
+    - React Server Components: Yes
+    - Import alias: @/components, @/lib
+  - [ ] Verify initialization creates necessary files
+
+- [ ] Task 2: Install Button Component (AC: #2)
+  - [ ] Run `npx shadcn-ui@latest add button`
+  - [ ] Verify component created at `/src/components/ui/button.tsx`
+  - [ ] Review component code for theme integration
+
+- [ ] Task 3: Install Card Component (AC: #2)
+  - [ ] Run `npx shadcn-ui@latest add card`
+  - [ ] Verify component created at `/src/components/ui/card.tsx`
+
+- [ ] Task 4: Install Input Component (AC: #2)
+  - [ ] Run `npx shadcn-ui@latest add input`
+  - [ ] Verify component created at `/src/components/ui/input.tsx`
+
+- [ ] Task 5: Install Dialog (Modal) Component (AC: #2)
+  - [ ] Run `npx shadcn-ui@latest add dialog`
+  - [ ] Verify component created at `/src/components/ui/dialog.tsx`
+  - [ ] Note: Dialog depends on @radix-ui/react-dialog (auto-installed)
+
+- [ ] Task 6: Install Toast Component (AC: #2)
+  - [ ] Run `npx shadcn-ui@latest add toast`
+  - [ ] Verify component created at `/src/components/ui/toast.tsx`
+  - [ ] Verify Toaster provider component created
+  - [ ] Note: Toast depends on @radix-ui/react-toast (auto-installed)
+
+- [ ] Task 7: Install Progress Component (AC: #2)
+  - [ ] Run `npx shadcn-ui@latest add progress`
+  - [ ] Verify component created at `/src/components/ui/progress.tsx`
+
+- [ ] Task 8: Install Badge Component (AC: #2)
+  - [ ] Run `npx shadcn-ui@latest add badge`
+  - [ ] Verify component created at `/src/components/ui/badge.tsx`
+
+- [ ] Task 9: Install Select Component (AC: #2)
+  - [ ] Run `npx shadcn-ui@latest add select`
+  - [ ] Verify component created at `/src/components/ui/select.tsx`
+
+- [ ] Task 10: Install Switch Component (AC: #2)
+  - [ ] Run `npx shadcn-ui@latest add switch`
+  - [ ] Verify component created at `/src/components/ui/switch.tsx`
+
+- [ ] Task 11: Install Tabs Component (AC: #2)
+  - [ ] Run `npx shadcn-ui@latest add tabs`
+  - [ ] Verify component created at `/src/components/ui/tabs.tsx`
+
+- [ ] Task 12: Create Norwegian Test Page (AC: #6)
+  - [ ] Create test page at `src/app/test-komponenter/page.tsx` (Norwegian: "components")
+  - [ ] Set HTML lang="nb" and Norwegian metadata
+  - [ ] Import all installed components
+  - [ ] Create sections demonstrating each component:
+    - Buttons: Primary, Secondary, Outline variants with Norwegian labels ("Klikk her", "Avbryt", "Lagre")
+    - Cards: Content cards with Norwegian text
+    - Inputs: Text input with Norwegian placeholder ("Skriv inn tekst...")
+    - Dialog: Modal with Norwegian heading and content
+    - Toast: Toast notification with Norwegian message
+    - Progress: Progress bar with Norwegian label
+    - Badges: Status badges with Norwegian text ("Ny", "Aktiv", "Fullført")
+    - Select: Dropdown with Norwegian options
+    - Switch: Toggle with Norwegian label ("Aktiver lydeffekter")
+    - Tabs: Tabs with Norwegian labels ("Oversikt", "Innstillinger", "Hjelp")
+
+- [ ] Task 13: Verify Theme Integration (AC: #3)
+  - [ ] Open test page in browser
+  - [ ] Verify buttons use primary color (#E94560) for primary variant
+  - [ ] Verify secondary actions use secondary color (#0F3460)
+  - [ ] Verify accent color (#FFC93C) appears in highlights/badges
+  - [ ] Use browser DevTools color picker to verify exact hex values
+  - [ ] Check success/error/info semantic colors in appropriate contexts
+
+- [ ] Task 14: Test Keyboard Accessibility (AC: #4)
+  - [ ] Press Tab to navigate through all interactive components
+  - [ ] Verify all buttons, inputs, selects, switches are focusable
+  - [ ] Verify focus indicators are clearly visible (outline or ring)
+  - [ ] Test Dialog: Open with button, close with Escape key
+  - [ ] Test Select: Open with Enter/Space, navigate with arrows
+  - [ ] Verify Tab order is logical (top to bottom, left to right)
+
+- [ ] Task 15: Run Lighthouse Accessibility Check (AC: #7)
+  - [ ] Open Chrome DevTools on test page
+  - [ ] Run Lighthouse audit (Accessibility category)
+  - [ ] Verify score >90
+  - [ ] Review any accessibility warnings or errors
+  - [ ] Fix any critical issues found
+
+- [ ] Task 16: Verify Component Imports (AC: #5)
+  - [ ] Check that test page imports work: `import { Button } from '@/components/ui/button'`
+  - [ ] Verify TypeScript autocomplete works for component props
+  - [ ] Confirm no import errors in console or build
+
+- [ ] Task 17: Build Verification and Cleanup (AC: #8)
+  - [ ] Run `npm run build` and verify success (exit code 0)
+  - [ ] Check for TypeScript errors (should be none)
+  - [ ] Check for ESLint errors (warnings acceptable)
+  - [ ] Delete test page: `src/app/test-komponenter/page.tsx`
+  - [ ] Run `npm run build` again to verify clean build after deletion
+  - [ ] Commit all new components and configuration files
+</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. **shadcn/ui Initialized**: shadcn/ui CLI initialized with proper Tailwind and TypeScript configuration
+2. **Base Components Installed**: Core components installed in `/src/components/ui/` directory: Button, Card, Input, Dialog (Modal), Toast, Progress, Badge, Select, Switch, Tabs
+3. **Theme Integration Verified**: All components render with Playful Nordic colors (primary #E94560, secondary #0F3460, accent #FFC93C)
+4. **Accessibility Verified**: All components are keyboard accessible (Tab navigation works, focus indicators visible)
+5. **Component Imports Work**: Components can be imported with `@/components/ui/*` path alias
+6. **Norwegian Test Page**: Test page created demonstrating all components with Norwegian labels and content
+7. **WCAG Compliance Maintained**: Lighthouse accessibility score >90 on test page
+8. **Build Verification**: Production build succeeds with all components, no TypeScript or ESLint errors
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>ADR-004: Use shadcn/ui for UI Components</section>
+        <snippet>shadcn/ui + Radix UI selected as UI component library. Copy-paste approach (NOT npm dependency) provides full customization control, built on Radix UI primitives (accessible by default), Tailwind styling matches tech stack, WCAG 2.1 AA compliant out of the box. Components copied to `/src/components/ui/` directory, each component standalone file.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>1.1 Design System Choice</section>
+        <snippet>shadcn/ui selected as design system. Perfect fit for Next.js + Tailwind stack, highly customizable, accessibility built-in (WCAG 2.1 AA), modern clean aesthetic, copy-paste components (not npm dependency), excellent mobile support.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>3.1 Color System - Playful Nordic Theme</section>
+        <snippet>Primary Red #E94560 (Main actions, CTAs), Secondary Navy #0F3460 (Supporting actions, headers), Accent Yellow #FFC93C (Highlights, badges). Success Green #06D6A0, Error #EF476F, Info Blue #3B82F6. WCAG 2.1 AA compliant contrast ratios verified.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>6.1 Component Strategy</section>
+        <snippet>From shadcn/ui (Standard Components): Button (primary/secondary/outline/ghost variants), Input (text, textarea), Card, Modal/Dialog, Toast notifications, Progress bar, Badge, Dropdown Select, Bottom Sheet, Tabs, Toggle/Switch. All components must work well on mobile (touch targets 48px+), responsive breakpoints: &lt;640px (mobile), 640-1024px (tablet), &gt;1024px (desktop).</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/epics/epic-1-foundation-infrastructure.md</path>
+        <title>Epic 1: Foundation & Infrastructure</title>
+        <section>Story 1.4</section>
+        <snippet>Install shadcn/ui with base accessible components. Initialize shadcn/ui with CLI, install base components (Button, Card, Input, Dialog, Toast, Progress, Badge, Select, Switch, Tabs), all components copied to /src/components/ui/, must use Playful Nordic color palette, meet WCAG 2.1 AA accessibility standards.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation & Infrastructure</title>
+        <section>UI Component Dependencies (Story 1.4)</section>
+        <snippet>Install Radix UI primitives: @radix-ui/react-dialog, @radix-ui/react-toast, @radix-ui/react-progress, @radix-ui/react-select, @radix-ui/react-switch, @radix-ui/react-tabs. Install class-variance-authority (^0.7.0), clsx (^2.1.0), tailwind-merge (^2.2.0), lucide-react (^0.316.0) for icons.</snippet>
+      </artifact>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>tailwind.config.ts</path>
+        <kind>config</kind>
+        <symbol>Tailwind Config with Playful Nordic Theme</symbol>
+        <lines>1-62</lines>
+        <reason>Tailwind already configured with Playful Nordic colors. shadcn/ui components must integrate with these existing colors: primary #E94560, secondary #0F3460, accent #FFC93C, success #06D6A0, error #EF476F.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/supabase/client.ts</path>
+        <kind>library</kind>
+        <symbol>Supabase client utility</symbol>
+        <lines>N/A</lines>
+        <reason>Existing library pattern for integration utilities. May reference when creating src/lib/utils.ts for shadcn/ui.</reason>
+      </artifact>
+      <artifact>
+        <path>package.json</path>
+        <kind>config</kind>
+        <symbol>Project dependencies</symbol>
+        <lines>1-30</lines>
+        <reason>Current dependencies: Next.js 14.2.3, React 18.2.0, TypeScript 5, Tailwind 3.4.1, Supabase. New dependencies will be added: Radix UI primitives, class-variance-authority, clsx, tailwind-merge, lucide-react.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <ecosystem key="node">
+        <package>next</package>
+        <version>^14.2.3</version>
+      </ecosystem>
+      <ecosystem key="node">
+        <package>react</package>
+        <version>^18.2.0</version>
+      </ecosystem>
+      <ecosystem key="node">
+        <package>typescript</package>
+        <version>^5</version>
+      </ecosystem>
+      <ecosystem key="node">
+        <package>tailwindcss</package>
+        <version>^3.4.1</version>
+      </ecosystem>
+      <ecosystem key="node">
+        <package>@supabase/supabase-js</package>
+        <version>^2.84.0</version>
+      </ecosystem>
+      <ecosystem key="node-new">
+        <package>@radix-ui/react-dialog</package>
+        <version>^1.0.5</version>
+        <note>Auto-installed by shadcn/ui for Dialog component</note>
+      </ecosystem>
+      <ecosystem key="node-new">
+        <package>@radix-ui/react-toast</package>
+        <version>^1.1.5</version>
+        <note>Auto-installed by shadcn/ui for Toast component</note>
+      </ecosystem>
+      <ecosystem key="node-new">
+        <package>@radix-ui/react-progress</package>
+        <version>^1.0.3</version>
+        <note>Auto-installed by shadcn/ui for Progress component</note>
+      </ecosystem>
+      <ecosystem key="node-new">
+        <package>@radix-ui/react-select</package>
+        <version>^2.0.0</version>
+        <note>Auto-installed by shadcn/ui for Select component</note>
+      </ecosystem>
+      <ecosystem key="node-new">
+        <package>@radix-ui/react-switch</package>
+        <version>^1.0.3</version>
+        <note>Auto-installed by shadcn/ui for Switch component</note>
+      </ecosystem>
+      <ecosystem key="node-new">
+        <package>@radix-ui/react-tabs</package>
+        <version>^1.0.4</version>
+        <note>Auto-installed by shadcn/ui for Tabs component</note>
+      </ecosystem>
+      <ecosystem key="node-new">
+        <package>class-variance-authority</package>
+        <version>^0.7.0</version>
+        <note>CVA for component variants</note>
+      </ecosystem>
+      <ecosystem key="node-new">
+        <package>clsx</package>
+        <version>^2.1.0</version>
+        <note>Class name utility</note>
+      </ecosystem>
+      <ecosystem key="node-new">
+        <package>tailwind-merge</package>
+        <version>^2.2.0</version>
+        <note>Tailwind class merging for proper style precedence</note>
+      </ecosystem>
+      <ecosystem key="node-new">
+        <package>lucide-react</package>
+        <version>^0.316.0</version>
+        <note>Icon library often used with shadcn/ui</note>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="pattern">Copy-paste approach: shadcn/ui components are NOT npm dependencies. Each component is a standalone file copied to /src/components/ui/ directory with full customization control.</constraint>
+    <constraint type="pattern">Radix UI foundation: All components built on Radix UI primitives (accessible by default) with Tailwind styling.</constraint>
+    <constraint type="pattern">Theme integration: Components MUST use existing Tailwind theme colors (primary, secondary, accent, success, error, info) defined in tailwind.config.ts.</constraint>
+    <constraint type="pattern">Accessibility requirement: All components must meet WCAG 2.1 AA standards with keyboard navigation, focus indicators, ARIA attributes, and screen reader support.</constraint>
+    <constraint type="pattern">Mobile-first design: All components must work on mobile with 48px+ touch targets, responsive breakpoints (&lt;640px mobile, 640-1024px tablet, &gt;1024px desktop).</constraint>
+    <constraint type="pattern">Norwegian testing: Test page must use Norwegian (Bokmål) language (HTML lang="nb", Norwegian labels/content) to align with DEVELOPMENT_GUIDELINES.md requirements.</constraint>
+    <constraint type="pattern">Import alias: Components must be importable via @/components/ui/* path alias (already configured in Next.js tsconfig).</constraint>
+    <constraint type="pattern">TypeScript strict mode: All component code must compile without TypeScript errors in strict mode.</constraint>
+    <constraint type="testing">Test page temporary: Create test page for verification (src/app/test-komponenter/page.tsx), DELETE before story completion to avoid clutter in production build.</constraint>
+    <constraint type="build">Build verification: npm run build must succeed with exit code 0, no TypeScript or ESLint errors (warnings acceptable).</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>shadcn/ui CLI init command</name>
+      <kind>CLI</kind>
+      <signature>npx shadcn-ui@latest init</signature>
+      <path>N/A (CLI tool)</path>
+      <description>Interactive CLI initialization that creates components.json config, src/lib/utils.ts utility file, and updates tailwind.config.ts with shadcn/ui base styles.</description>
+    </interface>
+    <interface>
+      <name>shadcn/ui CLI add command</name>
+      <kind>CLI</kind>
+      <signature>npx shadcn-ui@latest add [component]</signature>
+      <path>N/A (CLI tool)</path>
+      <description>Copies specified component to src/components/ui/ directory, auto-installs required Radix UI dependencies. Examples: npx shadcn-ui@latest add button, npx shadcn-ui@latest add card</description>
+    </interface>
+    <interface>
+      <name>Button component import</name>
+      <kind>Component import</kind>
+      <signature>import { Button } from '@/components/ui/button'</signature>
+      <path>src/components/ui/button.tsx (after installation)</path>
+      <description>Button component with variants (default/primary, secondary, outline, ghost, link, destructive). Usage: &lt;Button variant="default"&gt;Click me&lt;/Button&gt;</description>
+    </interface>
+    <interface>
+      <name>cn() utility function</name>
+      <kind>Utility function</kind>
+      <signature>cn(...inputs: ClassValue[]): string</signature>
+      <path>src/lib/utils.ts (created by shadcn/ui init)</path>
+      <description>Combines clsx and tailwind-merge for proper Tailwind class merging with precedence. Used internally by shadcn/ui components.</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+Testing standards for this story:
+- Manual verification: Create test page demonstrating all components with Norwegian content
+- Visual verification: Confirm Playful Nordic colors render correctly (#E94560 primary, #0F3460 secondary, #FFC93C accent)
+- Keyboard accessibility testing: Tab through all components, verify focus indicators and keyboard interaction
+- Lighthouse accessibility audit: Run Chrome DevTools Lighthouse, target score &gt;90
+- Build verification: npm run build must succeed with exit code 0, no TypeScript errors
+- Component isolation: Each component must work independently (no cross-dependencies between UI components)
+- Theme consistency: All components must inherit Tailwind theme colors automatically
+    </standards>
+    <locations>
+- Test page: src/app/test-komponenter/page.tsx (temporary, deleted before completion)
+- Build verification: Run npm run build from project root
+- Lighthouse audit: Chrome DevTools &gt; Lighthouse tab on test page
+- Console checks: Browser DevTools console for import errors or runtime warnings
+    </locations>
+    <ideas>
+- Test Idea 1 (AC #2, #5): Create test page importing all 10 components, verify no import errors in console
+- Test Idea 2 (AC #3): Use Chrome DevTools color picker on rendered buttons to verify primary color is exactly #E94560
+- Test Idea 3 (AC #4): Press Tab key repeatedly on test page, verify all interactive elements receive focus in logical order with visible focus ring
+- Test Idea 4 (AC #4): Test Dialog with keyboard - open with button click, close with Escape key, verify Tab key traps focus inside modal
+- Test Idea 5 (AC #4): Test Select with keyboard - open dropdown with Enter/Space, navigate options with arrow keys, select with Enter
+- Test Idea 6 (AC #6): Create test page with Norwegian labels - buttons: "Klikk her", "Avbryt", "Lagre", badges: "Ny", "Aktiv", "Fullført"
+- Test Idea 7 (AC #7): Run Lighthouse accessibility audit, verify score &gt;90, review "Accessibility" section for WCAG violations
+- Test Idea 8 (AC #8): Run npm run build twice - once with test page, once after deleting test page, both must succeed
+- Test Idea 9: Verify component variants work - render Button with all variants (default, secondary, outline, ghost, destructive)
+- Test Idea 10: Test responsive behavior - resize browser window to mobile (&lt;640px), tablet (640-1024px), desktop (&gt;1024px) widths
+    </ideas>
+  </tests>
+</story-context>
