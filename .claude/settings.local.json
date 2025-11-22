@@ -43,7 +43,9 @@
       "Bash(else echo \"File not found (may already be cleaned up)\")",
       "Bash(fi)",
       "Bash(if [ ! -d \"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\" ])",
-      "Bash(then mkdir -p \"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\")"
+      "Bash(then mkdir -p \"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\")",
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\credits\\purchase\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\credits\\purchase\")",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": []

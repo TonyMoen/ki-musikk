@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useCreditsStore } from '@/stores/credits-store'
+import { useToast } from '@/hooks/use-toast'
+import { CreditPurchaseModal } from '@/components/credit-purchase-modal'
 import { Coins, LogOut } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -16,12 +18,15 @@ interface UserProfile {
   created_at: string
 }
 
-export default function SettingsPage() {
+function SettingsContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { toast } = useToast()
   const { balance, refreshBalance } = useCreditsStore()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
 
   useEffect(() => {
     async function loadProfile() {
@@ -42,6 +47,30 @@ export default function SettingsPage() {
 
     loadProfile()
   }, [refreshBalance])
+
+  // Handle payment redirect query params
+  useEffect(() => {
+    const payment = searchParams.get('payment')
+
+    if (payment === 'success') {
+      toast({
+        title: '✓ Credits added to your account!',
+        description: 'Your credit balance has been updated.',
+      })
+      // Refresh balance to show new credits
+      refreshBalance()
+      // Clear query param
+      router.replace('/settings')
+    } else if (payment === 'cancelled') {
+      toast({
+        title: 'Credit purchase cancelled',
+        description: 'No charges were made to your account.',
+        variant: 'default',
+      })
+      // Clear query param
+      router.replace('/settings')
+    }
+  }, [searchParams, toast, refreshBalance, router])
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
@@ -129,14 +158,10 @@ export default function SettingsPage() {
 
             <Button
               className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white"
-              disabled
-              title="Credit purchase coming in Story 2.3"
+              onClick={() => setIsPurchaseModalOpen(true)}
             >
               Purchase Credits
             </Button>
-            <p className="text-xs text-center text-muted-foreground mt-2">
-              Credit purchase coming in Story 2.3
-            </p>
           </CardContent>
         </Card>
 
@@ -155,6 +180,20 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Credit Purchase Modal */}
+      <CreditPurchaseModal
+        open={isPurchaseModalOpen}
+        onOpenChange={setIsPurchaseModalOpen}
+      />
     </div>
+  )
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto p-6"><div className="max-w-2xl mx-auto"><h1 className="text-3xl font-bold mb-6">Settings</h1><p>Loading...</p></div></div>}>
+      <SettingsContent />
+    </Suspense>
   )
 }
