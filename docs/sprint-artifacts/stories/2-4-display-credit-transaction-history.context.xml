@@ -1,0 +1,314 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>4</storyId>
+    <title>Display Credit Transaction History</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-23</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/2-4-display-credit-transaction-history.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to view my credit transaction history</iWant>
+    <soThat>I can see all purchases, deductions, and refunds</soThat>
+    <tasks>
+      - Task 1: Update credit balance API to include transaction history (AC: All)
+        - Modify /src/app/api/credits/balance/route.ts to query credit_transaction table
+        - Add pagination support via URL query params (?page=1, default 10 per page)
+        - Add filter support via query param (?type=purchase|deduction|refund)
+        - Query transactions with ORDER BY created_at DESC
+        - Return paginated response with total count and current page
+        - Ensure RLS policy enforces user can only see own transactions
+
+      - Task 2: Create transaction history component (AC: Display transactions)
+        - Create /src/components/transaction-history.tsx
+        - Use shadcn/ui Table component for transaction list
+        - Create columns: Type (badge), Amount (with +/- prefix), Description, Date, Balance After
+        - Format dates as relative ("2 minutes ago") using date-fns or relative time function
+        - Display transaction type as colored badge (Purchase=green, Deduction=red, Refund=yellow)
+        - Truncate Stripe session ID to first 12 chars with ellipsis
+        - Make song_id clickable link if present (deduction transactions only)
+
+      - Task 3: Implement pagination controls (AC: Paginated list)
+        - Add pagination component below transaction table
+        - Use URL search params for page state (?page=2)
+        - Display "Previous" and "Next" buttons
+        - Show current page and total pages (e.g., "Page 2 of 5")
+        - Disable "Previous" on page 1, disable "Next" on last page
+        - Update URL without full page reload (router.push)
+
+      - Task 4: Implement transaction type filter (AC: Filter by type)
+        - Add filter dropdown using shadcn/ui Select component
+        - Options: "All", "Purchases", "Deductions", "Refunds"
+        - Use URL search param for filter state (?type=purchase)
+        - Update transactions query when filter changes
+        - Reset pagination to page 1 when filter changes
+        - Display active filter in UI (highlight selected option)
+
+      - Task 5: Integrate transaction history into Settings page (AC: Navigate to Settings)
+        - Import TransactionHistory component into /src/app/settings/page.tsx
+        - Add section header "Transaction History" below credit balance
+        - Render TransactionHistory component
+        - Fetch initial transaction data on page load
+        - Handle loading state (skeleton or spinner)
+        - Handle empty state (no transactions yet)
+
+      - Task 6: Add date formatting utility (AC: Display date)
+        - Create /src/lib/utils/date-format.ts (or add to existing utils.ts)
+        - Implement relativeTime() function for recent dates (&lt;7 days)
+        - Format absolute dates for older transactions (e.g., "Jan 15, 2025")
+        - Use native Date or date-fns library for formatting
+        - Handle timezone conversion to user's local time
+
+      - Task 7: Handle empty and error states (AC: All)
+        - Display friendly message when no transactions: "No transactions yet. Purchase credits to get started!"
+        - Handle API errors gracefully with toast notification
+        - Display loading skeleton during initial fetch
+        - Show pagination skeleton during page change
+        - Handle network timeout with retry button
+
+      - Task 8: Test transaction history with mock data (AC: All)
+        - Verify transaction list displays correctly with existing transaction from Story 2.3
+        - Test pagination with &gt;10 transactions (create additional test purchases if needed)
+        - Test filtering by Purchase, Deduction, Refund types
+        - Verify date formatting for recent and old transactions
+        - Test empty state (new user with 0 transactions)
+        - Verify Stripe session ID truncation and display
+
+      - Task 9: Build and verify production readiness (AC: All)
+        - Run `npm run build` to verify TypeScript compilation
+        - Run `npm run lint` to check code quality
+        - Verify transaction history accessible from Settings page
+        - Test responsive design (mobile, tablet, desktop)
+        - Verify accessibility (keyboard navigation, screen readers)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    AC1: Settings page shows transaction history sorted by date (newest first)
+    AC2: Each transaction displays: Type, Amount (+/-), Description, Date, Balance after
+    AC3: Purchases show truncated Stripe session ID
+    AC4: Deductions link to associated song (if applicable)
+    AC5: List paginated (10 per page)
+    AC6: User can filter by transaction type (Purchase/Deduction/Refund)
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-2.md</path>
+        <title>Epic Technical Specification: User Authentication &amp; Credit System</title>
+        <section>Story 2.4: Transaction History</section>
+        <snippet>Provides transparency into credit usage by displaying a complete audit trail. Transaction record structure includes: id, user_id, amount (positive for purchase, negative for deduction), balance_after, transaction_type (purchase|deduction|refund), description, stripe_session_id (purchases), song_id (deductions/refunds), created_at. Display requirements: Type badge color-coded, Amount format with +/- prefix, Date format relative or absolute, Stripe ID truncated to 12 chars, Song link if applicable.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-2-user-authentication-credit-system.md</path>
+        <title>Epic 2: User Authentication &amp; Credit System - Story 2.4</title>
+        <section>Story 2.4: Display Credit Transaction History</section>
+        <snippet>User wants to view credit transaction history to see all purchases, deductions, and refunds. Acceptance criteria include: list sorted by date (newest first), each transaction shows Type/Amount/Description/Date/Balance, purchases show Stripe session ID (truncated), deductions link to song, paginated (10 per page), filterable by type.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken - Architecture Document</title>
+        <section>Data Architecture - Database Schema</section>
+        <snippet>credit_transaction table: id UUID, user_id UUID (FK to user_profile), amount INTEGER (positive=purchase, negative=deduction), balance_after INTEGER, transaction_type TEXT CHECK(purchase|deduction|refund), description TEXT, stripe_session_id TEXT (purchases), song_id UUID FK (deductions/refunds), created_at TIMESTAMPTZ. RLS policy enforces auth.uid() = user_id. Indexed on user_id and created_at DESC for performance.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken - Architecture Document</title>
+        <section>API Response Format</section>
+        <snippet>Success response format: {data: T, meta?: {page?, total?}}. Error response: {error: {code: string, message: string, details?: any}}. Status codes: 200 Success, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 500 Internal Server Error. Pagination uses offset-based approach with page and pageSize parameters.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>src/app/api/credits/balance/route.ts</path>
+        <kind>API route</kind>
+        <symbol>GET handler</symbol>
+        <lines>1-53</lines>
+        <reason>Existing credit balance API that needs to be extended to include transaction history query with pagination and filtering. Currently returns profile and balance only. Will add transaction list with pagination metadata.</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/settings/page.tsx</path>
+        <kind>page component</kind>
+        <symbol>SettingsPage, SettingsContent</symbol>
+        <lines>1-200</lines>
+        <reason>Settings page where transaction history component will be integrated. Currently displays user profile, credit balance, and purchase modal. Transaction history section will be added below credit balance card (around line 166).</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>CREDIT_PACKAGES, CREDIT_COSTS</symbol>
+        <lines>1-48</lines>
+        <reason>Credit package definitions and cost constants used for transaction descriptions and display formatting. CREDIT_COSTS.SONG_GENERATION (10 credits) used in deduction transactions.</reason>
+      </artifact>
+      <artifact>
+        <path>src/stores/credits-store.ts</path>
+        <kind>store</kind>
+        <symbol>useCreditsStore</symbol>
+        <lines>N/A</lines>
+        <reason>Zustand store for global credit balance state management. May need to extend for transaction history caching if implementing real-time updates or optimistic UI patterns.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/badge.tsx</path>
+        <kind>ui component</kind>
+        <symbol>Badge</symbol>
+        <lines>N/A</lines>
+        <reason>shadcn/ui Badge component already installed, will be used to display transaction type with color variants (success=green for purchase, destructive=red for deduction, warning=yellow for refund).</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/credit-purchase-modal.tsx</path>
+        <kind>component</kind>
+        <symbol>CreditPurchaseModal</symbol>
+        <lines>N/A</lines>
+        <reason>Reference implementation for credit-related UI patterns. Shows how to integrate Stripe payment flow, handle loading states, and display credit packages. Useful pattern reference for transaction history component.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <package>next</package>
+        <version>^14.2.3</version>
+        <reason>Next.js framework with App Router for page routing and API routes</reason>
+      </node>
+      <node>
+        <package>react</package>
+        <version>^18.2.0</version>
+        <reason>React library for component development</reason>
+      </node>
+      <node>
+        <package>typescript</package>
+        <version>^5</version>
+        <reason>Type safety for transaction interfaces and component props</reason>
+      </node>
+      <node>
+        <package>@supabase/supabase-js</package>
+        <version>^2.84.0</version>
+        <reason>Supabase SDK for querying credit_transaction table with RLS enforcement</reason>
+      </node>
+      <node>
+        <package>@radix-ui/react-select</package>
+        <version>^2.2.6</version>
+        <reason>shadcn/ui Select component for transaction type filter dropdown</reason>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <version>^0.554.0</version>
+        <reason>Icon library for UI elements (filter icon, pagination arrows, etc.)</reason>
+      </node>
+      <node>
+        <package>date-fns</package>
+        <version>^4.1.0</version>
+        <reason>Already installed - date formatting library for relative time ("2 minutes ago") and absolute dates ("Jan 15, 2025")</reason>
+      </node>
+      <node>
+        <package>tailwind-merge</package>
+        <version>^3.4.0</version>
+        <reason>Merge Tailwind CSS classes for component styling</reason>
+      </node>
+      <node>
+        <package>class-variance-authority</package>
+        <version>^0.7.1</version>
+        <reason>Component variant styling for badge colors (purchase/deduction/refund)</reason>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - Database: Use Supabase client with RLS to query credit_transaction table filtered by authenticated user only
+    - Performance: Target &lt;500ms for transaction history query (10 records) with indexed columns (user_id, created_at)
+    - Pagination: Offset-based pagination with 10 transactions per page (Architecture: API patterns)
+    - Date Format: Relative time for recent (&lt;7 days), absolute date for older transactions (e.g., "Jan 15, 2025")
+    - Badge Variants: Purchase=green (success), Deduction=red (destructive), Refund=yellow (warning) - use shadcn/ui Badge component
+    - API Response Format: Follow architecture standard - {data: {balance, transactions, pagination: {currentPage, totalPages, totalCount, pageSize}}}
+    - Error Handling: Return consistent error format {error: {code, message}}, use toast notifications for user-facing errors
+    - Component Pattern: Create TransactionHistory as client component ("use client") since it handles URL search params and user interactions
+    - File Organization: Place transaction-history.tsx in src/components/ directory following existing component naming convention
+    - TypeScript Types: Define CreditTransaction interface matching database schema (id, user_id, amount, balance_after, transaction_type, description, stripe_session_id?, song_id?, created_at)
+    - URL State Management: Use Next.js router and search params for pagination (?page=N) and filter (?type=TYPE) state
+    - Accessibility: Ensure keyboard navigation works for pagination and filter controls, use semantic HTML for table structure
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>GET /api/credits/balance (Extended)</name>
+      <kind>REST API endpoint</kind>
+      <signature>GET /api/credits/balance?page=1&amp;type=all</signature>
+      <path>src/app/api/credits/balance/route.ts</path>
+      <description>Extended to include transaction history with pagination and filtering. Query params: page (default 1), type (all|purchase|deduction|refund, default all). Returns: {data: {balance: number, profile: UserProfile, transactions: CreditTransaction[], pagination: {currentPage, totalPages, totalCount, pageSize: 10}}}</description>
+    </interface>
+    <interface>
+      <name>CreditTransaction</name>
+      <kind>TypeScript interface</kind>
+      <signature>
+        export interface CreditTransaction {
+          id: string
+          user_id: string
+          amount: number
+          balance_after: number
+          transaction_type: 'purchase' | 'deduction' | 'refund'
+          description: string
+          stripe_session_id?: string
+          song_id?: string
+          created_at: string
+        }
+      </signature>
+      <path>src/types/credit.ts (to be created or added to existing types)</path>
+      <description>TypeScript interface matching credit_transaction database table schema. Used for transaction list component props and API response typing.</description>
+    </interface>
+    <interface>
+      <name>TransactionHistory Component</name>
+      <kind>React component</kind>
+      <signature>
+        export function TransactionHistory(): JSX.Element
+      </signature>
+      <path>src/components/transaction-history.tsx (to be created)</path>
+      <description>Client component that displays paginated transaction list with filtering. Manages URL search params for page and type. Uses shadcn/ui Table, Badge, Select components. Handles loading, empty, and error states.</description>
+    </interface>
+    <interface>
+      <name>formatTransactionDate</name>
+      <kind>Utility function</kind>
+      <signature>
+        export function formatTransactionDate(dateString: string): string
+      </signature>
+      <path>src/lib/utils/date-format.ts (to be created or added to utils.ts)</path>
+      <description>Formats transaction timestamp as relative time for recent dates (&lt;7 days: "2 minutes ago", "Yesterday") or absolute date for older ("Jan 15, 2025"). Converts UTC to user local timezone.</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing framework: Jest + React Testing Library for unit tests, Playwright for E2E tests.
+      Testing patterns from architecture:
+      - Unit tests for utility functions (date formatting, amount formatting)
+      - Integration tests for API routes (transaction query with pagination/filtering)
+      - Component tests for TransactionHistory (rendering, pagination, filtering)
+      - E2E tests for complete user flow (Settings page -&gt; view transactions -&gt; pagination -&gt; filter)
+      Coverage target: &gt;80% for credit logic modules (architecture standard)
+    </standards>
+
+    <locations>
+      - Unit tests: src/components/transaction-history.test.tsx, src/lib/utils/date-format.test.ts
+      - Integration tests: src/app/api/credits/balance/route.test.ts
+      - E2E tests: e2e/transaction-history.spec.ts (if E2E directory exists)
+    </locations>
+
+    <ideas>
+      <test ac="AC1" idea="Query credit_transaction table with ORDER BY created_at DESC, verify transactions sorted newest first in component render" />
+      <test ac="AC2" idea="Test transaction row displays all fields correctly: type badge with correct variant, amount with +/- prefix, description text, formatted date, balance_after value" />
+      <test ac="AC3" idea="Mock purchase transaction with stripe_session_id, verify truncated to first 12 chars with ellipsis in rendered output" />
+      <test ac="AC4" idea="Mock deduction transaction with song_id, verify clickable link to /songs/[id] rendered, test link navigation" />
+      <test ac="AC5" idea="Mock 25 transactions, verify pagination shows 3 pages (10 per page), test page navigation updates URL params and fetches correct offset" />
+      <test ac="AC6" idea="Test filter dropdown with all options (All, Purchases, Deductions, Refunds), verify API query includes type param, verify filtered results display correctly" />
+      <test ac="All" idea="Test empty state renders when user has 0 transactions - verify friendly message and 'Purchase Credits' call-to-action" />
+      <test ac="All" idea="Test loading state - verify skeleton or spinner displays during initial data fetch and pagination changes" />
+      <test ac="All" idea="Test error handling - mock API failure, verify error toast displayed, retry mechanism works" />
+      <test ac="All" idea="Test date formatting utility - verify relative time for dates &lt;7 days old ('2 minutes ago'), absolute date for older ('Jan 15, 2025')" />
+      <test ac="All" idea="Test responsive design - verify table layout adapts to mobile/tablet/desktop screen sizes, horizontal scroll if needed" />
+      <test ac="All" idea="Performance test - verify transaction history query with pagination completes in &lt;500ms (indexed query on user_id + created_at)" />
+    </ideas>
+  </tests>
+</story-context>

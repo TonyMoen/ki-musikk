@@ -533,4 +533,6 @@ Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
 
 **Modified Files:**
 - src/app/settings/page.tsx
+- src/app/api/webhooks/stripe/route.ts (fixed to use service role key)
 - .env.local
+- supabase/migrations/20251122_add_user_profile_trigger.sql (new migration)
