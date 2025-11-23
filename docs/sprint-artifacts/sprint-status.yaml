@@ -63,7 +63,7 @@ development_status:
   2-3-implement-credit-purchase-flow-with-stripe-checkout: review
   2-4-display-credit-transaction-history: review
   2-5-implement-credit-balance-warnings: review
-  2-6-implement-atomic-credit-deduction-with-rollback: backlog
+  2-6-implement-atomic-credit-deduction-with-rollback: ready-for-dev
   epic-2-retrospective: optional
 
   # Epic 3: Norwegian Song Creation (CORE) (10 stories)

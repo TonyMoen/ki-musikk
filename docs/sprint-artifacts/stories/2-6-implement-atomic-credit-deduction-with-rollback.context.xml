@@ -1,0 +1,287 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.6</storyId>
+    <title>Implement Atomic Credit Deduction with Rollback</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-23</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>C:\Users\tony-\SG-Tony\docs\sprint-artifacts\2-6-implement-atomic-credit-deduction-with-rollback.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>credit deduction to be atomic with automatic rollback on failure</iWant>
+    <soThat>users are never charged for failed song generations</soThat>
+    <tasks>
+- [ ] Task 1: Verify database stored procedure exists (AC: Atomic deduction)
+  - [ ] Check if `deduct_credits()` stored procedure exists in Supabase migrations
+  - [ ] If missing: Create migration file with stored procedure definition
+  - [ ] Stored procedure should lock user_profile row (FOR UPDATE)
+  - [ ] Validate sufficient balance, raise exception if insufficient
+  - [ ] Deduct credits atomically and return transaction record
+  - [ ] Test with Supabase CLI: `npx supabase db push`
+
+- [ ] Task 2: Create credit transaction utility functions (AC: Deduction + refund)
+  - [ ] Create or update `/src/lib/credits/transaction.ts`
+  - [ ] Implement `deductCredits(userId, amount, description, songId?)` function
+  - [ ] Function calls database RPC: `supabase.rpc('deduct_credits', params)`
+  - [ ] Handle errors: Throw specific error for insufficient credits
+  - [ ] Implement `refundCredits(userId, amount, description, originalTransactionId?)` function
+  - [ ] Refund creates compensating transaction (type='refund')
+  - [ ] Both functions return CreditTransaction type
+
+- [ ] Task 3: Create refund stored procedure (AC: Automatic rollback)
+  - [ ] Create database migration for `refund_credits()` stored procedure
+  - [ ] Lock user_profile row, add credits back atomically
+  - [ ] Insert credit_transaction record with type='refund', positive amount
+  - [ ] Accept optional reference to original deduction transaction
+  - [ ] Return transaction record
+  - [ ] Test refund procedure independently
+
+- [ ] Task 4: Integrate credit deduction into song generation API (AC: Deduction persists)
+  - [ ] Update `/src/app/api/songs/generate/route.ts` (or create if doesn't exist)
+  - [ ] Before calling Suno API: Call `deductCredits(user.id, CREDIT_COSTS.SONG_GENERATION, 'Song generation', songId)`
+  - [ ] Store deduction transaction ID for potential rollback
+  - [ ] Wrap Suno API call in try-catch block
+  - [ ] On success: Log success, allow transaction to persist
+  - [ ] On failure: Call refund function (Task 5)
+
+- [ ] Task 5: Implement automatic rollback on API failure (AC: Refund on failure)
+  - [ ] In catch block of song generation API
+  - [ ] Call `refundCredits(user.id, CREDIT_COSTS.SONG_GENERATION, 'Generation failed - API error', txnId)`
+  - [ ] Log refund event with original error context
+  - [ ] Return error response with refund confirmation message (Norwegian)
+  - [ ] Test with intentional Suno API failure (invalid API key, network error)
+
+- [ ] Task 6: Add client-side refund notification (AC: Toast notification)
+  - [ ] Update song generation component to handle refund responses
+  - [ ] Display success toast (Norwegian): "✓ Kredittene er tilbakebetalt på grunn av genereringsfeil"
+  - [ ] Toast should be informative, not alarming (reassure user)
+  - [ ] Refresh credit balance display after refund
+  - [ ] Optional: Link to transaction history to show refund record
+
+- [ ] Task 7: Implement concurrent request protection (AC: No double-charging)
+  - [ ] Verify stored procedure uses row locking (FOR UPDATE)
+  - [ ] Add server-side rate limiting (optional): Max 1 generation per user per 5 seconds
+  - [ ] Test concurrent requests: Simulate 2 rapid button clicks
+  - [ ] Verify second request waits for first to complete (row lock)
+  - [ ] Verify no double-charging occurs (balance correct after both requests)
+  - [ ] Document row lock timeout behavior (default 10 seconds)
+
+- [ ] Task 8: Add comprehensive error handling (AC: Clear error messages)
+  - [ ] Handle insufficient credits error specifically
+  - [ ] Return 403 with code 'INSUFFICIENT_CREDITS' and Norwegian message
+  - [ ] Handle database connection errors (retry logic or friendly error)
+  - [ ] Handle row lock timeout (return 503 "Tjenesten er midlertidig opptatt")
+  - [ ] Handle refund failures (log critical error, alert admin)
+  - [ ] All error messages in Norwegian for user-facing responses
+
+- [ ] Task 9: Add audit logging for credit operations (AC: Audit trail)
+  - [ ] Log all credit deductions: userId, amount, songId, timestamp
+  - [ ] Log all refunds: userId, amount, reason, original transaction ID
+  - [ ] Use structured logging format (JSON) with context
+  - [ ] Include trace IDs for debugging end-to-end flows
+  - [ ] Log level: INFO for normal operations, ERROR for failures
+  - [ ] Reference architecture logging strategy for format
+
+- [ ] Task 10: Write integration tests for credit deduction flow (AC: All)
+  - [ ] Test: Successful deduction → Suno success → Credits remain deducted
+  - [ ] Test: Successful deduction → Suno failure → Credits refunded
+  - [ ] Test: Insufficient credits → Return 403 error before calling Suno
+  - [ ] Test: Concurrent requests → No double-charging (sequential processing)
+  - [ ] Test: Refund creates correct transaction record in database
+  - [ ] Test: User's credit balance correct after deduction and refund
+  - [ ] Test: Audit logs contain all expected events
+  - [ ] Run tests with real Supabase test database
+
+- [ ] Task 11: Build, test, and verify production readiness (AC: All)
+  - [ ] Run `npm run build` to verify TypeScript compilation
+  - [ ] Run `npm run lint` to check code quality
+  - [ ] Run integration tests to verify end-to-end credit flow
+  - [ ] Test with Stripe test mode purchase → generation → verify balance
+  - [ ] Test edge case: Exactly 10 credits → Generate → Balance = 0
+  - [ ] Test edge case: 5 credits → Attempt generation → 403 error
+  - [ ] Verify transaction audit trail is complete and accurate
+  - [ ] Document known limitations (row lock timeout, retry behavior)
+</tasks>
+  </story>
+
+  <acceptanceCriteria>
+**Given** A user initiates song generation with sufficient credits
+**When** The system deducts credits before calling Suno API
+**Then** Credits are deducted atomically using database transaction
+**And** If Suno API call succeeds, transaction is committed and credit deduction persists
+**And** If Suno API call fails, credits are automatically rolled back (refunded)
+**And** A credit transaction record is created for audit trail (deduction + refund if applicable)
+**And** User sees toast notification: "✓ Kredittene er tilbakebetalt på grunn av genereringsfeil"
+**And** No double-charging occurs even with concurrent requests
+</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-2.md</path>
+        <title>Epic 2 Technical Specification - User Authentication & Credit System</title>
+        <section>Story 2.6: Atomic Credit Deduction with Rollback</section>
+        <snippet>Stored procedure deduct_credits() locks user_profile row (FOR UPDATE), validates sufficient credits, deducts atomically, and inserts transaction record. Refund via compensating transaction (type='refund') on API failures. Row locking prevents concurrent double-charging.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-2.md</path>
+        <title>Epic 2 Technical Specification - Workflows</title>
+        <section>Workflow 3: Credit Deduction with Rollback</section>
+        <snippet>Backend deducts credits before Suno API call. On success: credits remain deducted. On failure: refundCredits() creates compensating transaction, restores balance, returns error with refund confirmation. Database row locking ensures sequential processing of concurrent requests.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture - Data Architecture</title>
+        <section>Database Functions: deduct_credits()</section>
+        <snippet>Atomic credit deduction stored procedure with row locking (FOR UPDATE), balance validation, atomic update, and transaction record insertion. Raises exception for insufficient credits. Returns credit_transaction record.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture - Logging Strategy</title>
+        <section>Log Format and Levels</section>
+        <snippet>Structured JSON logging with timestamp, level (ERROR, WARN, INFO, DEBUG), message, and context. Log all credit operations (deductions, refunds) at INFO level with userId, amount, transactionId, balanceAfter.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture - Language & Localization</title>
+        <section>Norwegian UI Content, English Code</section>
+        <snippet>All user-facing messages in Norwegian (error messages, toasts, notifications). Code (variables, functions, comments, logs) in English. Refund toast: "Kredittene er tilbakebetalt på grunn av genereringsfeil".</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-2-user-authentication-credit-system.md</path>
+        <title>Epic 2 Story Definitions</title>
+        <section>Story 2.6: Implement Atomic Credit Deduction with Rollback</section>
+        <snippet>Developer story ensuring atomic transactions with automatic rollback on failures. Prerequisites: Story 1.6 (database schema), Story 2.3 (credit system). Prevents double-charging with database row locking.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>supabase/migrations/20251120_initial_schema.sql</path>
+        <kind>stored-procedure</kind>
+        <symbol>deduct_credits</symbol>
+        <lines>187-225</lines>
+        <reason>ALREADY EXISTS - Atomic credit deduction function with row locking (FOR UPDATE), balance validation, and transaction logging. Returns credit_transaction record.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/credits/validator.ts</path>
+        <kind>utility</kind>
+        <symbol>checkSufficientCredits</symbol>
+        <lines>19-30</lines>
+        <reason>Client-side credit validation utility from Story 2.5. Can reuse for validation logic patterns.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>CREDIT_COSTS</symbol>
+        <lines>40-45</lines>
+        <reason>Credit cost constants including SONG_GENERATION: 10. Use for deduction amounts.</reason>
+      </artifact>
+      <artifact>
+        <path>src/stores/credits-store.ts</path>
+        <kind>state-store</kind>
+        <symbol>useCreditsStore</symbol>
+        <lines>1-31</lines>
+        <reason>Zustand store with balance state and refreshBalance() method. Will need to call refreshBalance() after deduction/refund for UI updates.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>service</kind>
+        <symbol>createClient</symbol>
+        <lines>1-50</lines>
+        <reason>Server-side Supabase client for calling RPC functions (deduct_credits, refund_credits) in API routes.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package name="@supabase/supabase-js" version="^2.84.0">Supabase client SDK for calling RPC stored procedures</package>
+        <package name="@supabase/ssr" version="^0.7.0">Server-side auth helpers for Next.js API routes</package>
+        <package name="zustand" version="latest">State management for credit balance updates</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>All credit operations must use PostgreSQL ACID transactions via stored procedures</constraint>
+    <constraint>Row locking (FOR UPDATE) required to prevent concurrent double-charging</constraint>
+    <constraint>Refunds must be compensating transactions (type='refund'), not database rollbacks</constraint>
+    <constraint>Audit trail: Immutable credit_transaction log for all operations</constraint>
+    <constraint>User-facing error messages must be in Norwegian, code/logs in English</constraint>
+    <constraint>Credit cost constant: CREDIT_COSTS.SONG_GENERATION = 10 credits per song</constraint>
+    <constraint>Error handling: Specific InsufficientCreditsError vs generic errors</constraint>
+    <constraint>Structured logging: JSON format with timestamp, level, message, context</constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>deduct_credits RPC</name>
+      <kind>PostgreSQL Stored Procedure</kind>
+      <signature>deduct_credits(p_user_id UUID, p_amount INTEGER, p_description TEXT, p_song_id UUID DEFAULT NULL) RETURNS credit_transaction</signature>
+      <path>supabase/migrations/20251120_initial_schema.sql:187</path>
+    </interface>
+    <interface>
+      <name>refund_credits RPC</name>
+      <kind>PostgreSQL Stored Procedure</kind>
+      <signature>refund_credits(p_user_id UUID, p_amount INTEGER, p_description TEXT, p_song_id UUID DEFAULT NULL) RETURNS credit_transaction</signature>
+      <path>TO BE CREATED - supabase/migrations/YYYYMMDD_add_refund_credits_function.sql</path>
+    </interface>
+    <interface>
+      <name>POST /api/songs/generate</name>
+      <kind>API Endpoint</kind>
+      <signature>{ genre: string, concept: string, phoneticEnabled: boolean } => { songId: string, status: 'generating' } | { error: { code: string, message: string, refunded?: boolean } }</signature>
+      <path>TO BE CREATED - src/app/api/songs/generate/route.ts</path>
+    </interface>
+    <interface>
+      <name>deductCredits utility</name>
+      <kind>TypeScript Function</kind>
+      <signature>async deductCredits(userId: string, amount: number, description: string, songId?: string): Promise&lt;CreditTransaction&gt;</signature>
+      <path>TO BE CREATED - src/lib/credits/transaction.ts</path>
+    </interface>
+    <interface>
+      <name>refundCredits utility</name>
+      <kind>TypeScript Function</kind>
+      <signature>async refundCredits(userId: string, amount: number, description: string, songId?: string): Promise&lt;CreditTransaction&gt;</signature>
+      <path>TO BE CREATED - src/lib/credits/transaction.ts</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>Testing framework: Jest for unit tests, Playwright for integration/E2E tests. Tests colocated with source files (*.test.ts, *.spec.ts). Supabase local development for integration tests with real database. Code coverage target: &gt;80% for credit logic modules. Test Stripe webhooks in test mode with mock events.</standards>
+    <locations>
+      <location>src/lib/credits/*.test.ts - Unit tests for transaction utilities</location>
+      <location>src/app/api/songs/generate/route.test.ts - Integration tests for generation API</location>
+      <location>supabase/migrations/*.test.sql - Database stored procedure tests</location>
+      <location>e2e/credit-deduction.spec.ts - End-to-end credit flow tests</location>
+    </locations>
+    <ideas>
+      <test id="AC1" acceptance_criteria="Credits deducted atomically">
+        <description>Unit test deduct_credits stored procedure with sufficient balance</description>
+        <approach>Mock Supabase RPC call, verify transaction record returned with correct balance_after</approach>
+      </test>
+      <test id="AC2" acceptance_criteria="Suno success - credits persist">
+        <description>Integration test: deduction → mock Suno success → verify balance remains deducted</description>
+        <approach>Call /api/songs/generate with mock Suno API returning success, verify credit transaction type='deduction'</approach>
+      </test>
+      <test id="AC3" acceptance_criteria="Suno failure - automatic refund">
+        <description>Integration test: deduction → mock Suno failure → verify refund transaction created</description>
+        <approach>Call /api/songs/generate with mock Suno API throwing error, verify two transactions (deduction + refund), balance restored</approach>
+      </test>
+      <test id="AC4" acceptance_criteria="Audit trail">
+        <description>Verify credit_transaction table records both deduction and refund</description>
+        <approach>Query credit_transaction after failed generation, verify 2 records with correct types, amounts, timestamps</approach>
+      </test>
+      <test id="AC5" acceptance_criteria="Norwegian refund toast">
+        <description>E2E test: trigger generation failure, verify toast message in Norwegian</description>
+        <approach>Playwright test with mock API failure, assert toast contains "Kredittene er tilbakebetalt"</approach>
+      </test>
+      <test id="AC6" acceptance_criteria="No double-charging">
+        <description>Concurrency test: simulate 2 rapid clicks, verify sequential processing</description>
+        <approach>Send 2 concurrent requests to /api/songs/generate, verify row lock prevents double-charge (balance correct)</approach>
+      </test>
+      <test id="AC7" acceptance_criteria="Insufficient credits error">
+        <description>Test insufficient credits returns 403 before calling Suno</description>
+        <approach>Set user balance to 5, attempt generation (10 credits), verify 403 response with code INSUFFICIENT_CREDITS</approach>
+      </test>
+    </ideas>
+  </tests>
+</story-context>
