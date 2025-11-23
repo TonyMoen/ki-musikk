@@ -15,6 +15,20 @@ export interface LyricGenerationResponse {
   }
 }
 
+export interface PhoneticChange {
+  original: string
+  optimized: string
+  reason: string
+  lineNumber: number
+}
+
+export interface OptimizationResult {
+  originalLyrics: string
+  optimizedLyrics: string
+  changes: PhoneticChange[]
+  cacheHitRate: number
+}
+
 export interface Song {
   id: string
   user_id: string

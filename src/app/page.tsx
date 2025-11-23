@@ -4,9 +4,11 @@ import { useState } from 'react'
 import { GenreSelection } from '@/components/genre-selection'
 import { ConceptInput } from '@/components/concept-input'
 import { LyricsEditor } from '@/components/lyrics-editor'
+import { PronunciationToggle } from '@/components/pronunciation-toggle'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
+import type { OptimizationResult } from '@/types/song'
 
 export default function Home() {
   const [selectedGenre, setSelectedGenre] = useState<{
@@ -15,11 +17,70 @@ export default function Home() {
   } | null>(null)
   const [concept, setConcept] = useState('')
   const [lyrics, setLyrics] = useState('')
+  const [originalLyrics, setOriginalLyrics] = useState('')
+  const [optimizedLyrics, setOptimizedLyrics] = useState('')
+  const [pronunciationEnabled, setPronunciationEnabled] = useState(true)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isOptimizing, setIsOptimizing] = useState(false)
   const { toast } = useToast()
 
   const handleGenreSelect = (genreId: string, genreName: string) => {
     setSelectedGenre({ id: genreId, name: genreName })
+  }
+
+  const handleOptimizePronunciation = async (lyricsToOptimize: string) => {
+    setIsOptimizing(true)
+
+    try {
+      const response = await fetch('/api/lyrics/optimize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          lyrics: lyricsToOptimize
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || data.error) {
+        throw new Error(data.error?.message || 'Kunne ikke optimalisere uttale')
+      }
+
+      const result: OptimizationResult = data.data
+
+      setOriginalLyrics(result.originalLyrics)
+      setOptimizedLyrics(result.optimizedLyrics)
+
+      // Display optimized version if pronunciation is enabled
+      if (pronunciationEnabled) {
+        setLyrics(result.optimizedLyrics)
+      }
+
+      toast({
+        title: 'Uttale optimalisert! 🎵',
+        description: `${result.changes.length} ord optimalisert for autentisk norsk uttale (${result.cacheHitRate}% fra cache)`
+      })
+    } catch (error) {
+      console.error('Pronunciation optimization error:', error)
+
+      toast({
+        variant: 'destructive',
+        title: 'Optimalisering feilet',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Kunne ikke optimalisere uttale. Bruker original tekst.'
+      })
+
+      // Fallback: use original lyrics
+      setOriginalLyrics(lyricsToOptimize)
+      setOptimizedLyrics(lyricsToOptimize)
+      setLyrics(lyricsToOptimize)
+    } finally {
+      setIsOptimizing(false)
+    }
   }
 
   const handleGenerateLyrics = async () => {
@@ -70,12 +131,19 @@ export default function Home() {
         throw new Error(data.error?.message || 'Kunne ikke generere tekst')
       }
 
-      setLyrics(data.data.lyrics)
+      const generatedLyrics = data.data.lyrics
+      setLyrics(generatedLyrics)
+      setOriginalLyrics(generatedLyrics)
 
       toast({
         title: 'Tekst generert! ✨',
         description: 'AI har laget norsk sangtekst basert på konseptet ditt'
       })
+
+      // Automatically optimize pronunciation if enabled
+      if (pronunciationEnabled) {
+        await handleOptimizePronunciation(generatedLyrics)
+      }
     } catch (error) {
       console.error('Lyric generation error:', error)
 
@@ -92,8 +160,41 @@ export default function Home() {
     }
   }
 
+  const handlePronunciationToggle = (enabled: boolean) => {
+    setPronunciationEnabled(enabled)
+
+    // If we have both versions, switch between them
+    if (originalLyrics && optimizedLyrics) {
+      setLyrics(enabled ? optimizedLyrics : originalLyrics)
+
+      toast({
+        title: enabled ? 'Norsk uttale aktivert' : 'Norsk uttale deaktivert',
+        description: enabled
+          ? 'Viser optimalisert tekst for autentisk uttale'
+          : 'Viser original tekst'
+      })
+    }
+  }
+
+  const handleLyricsChange = (newLyrics: string) => {
+    setLyrics(newLyrics)
+    // Reset optimized versions when user manually edits
+    setOriginalLyrics('')
+    setOptimizedLyrics('')
+  }
+
+  const handleReoptimize = async () => {
+    if (lyrics && lyrics.trim().length > 0) {
+      await handleOptimizePronunciation(lyrics)
+    }
+  }
+
   const isGenerateDisabled =
-    !selectedGenre || concept.length < 10 || concept.length > 500 || isGenerating
+    !selectedGenre ||
+    concept.length < 10 ||
+    concept.length > 500 ||
+    isGenerating ||
+    isOptimizing
 
   return (
     <main className="flex min-h-screen flex-col items-center p-8 md:p-24">
@@ -118,7 +219,16 @@ export default function Home() {
           <ConceptInput
             value={concept}
             onChange={setConcept}
-            disabled={isGenerating}
+            disabled={isGenerating || isOptimizing}
+          />
+        </div>
+
+        {/* Pronunciation Toggle */}
+        <div className="mb-8">
+          <PronunciationToggle
+            enabled={pronunciationEnabled}
+            onToggle={handlePronunciationToggle}
+            disabled={isGenerating || isOptimizing}
           />
         </div>
 
@@ -135,6 +245,11 @@ export default function Home() {
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Genererer tekst...
               </>
+            ) : isOptimizing ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Optimaliserer uttale...
+              </>
             ) : (
               'Generer tekst med AI'
             )}
@@ -142,18 +257,35 @@ export default function Home() {
         </div>
 
         {/* Lyrics Editor Section */}
-        {(lyrics || isGenerating) && (
+        {(lyrics || isGenerating || isOptimizing) && (
           <div className="mb-8">
             <LyricsEditor
               value={lyrics}
-              onChange={setLyrics}
-              disabled={isGenerating}
+              onChange={handleLyricsChange}
+              disabled={isGenerating || isOptimizing}
               placeholder={
                 isGenerating
                   ? 'Genererer norsk sangtekst...'
+                  : isOptimizing
+                  ? 'Optimaliserer uttale...'
                   : 'Genererte tekster vil vises her...'
               }
             />
+
+            {/* Re-optimize button if lyrics were manually edited */}
+            {lyrics &&
+              !isGenerating &&
+              !isOptimizing &&
+              !originalLyrics &&
+              pronunciationEnabled && (
+                <Button
+                  onClick={handleReoptimize}
+                  variant="outline"
+                  className="w-full mt-4"
+                >
+                  Optimaliser uttale
+                </Button>
+              )}
           </div>
         )}
       </div>

@@ -1,0 +1,277 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3</storyId>
+    <title>Build Norwegian Pronunciation Optimizer with GPT-4</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-23</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-3-build-norwegian-pronunciation-optimizer-with-gpt4.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>automatic Norwegian pronunciation optimization applied to my lyrics</iWant>
+    <soThat>Suno generates authentic Norwegian vocals instead of "American-sounding" results</soThat>
+    <tasks>
+      - Task 1: Create phonetic optimizer core logic (AC: GPT-4 phonetic analysis)
+      - Task 2: Create pronunciation toggle component (AC: ON/OFF control)
+      - Task 3: Implement optimization API route (AC: &lt;5 second optimization)
+      - Task 4: Integrate with lyrics generation flow (AC: Preserves original)
+      - Task 5: Implement phonetic cache for common words (AC: Performance)
+      - Task 6: Testing and quality validation (AC: All)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    - System analyzes lyrics for pronunciation issues (silent letters, vowel sounds, stress patterns)
+    - GPT-4 suggests phonetic spellings for Norwegian-specific sounds
+    - Original lyrics are preserved, optimized version created
+    - Phonetic rules applied: Rolled R's, Norwegian vowel patterns, consonant clusters
+    - Optimization completes in &lt;5 seconds
+    - User can preview before/after comparison
+    - User can toggle OFF to use original lyrics
+    - "Uttalelse Bokmål" toggle is ON by default
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>ADR-006: Norwegian Pronunciation Optimization via GPT-4</section>
+        <snippet>Use GPT-4 to analyze Norwegian lyrics and suggest phonetic spellings before sending to Suno. GPT-4 understands Norwegian language nuances, can apply phonetic rules validated by founder (80k listener expertise). Visual diff preview shows before/after changes.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>FR Category to Architecture Mapping</section>
+        <snippet>Norwegian Pronunciation Optimization (FR9-FR13): /src/lib/phonetic/, /src/components/phonetic-diff-viewer.tsx - Core Logic + Frontend</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Implementation Patterns - Language & Localization</section>
+        <snippet>User-Facing Content (Norwegian): All UI text, buttons, labels, headers, messages, tooltips. Code & Technical (English): Variable names, function names, file names, comments.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Project Structure</section>
+        <snippet>src/lib/phonetic/ - Norwegian pronunciation optimization: optimizer.ts (Core phonetic rules), rules.ts (Norwegian pronunciation rules), diff.ts (Generate before/after diff)</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/epics/epic-3-norwegian-song-creation-core.md</path>
+        <title>Epic 3: Norwegian Song Creation (CORE)</title>
+        <section>Story 3.3: Build Norwegian Pronunciation Optimizer with GPT-4</section>
+        <snippet>THE CORE VALUE PROPOSITION - Create /src/lib/phonetic/optimizer.ts for core pronunciation logic. Use OpenAI GPT-4 for intelligent phonetic suggestions. Store both original_lyrics and optimized_lyrics in database. Cache phonetic rules for common Norwegian words to reduce API calls.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>6.1 Custom Components - Norwegian Pronunciation Toggle</section>
+        <snippet>Toggle switch for "Uttalelse Bokmål" phonetic optimization on/off. Label with info icon. On (default): Toggle to the right, green (#06D6A0). Off: Toggle to the left, gray. Helper text: "Optimizes Norwegian pronunciation automatically"</snippet>
+      </artifact>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/app/api/lyrics/generate/route.ts</path>
+        <kind>API Route</kind>
+        <symbol>POST handler</symbol>
+        <lines>1-120</lines>
+        <reason>Existing OpenAI GPT-4 integration pattern for lyric generation - use same initialization and error handling pattern for phonetic optimization API</reason>
+      </artifact>
+      <artifact>
+        <path>src/types/song.ts</path>
+        <kind>Type Definitions</kind>
+        <symbol>Song interface</symbol>
+        <lines>1-30</lines>
+        <reason>Need to extend with optimized_lyrics field and phonetic_enabled boolean for pronunciation toggle state</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/lyrics-editor.tsx</path>
+        <kind>Component</kind>
+        <symbol>LyricsEditor</symbol>
+        <lines>1-100</lines>
+        <reason>Will display optimized version based on pronunciation toggle state - integrate toggle component with this editor</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/switch.tsx</path>
+        <kind>UI Component</kind>
+        <symbol>Switch</symbol>
+        <lines>1-50</lines>
+        <reason>shadcn/ui Switch component - use for "Uttalelse Bokmål" pronunciation toggle</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/constants.ts</path>
+        <kind>Constants</kind>
+        <symbol>CREDIT_COSTS</symbol>
+        <lines>1-20</lines>
+        <reason>May need to add cost constants for phonetic optimization if charged separately (currently included in generation)</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/page.tsx</path>
+        <kind>Page Component</kind>
+        <symbol>HomePage</symbol>
+        <lines>1-200</lines>
+        <reason>Main song creation flow - integrate pronunciation toggle and automatic optimization after lyric generation</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>openai</package>
+        <version>^6.9.1</version>
+        <usage>GPT-4 API client for phonetic optimization - already installed for lyric generation</usage>
+      </node>
+      <node>
+        <package>zod</package>
+        <version>^4.1.12</version>
+        <usage>Schema validation for API responses and phonetic change JSON format</usage>
+      </node>
+      <node>
+        <package>@radix-ui/react-switch</package>
+        <version>^1.2.6</version>
+        <usage>Toggle component primitives - already installed via shadcn/ui</usage>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - MUST preserve original lyrics - never overwrite without user consent
+    - MUST complete optimization in &lt;5 seconds for good UX
+    - MUST use temperature 0.3 for GPT-4 (lower than 0.7 for consistency, not creativity)
+    - MUST use GPT-4 JSON mode for structured response format
+    - MUST keep proper nouns and place names unchanged (e.g., "Lars", "Oslo")
+    - MUST implement in-memory cache to reduce API costs by ~40%
+    - MUST follow Norwegian UI text pattern (buttons/labels in Norwegian, code in English)
+    - MUST store both original_lyrics and optimized_lyrics in song table
+    - MUST respect component state - toggle state persists through song creation flow
+    - MUST NOT alter lyric meaning with phonetic changes
+    - MUST preserve line breaks and structure in optimized version
+    - MUST handle Norwegian special characters (æ, ø, å) correctly
+    - Environment variable OPENAI_API_KEY already configured from Story 3.2
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/lyrics/optimize</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: { lyrics: string }
+Response: {
+  originalLyrics: string,
+  optimizedLyrics: string,
+  changes: Array&lt;{original: string, optimized: string, reason: string, lineNumber: number}&gt;
+}
+      </signature>
+      <path>src/app/api/lyrics/optimize/route.ts</path>
+    </interface>
+    <interface>
+      <name>optimizeLyrics</name>
+      <kind>Core Function</kind>
+      <signature>
+async function optimizeLyrics(lyrics: string): Promise&lt;{
+  originalLyrics: string
+  optimizedLyrics: string
+  changes: PhoneticChange[]
+}&gt;
+      </signature>
+      <path>src/lib/phonetic/optimizer.ts</path>
+    </interface>
+    <interface>
+      <name>PhoneticChange</name>
+      <kind>TypeScript Interface</kind>
+      <signature>
+interface PhoneticChange {
+  original: string
+  optimized: string
+  reason: string
+  lineNumber: number
+}
+      </signature>
+      <path>src/lib/phonetic/optimizer.ts</path>
+    </interface>
+    <interface>
+      <name>PronunciationToggle Component</name>
+      <kind>React Component</kind>
+      <signature>
+interface PronunciationToggleProps {
+  enabled: boolean
+  onToggle: (enabled: boolean) =&gt; void
+  disabled?: boolean
+}
+      </signature>
+      <path>src/components/pronunciation-toggle.tsx</path>
+    </interface>
+    <interface>
+      <name>Song Type Extension</name>
+      <kind>TypeScript Type</kind>
+      <signature>
+type Song = {
+  // existing fields...
+  original_lyrics?: string
+  optimized_lyrics?: string
+  phonetic_enabled: boolean
+}
+      </signature>
+      <path>src/types/song.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+Testing approach follows existing patterns from Story 3.2 (AI lyric generation). Focus on API integration correctness, cache hit/miss scenarios, and edge cases. Use Jest for unit tests, test API routes with mock OpenAI responses.
+    </standards>
+    <locations>
+      - src/lib/phonetic/__tests__/optimizer.test.ts
+      - src/lib/phonetic/__tests__/rules.test.ts
+      - src/app/api/lyrics/optimize/__tests__/route.test.ts
+      - src/components/__tests__/pronunciation-toggle.test.tsx
+    </locations>
+    <ideas>
+      <test ac="System analyzes lyrics for pronunciation issues">
+        - Unit test: Norwegian lyrics with common pronunciation issues (silent letters, vowel sounds)
+        - Verify GPT-4 prompt includes correct phonetic analysis instructions
+        - Test with various Norwegian text samples (different dialects, styles)
+      </test>
+      <test ac="GPT-4 suggests phonetic spellings">
+        - Integration test: Call real OpenAI API with sample Norwegian lyrics
+        - Verify response format matches PhoneticChange interface
+        - Test JSON mode is enabled and returns valid JSON
+      </test>
+      <test ac="Optimization completes in &lt;5 seconds">
+        - Performance test: Measure optimization time for typical lyrics (4-8 lines)
+        - Test cache improves performance (second run faster than first)
+        - Test timeout handling if GPT-4 takes longer than 5 seconds
+      </test>
+      <test ac="Original lyrics preserved">
+        - Unit test: Verify original lyrics unchanged after optimization
+        - Test both original and optimized versions stored separately
+        - Verify toggle can switch between versions without data loss
+      </test>
+      <test ac="Phonetic rules applied correctly">
+        - Unit test: Verify rolled R's, Norwegian vowel patterns, consonant clusters
+        - Test cache contains correct phonetic mappings for common words
+        - Verify proper nouns (Lars, Oslo) are NOT changed
+      </test>
+      <test ac="Toggle ON/OFF functionality">
+        - Component test: PronunciationToggle renders correctly
+        - Test default state is ON
+        - Test toggle state persists through re-renders
+        - Test disabled state during generation
+      </test>
+      <test ac="Cache reduces API calls">
+        - Unit test: Cache hit for common Norwegian words
+        - Test cache miss for uncommon words
+        - Verify ~40% API call reduction with seeded cache
+      </test>
+      <test ac="Edge cases handled">
+        - Test empty lyrics input
+        - Test mixed language (Norwegian + English words)
+        - Test special characters (æ, ø, å) preserved
+        - Test numbers and punctuation handling
+        - Test very long lyrics (&gt;500 characters)
+      </test>
+    </ideas>
+  </tests>
+</story-context>
