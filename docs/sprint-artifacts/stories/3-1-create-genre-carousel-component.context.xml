@@ -1,0 +1,125 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>1</storyId>
+    <title>Create Genre Selection Component</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-23</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-1-create-genre-carousel-component.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a user</asA>
+    <iWant>to see and select genre options from a clear grid of buttons</iWant>
+    <soThat>I can quickly choose the music style for my Norwegian song without extra navigation</soThat>
+    <tasks>
+      - Task 1: Set up genre database seeding (8+ genres with Norwegian names, emoji, Suno prompt templates)
+      - Task 2: Create genre selection component with responsive grid layout (2-3 columns mobile, 4-5 desktop)
+      - Task 3: Style genre buttons with selection states (3px red border #E94560, solid background for selected)
+      - Task 4: Implement genre selection state management (useState, emit to parent, single selection)
+      - Task 5: Implement keyboard navigation (tab, enter/space, ARIA radiogroup)
+      - Task 6: Integrate with database and test (fetch genres, loading/error states, responsive behavior)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    - Genre selection section displays 8+ genre buttons in responsive grid/wrap layout
+    - Each button shows genre emoji/icon and name (e.g., "Country Rock", "Norwegian Pop")
+    - All genres visible at once (no scrolling or swiping required)
+    - Selected genre has 3px primary red border (#E94560) and solid background
+    - Unselected genres have lighter background and border
+    - Clicking/tapping a button selects that genre
+    - Keyboard tab and enter/space keys work for selection (accessibility)
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics/epic-3-norwegian-song-creation-core.md" title="Epic 3: Norwegian Song Creation (CORE)" section="Story 3.1">
+        Defines genre carousel (updated to grid button layout) as first user interaction point for song creation. Originally specified horizontal swipe carousel, updated to grid button layout per user feedback for better UX. Genre selection sets the tone for entire song creation process and implements FR5 (genre selection) and FR51 (Norwegian genre templates).
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Component Mapping and Database Schema">
+        Specifies component location (/src/components/genre-selection.tsx), database genre table schema (name, display_name, emoji, suno_prompt_template, sort_order, is_active), shadcn/ui integration, and WCAG 2.1 AA accessibility requirements. Defines Norwegian UI language requirement (all user-facing text in Norwegian, code in English).
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-1.md" title="Tech Spec - Epic 1: Foundation" section="Project Structure">
+        Establishes Next.js 14 App Router structure, TypeScript configuration, Tailwind CSS setup, and shadcn/ui component integration patterns used throughout the project.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-2.md" title="Tech Spec - Epic 2: Authentication & Credits" section="Database Patterns">
+        Defines Supabase client usage patterns, database query patterns with RLS, Norwegian error message conventions, and structured logging approach.
+      </doc>
+    </docs>
+
+    <code>
+      <artifact path="supabase/migrations/20251120_initial_schema.sql" kind="database-schema" symbol="genre table" lines="87-100" reason="Genre table already created with columns: id, name, display_name, description, emoji, suno_prompt_template, sort_order, is_active. Currently has 4 seed genres (country-rock, norwegian-pop, folk-ballad, party-anthem). Need to add 4-6 more genres to meet 8+ requirement."/>
+
+      <artifact path="src/lib/supabase/client.ts" kind="library" symbol="createClient" lines="25-30" reason="Supabase browser client for fetching genres from database in component. Uses NEXT_PUBLIC_SUPABASE_ANON_KEY with RLS enforcement."/>
+
+      <artifact path="src/components/ui/button.tsx" kind="component" symbol="Button" lines="1-50" reason="shadcn/ui Button component for genre selection buttons. Supports variants (default, outline) and customizable className."/>
+
+      <artifact path="src/lib/utils.ts" kind="utility" symbol="cn" lines="1-10" reason="Tailwind class merging utility (cn) for combining base styles with conditional selected/unselected states."/>
+
+      <artifact path="src/lib/constants.ts" kind="constants" symbol="CREDIT_COSTS" lines="40-45" reason="Contains credit cost constants. Genre selection doesn't consume credits but component may need to reference cost structure for context."/>
+    </code>
+
+    <dependencies>
+      <node>
+        react: ^18.2.0
+        react-dom: ^18.2.0
+        next: ^14.2.3
+        @supabase/supabase-js: ^2.84.0
+        @supabase/ssr: ^0.7.0
+        @radix-ui/react-slot: ^1.2.4
+        class-variance-authority: ^0.7.1
+        clsx: ^2.1.1
+        tailwind-merge: ^3.4.0
+        lucide-react: ^0.554.0
+        zod: ^4.1.12
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - Component must be client component ('use client' directive) due to interactivity (useState, onClick)
+    - All user-facing text must be in Norwegian (labels, error messages, loading states)
+    - Code, comments, and variable names must be in English
+    - Component file name: genre-selection.tsx (not genre-carousel.tsx - design updated)
+    - Use Supabase client from @/lib/supabase/client for database queries
+    - Query genre table with: .select('id, name, display_name, emoji, sort_order').eq('is_active', true).order('sort_order')
+    - Use shadcn/ui Button component as base with custom className for styling
+    - Selection state must use 3px border with exact color #E94560 (primary red from Playful Nordic theme)
+    - Minimum touch target size: 44x44px (accessibility requirement)
+    - Implement ARIA radiogroup pattern (role="radiogroup", role="radio", aria-checked)
+    - Must handle loading state with Norwegian text "Laster sjangre..."
+    - Must handle error state with Norwegian error message
+    - Component should accept onGenreSelect callback prop to emit selected genre ID
+    - Component should accept defaultSelectedId prop for initial selection
+  </constraints>
+
+  <interfaces>
+    <interface name="GenreSelectionProps" kind="component-props" signature="interface GenreSelectionProps { onGenreSelect?: (genreId: string) => void; defaultSelectedId?: string }" path="src/components/genre-selection.tsx"/>
+
+    <interface name="Genre" kind="database-type" signature="interface Genre { id: string; name: string; display_name: string; emoji: string; sort_order: number }" path="src/components/genre-selection.tsx"/>
+
+    <interface name="Supabase Genre Query" kind="database-query" signature=".from('genre').select('id, name, display_name, emoji, sort_order').eq('is_active', true).order('sort_order', { ascending: true })" path="Database genre table"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Project uses Next.js with TypeScript and ESLint. No explicit testing framework configured yet in package.json. Component should be manually tested for: responsive grid layout (mobile 2-3 columns, desktop 4-5 columns), selection state visual feedback (red border, background color), keyboard navigation (tab, enter, space), database integration (loading, error, success states), accessibility (ARIA roles, screen reader compatibility).
+    </standards>
+
+    <locations>
+      No existing test directories found. Manual testing via browser dev tools and accessibility inspector recommended until testing framework is established.
+    </locations>
+
+    <ideas>
+      - AC1: Test genre grid renders all genres without scrolling - verify 8+ genres display in wrapped grid, no vertical scroll required
+      - AC2: Test visual selection state - verify selected genre has 3px #E94560 border and solid background, unselected has lighter background
+      - AC3: Test keyboard navigation - verify tab moves focus between buttons, enter/space selects focused genre
+      - AC4: Test single selection enforcement - verify selecting new genre deselects previous, only one genre selected at a time
+      - AC5: Test database integration - verify genres load from Supabase, loading state shows "Laster sjangre...", error state shows Norwegian error message
+      - AC6: Test responsive layout - verify 2-3 columns on mobile (< 768px), 4-5 columns on desktop (>= 768px)
+      - AC7: Test accessibility - verify ARIA radiogroup/radio roles, aria-checked attribute updates, screen reader announces selection changes
+    </ideas>
+  </tests>
+</story-context>
