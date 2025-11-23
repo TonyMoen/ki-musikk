@@ -1,0 +1,398 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.5</storyId>
+    <title>Implement Credit Balance Warnings</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-23</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/2-5-implement-credit-balance-warnings.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to receive warnings when my credit balance is low</iWant>
+    <soThat>I can purchase more credits before running out</soThat>
+    <tasks>- [ ] Task 1: Create low credit warning banner component (AC: Warning banner)
+  - [ ] Create /src/components/low-credit-warning.tsx
+  - [ ] Banner displays when credit balance < 20
+  - [ ] Yellow background (#FFC93C from Playful Nordic theme), dismiss button
+  - [ ] Norwegian warning text: "💡 Lite kreditter igjen! Du har {balance} kreditter. Kjøp mer?"
+  - [ ] Include "Kjøp kreditter" button that opens purchase modal
+  - [ ] Dismiss functionality stores state in localStorage
+  - [ ] Banner re-appears on new session if balance still < 20
+
+- [ ] Task 2: Implement credit balance state management (AC: Balance check)
+  - [ ] Update /src/stores/credits-store.ts (or create if doesn't exist using Zustand)
+  - [ ] Add balance state with getter/setter
+  - [ ] Add computed property: isLowBalance (balance < 20)
+  - [ ] Add computed property: hasInsufficientCredits (balance < minimum required for action)
+  - [ ] Subscribe to balance updates from credit transactions
+  - [ ] Initialize balance from API on app load
+
+- [ ] Task 3: Integrate warning banner into root layout (AC: Top of screen)
+  - [ ] Update /src/app/layout.tsx to include LowCreditWarning component
+  - [ ] Position banner at top below header (if header exists) or at top of page
+  - [ ] Only render if user is authenticated and balance < 20
+  - [ ] Check localStorage for dismissal state (key: `low-credit-warning-dismissed-{userId}`)
+  - [ ] Reset dismissal state when balance goes above 20
+
+- [ ] Task 4: Implement zero balance handling (AC: Error toast, disabled buttons)
+  - [ ] Create utility function: checkSufficientCredits(requiredAmount) in /src/lib/credits/validator.ts
+  - [ ] Returns { sufficient: boolean, balance: number, required: number }
+  - [ ] Update song generation button to check balance before enabling
+  - [ ] Disable button if balance < CREDIT_COSTS.SONG_GENERATION (10 credits)
+  - [ ] Add tooltip to disabled button: "Trenger kreditter for å generere"
+  - [ ] Display error toast if user attempts action with insufficient credits
+  - [ ] Toast message (Norwegian): "❌ Ikke nok kreditter. Kjøp en pakke for å fortsette."
+
+- [ ] Task 5: Add client-side credit validation (AC: Prevent actions)
+  - [ ] Update all credit-consuming actions (song generation, canvas, etc.)
+  - [ ] Check credit balance before allowing action
+  - [ ] Display error toast if insufficient credits
+  - [ ] Redirect to credit purchase modal with pre-selected package
+  - [ ] Validation happens both client-side (UX) and server-side (security)
+
+- [ ] Task 6: Update Settings page to show warning state (AC: Purchase button prominent)
+  - [ ] Add warning card if balance < 20 on /src/app/settings/page.tsx
+  - [ ] Norwegian warning text: "⚠️ Lav kredittsaldo! Du har {balance} kreditter igjen."
+  - [ ] "Kjøp kreditter" button displayed prominently (primary red)
+  - [ ] Show recommended package based on low balance (e.g., Starter or Pro)
+  - [ ] Highlight credit balance in red if balance < 20
+
+- [ ] Task 7: Implement localStorage dismissal logic (AC: Dismissible, re-appears)
+  - [ ] Store dismissal state in localStorage: `low-credit-warning-dismissed-{userId}`
+  - [ ] Store timestamp of dismissal
+  - [ ] Clear dismissal state when balance goes above 20
+  - [ ] Clear dismissal state on new session (check timestamp, reset if > 24 hours)
+  - [ ] Banner re-appears immediately if balance drops below 20 again
+
+- [ ] Task 8: Add credit balance polling/real-time updates (AC: Real-time balance)
+  - [ ] Implement polling mechanism to fetch balance every 30 seconds (optional, can use Supabase real-time)
+  - [ ] Update Zustand store when balance changes
+  - [ ] Trigger warning banner if balance drops below 20
+  - [ ] OR: Use Supabase real-time subscription to credit_transaction table for instant updates
+  - [ ] Update balance display in UI immediately after transaction
+
+- [ ] Task 9: Test warning banner and zero balance scenarios (AC: All)
+  - [ ] Test warning banner appears when balance < 20
+  - [ ] Test banner dismissal and localStorage persistence
+  - [ ] Test banner re-appears on new session
+  - [ ] Test banner hides when balance goes above 20
+  - [ ] Test generation button disabled when balance = 0
+  - [ ] Test error toast displays on action attempt with 0 balance
+  - [ ] Test tooltip displays on disabled button
+  - [ ] Test recommended package suggestion based on balance
+
+- [ ] Task 10: Build and verify production readiness (AC: All)
+  - [ ] Run `npm run build` to verify TypeScript compilation
+  - [ ] Run `npm run lint` to check code quality
+  - [ ] Verify warning banner displays correctly on all pages
+  - [ ] Test responsive design (mobile, tablet, desktop)
+  - [ ] Verify localStorage cleanup on logout
+  - [ ] Test edge case: exactly 20 credits (should NOT show warning)
+  - [ ] Test edge case: exactly 0 credits (should show error state)</tasks>
+  </story>
+
+  <acceptanceCriteria>**Given** I am logged in with active credit balance
+**When** My balance drops below 20 credits (2 songs)
+**Then** I see a warning banner at top of screen: "💡 Lite kreditter igjen! Du har 15 kreditter. Kjøp mer?"
+**And** Banner is yellow (#FFC93C background), dismissible but re-appears on next session
+**When** My balance reaches 0 credits
+**Then** I see an error toast when attempting any action: "❌ Ikke nok kreditter. Kjøp en pakke for å fortsette."
+**And** All generation buttons are disabled with tooltip "Trenger kreditter for å generere"
+**And** "Kjøp kreditter" button is prominently displayed</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-2.md</path>
+        <title>Epic Technical Specification: User Authentication & Credit System</title>
+        <section>Story 2.5: Credit Balance Warnings</section>
+        <snippet>Implements FR30 (Low balance warnings) and FR33 (Prevent actions if insufficient). Warning threshold: 20 credits (~2 songs). Dismissal state stored in localStorage with user ID scope. Yellow warning (#FFC93C from Playful Nordic theme). Client-side validation for UX, server-side validation for security.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-2-user-authentication-credit-system.md</path>
+        <title>Epic 2: User Authentication & Credit System</title>
+        <section>Story 2.5</section>
+        <snippet>Provides warnings when balance drops below 20 credits. Users can purchase more credits before running out. Dismissible warning banner re-appears on next session.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken - Architecture Document</title>
+        <section>State Management (ADR-003: Zustand)</section>
+        <snippet>Use Zustand for client-side state management. Credit balance state stored globally. Zustand provides simple API for reactive state updates across components.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR30: Low Balance Warnings</section>
+        <snippet>System displays prominent warning when user credit balance falls below threshold (20 credits = ~2 songs). Warning includes "Purchase Credits" CTA button.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/stores/credits-store.ts</path>
+        <kind>store</kind>
+        <symbol>useCreditsStore</symbol>
+        <lines>1-25</lines>
+        <reason>Existing Zustand store for credit balance. Needs extension to add isLowBalance() and hasInsufficientCredits() helper functions</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>CREDIT_COSTS</symbol>
+        <lines>40-45</lines>
+        <reason>Credit cost constants (SONG_GENERATION: 10 credits). Used for validation in checkSufficientCredits()</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/credit-purchase-modal.tsx</path>
+        <kind>component</kind>
+        <symbol>CreditPurchaseModal</symbol>
+        <lines>1-127</lines>
+        <reason>Existing purchase modal component. Will be triggered when user clicks "Kjøp kreditter" button in warning banner</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/layout.tsx</path>
+        <kind>layout</kind>
+        <symbol>RootLayout</symbol>
+        <lines>18-31</lines>
+        <reason>Root layout where LowCreditWarning banner will be integrated. Currently has BottomNavigation, needs warning banner at top</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/settings/page.tsx</path>
+        <kind>page</kind>
+        <symbol>SettingsContent</symbol>
+        <lines>1-150</lines>
+        <reason>Settings page showing credit balance and purchase modal. Needs warning card when balance < 20</reason>
+      </artifact>
+      <artifact>
+        <path>src/hooks/use-toast.ts</path>
+        <kind>hook</kind>
+        <symbol>useToast</symbol>
+        <lines>all</lines>
+        <reason>Toast hook for displaying error messages when user has insufficient credits</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/toast.tsx</path>
+        <kind>component</kind>
+        <symbol>Toast</symbol>
+        <lines>all</lines>
+        <reason>shadcn/ui Toast component for error notifications. Already installed and working</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/api/credits/balance/route.ts</path>
+        <kind>api</kind>
+        <symbol>GET</symbol>
+        <lines>all</lines>
+        <reason>API endpoint that returns current credit balance. Used by credits store to initialize and refresh balance</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>zustand</package>
+        <version>^5.0.8</version>
+        <status>installed</status>
+        <usage>State management for credit balance</usage>
+      </node>
+      <node>
+        <package>@radix-ui/react-toast</package>
+        <version>^1.2.15</version>
+        <status>installed</status>
+        <usage>Toast notifications for error messages</usage>
+      </node>
+      <node>
+        <package>@radix-ui/react-dialog</package>
+        <version>^1.1.15</version>
+        <status>installed</status>
+        <usage>Credit purchase modal (already in use)</usage>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <version>^0.554.0</version>
+        <status>installed</status>
+        <usage>Icons for warning banner (AlertTriangle, X, etc.)</usage>
+      </node>
+      <shadcn>
+        <component>alert</component>
+        <status>not-installed</status>
+        <usage>Warning banner component - needs installation via npx shadcn@latest add alert</usage>
+      </shadcn>
+      <shadcn>
+        <component>tooltip</component>
+        <status>not-installed</status>
+        <usage>Tooltip for disabled buttons - needs installation via npx shadcn@latest add tooltip</usage>
+      </shadcn>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <type>design</type>
+      <rule>Warning banner uses Playful Nordic theme yellow (#FFC93C) for background</rule>
+    </constraint>
+    <constraint>
+      <type>threshold</type>
+      <rule>Low balance warning threshold is 20 credits (equivalent to 2 song generations at 10 credits each)</rule>
+    </constraint>
+    <constraint>
+      <type>language</type>
+      <rule>All user-facing text in Norwegian (warnings, tooltips, error messages). Code and technical content in English.</rule>
+    </constraint>
+    <constraint>
+      <type>state-management</type>
+      <rule>Use Zustand for global credit balance state (ADR-003). Warning dismissal state in localStorage with user ID scope.</rule>
+    </constraint>
+    <constraint>
+      <type>validation</type>
+      <rule>Client-side validation for UX (disable buttons, show warnings). Server-side validation for security (API routes check credits).</rule>
+    </constraint>
+    <constraint>
+      <type>persistence</type>
+      <rule>Dismissal state stored in localStorage: key pattern `low-credit-warning-dismissed-{userId}`. Include timestamp. Reset after 24 hours or when balance >= 20.</rule>
+    </constraint>
+    <constraint>
+      <type>components</type>
+      <rule>Must install shadcn/ui Alert and Tooltip components before implementation: npx shadcn@latest add alert tooltip</rule>
+    </constraint>
+    <constraint>
+      <type>accessibility</type>
+      <rule>Disabled buttons must have accessible tooltips (keyboard-accessible, screen-reader friendly)</rule>
+    </constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>useCreditsStore (extended)</name>
+      <kind>Zustand store</kind>
+      <signature>
+interface CreditsStore {
+  balance: number
+  setBalance: (balance: number) => void
+  refreshBalance: () => Promise&lt;void&gt;
+  isLowBalance: () => boolean  // NEW: returns balance < 20
+  hasInsufficientCredits: (required: number) => boolean  // NEW: returns balance < required
+}
+      </signature>
+      <path>src/stores/credits-store.ts</path>
+    </interface>
+    <interface>
+      <name>checkSufficientCredits</name>
+      <kind>Validation utility function</kind>
+      <signature>
+interface CreditCheckResult {
+  sufficient: boolean
+  balance: number
+  required: number
+  shortfall?: number
+}
+
+function checkSufficientCredits(
+  balance: number,
+  required: number
+): CreditCheckResult
+      </signature>
+      <path>src/lib/credits/validator.ts (NEW FILE)</path>
+    </interface>
+    <interface>
+      <name>LowCreditWarning component</name>
+      <kind>React component</kind>
+      <signature>
+interface LowCreditWarningProps {
+  balance: number
+  userId: string
+  onPurchaseClick: () => void
+}
+
+function LowCreditWarning(props: LowCreditWarningProps): JSX.Element | null
+      </signature>
+      <path>src/components/low-credit-warning.tsx (NEW FILE)</path>
+    </interface>
+    <interface>
+      <name>CreditPurchaseModal (existing)</name>
+      <kind>React component</kind>
+      <signature>
+interface CreditPurchaseModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+      </signature>
+      <path>src/components/credit-purchase-modal.tsx</path>
+    </interface>
+    <interface>
+      <name>GET /api/credits/balance (existing)</name>
+      <kind>API endpoint</kind>
+      <signature>
+Response: {
+  data: {
+    profile: UserProfile,
+    balance: number,
+    transactions: CreditTransaction[],
+    pagination: Pagination
+  }
+}
+      </signature>
+      <path>src/app/api/credits/balance/route.ts</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+Testing follows the project's standard patterns:
+- Unit tests: Jest + React Testing Library for component logic
+- Integration tests: Test API interactions with mocked fetch
+- E2E tests: Playwright for user flows (optional for this story)
+- Manual testing: Browser testing for localStorage, dismissal behavior, and responsive design
+- Test coverage target: >80% for new components and utilities
+- Norwegian UI text validated manually (automated testing focuses on behavior)
+    </standards>
+    <locations>
+      <location>__tests__/components/low-credit-warning.test.tsx</location>
+      <location>__tests__/lib/credits/validator.test.ts</location>
+      <location>__tests__/stores/credits-store.test.ts</location>
+    </locations>
+    <ideas>
+      <test id="AC1" criteria="Warning banner appears when balance &lt; 20">
+        <idea>Unit test: Render LowCreditWarning with balance=15, verify banner displays with Norwegian text "Lite kreditter igjen! Du har 15 kreditter."</idea>
+        <idea>Unit test: Render LowCreditWarning with balance=20, verify banner does NOT display (threshold is strict &lt; 20)</idea>
+        <idea>Unit test: Render LowCreditWarning with balance=25, verify banner does NOT display</idea>
+      </test>
+      <test id="AC2" criteria="Banner is yellow, dismissible, re-appears on next session">
+        <idea>Unit test: Verify banner has className containing "bg-[#FFC93C]" (yellow background)</idea>
+        <idea>Unit test: Click dismiss button, verify localStorage key `low-credit-warning-dismissed-{userId}` is set with timestamp</idea>
+        <idea>Manual test: Dismiss banner, refresh page, verify banner re-appears (localStorage persists)</idea>
+        <idea>Manual test: Dismiss banner, wait 24+ hours (or mock timestamp), refresh, verify banner re-appears (timestamp check)</idea>
+      </test>
+      <test id="AC3" criteria="Error toast when balance = 0">
+        <idea>Integration test: Mock useCreditsStore with balance=0, attempt credit-consuming action, verify toast displays with Norwegian text "Ikke nok kreditter"</idea>
+        <idea>Unit test: Call checkSufficientCredits(0, 10), verify returns {sufficient: false, shortfall: 10}</idea>
+      </test>
+      <test id="AC4" criteria="Generation buttons disabled with tooltip">
+        <idea>Manual test: Set balance to 0 via Supabase, verify song generation button is disabled</idea>
+        <idea>Manual test: Hover over disabled button, verify tooltip displays "Trenger kreditter for å generere"</idea>
+        <idea>Accessibility test: Navigate to disabled button via keyboard (Tab), verify tooltip appears</idea>
+      </test>
+      <test id="AC5" criteria="Purchase button prominently displayed">
+        <idea>Unit test: Render warning banner, verify "Kjøp kreditter" button exists</idea>
+        <idea>Unit test: Click "Kjøp kreditter" button, verify onPurchaseClick callback is called</idea>
+        <idea>Integration test: Verify clicking button opens CreditPurchaseModal</idea>
+      </test>
+      <test id="EDGE1" criteria="Exactly 20 credits edge case">
+        <idea>Unit test: Set balance=20, verify warning does NOT appear (threshold is &lt; 20, not &lt;= 20)</idea>
+      </test>
+      <test id="EDGE2" criteria="Exactly 0 credits edge case">
+        <idea>Unit test: Set balance=0, verify error state (disabled buttons, error toast on action attempt)</idea>
+      </test>
+      <test id="EDGE3" criteria="localStorage cleanup on balance increase">
+        <idea>Manual test: Dismiss warning with balance=15, purchase credits to balance=100, verify banner does NOT re-appear on refresh (dismissal state cleared)</idea>
+      </test>
+      <test id="ZUSTAND" criteria="Zustand store extensions">
+        <idea>Unit test: Test isLowBalance() returns true when balance &lt; 20, false otherwise</idea>
+        <idea>Unit test: Test hasInsufficientCredits(10) returns true when balance &lt; 10, false otherwise</idea>
+      </test>
+      <test id="BUILD" criteria="Production readiness">
+        <idea>Run npm run build, verify no TypeScript errors</idea>
+        <idea>Run npm run lint, verify no linting errors</idea>
+        <idea>Manual test: Test responsive design on mobile (375px), tablet (768px), desktop (1024px)</idea>
+      </test>
+    </ideas>
+  </tests>
+</story-context>
