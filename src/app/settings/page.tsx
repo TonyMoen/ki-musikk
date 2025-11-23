@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useCreditsStore } from '@/stores/credits-store'
 import { useToast } from '@/hooks/use-toast'
 import { CreditPurchaseModal } from '@/components/credit-purchase-modal'
+import { TransactionHistory } from '@/components/transaction-history'
 import { Coins, LogOut } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -18,12 +19,38 @@ interface UserProfile {
   created_at: string
 }
 
+interface CreditTransaction {
+  id: string
+  user_id: string
+  amount: number
+  balance_after: number
+  transaction_type: 'purchase' | 'deduction' | 'refund'
+  description: string
+  stripe_session_id?: string
+  song_id?: string
+  created_at: string
+}
+
+interface Pagination {
+  currentPage: number
+  totalPages: number
+  totalCount: number
+  pageSize: number
+}
+
 function SettingsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { toast } = useToast()
   const { balance, refreshBalance } = useCreditsStore()
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [transactions, setTransactions] = useState<CreditTransaction[]>([])
+  const [pagination, setPagination] = useState<Pagination>({
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0,
+    pageSize: 10
+  })
   const [isLoading, setIsLoading] = useState(true)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
@@ -31,12 +58,25 @@ function SettingsContent() {
   useEffect(() => {
     async function loadProfile() {
       try {
-        const res = await fetch('/api/credits/balance')
+        const page = searchParams.get('page') || '1'
+        const type = searchParams.get('type') || 'all'
+        const params = new URLSearchParams()
+        if (page !== '1') params.set('page', page)
+        if (type !== 'all') params.set('type', type)
+
+        const res = await fetch(`/api/credits/balance${params.toString() ? '?' + params.toString() : ''}`)
         if (!res.ok) {
           throw new Error('Failed to fetch profile')
         }
         const { data } = await res.json()
         setProfile(data.profile)
+        setTransactions(data.transactions || [])
+        setPagination(data.pagination || {
+          currentPage: 1,
+          totalPages: 1,
+          totalCount: 0,
+          pageSize: 10
+        })
         refreshBalance()
       } catch (error) {
         console.error('Error loading profile:', error)
@@ -46,7 +86,7 @@ function SettingsContent() {
     }
 
     loadProfile()
-  }, [refreshBalance])
+  }, [refreshBalance, searchParams])
 
   // Handle payment redirect query params
   useEffect(() => {
@@ -162,6 +202,16 @@ function SettingsContent() {
             >
               Purchase Credits
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Transaction History */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <TransactionHistory
+              transactions={transactions}
+              pagination={pagination}
+            />
           </CardContent>
         </Card>
 

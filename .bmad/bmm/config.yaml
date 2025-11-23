@@ -13,5 +13,6 @@ bmad_folder: .bmad
 user_name: BIP
 communication_language: English
 document_output_language: English
+ui_content_language: Norwegian  # User-facing UI text, content, SEO (code/tech stays in English)
 output_folder: '{project-root}/docs'
 install_user_docs: true

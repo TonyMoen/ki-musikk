@@ -295,6 +295,47 @@ musikkfabrikken/
 
 **These patterns ensure consistent implementation across all AI agents working on Musikkfabrikken.**
 
+### Language & Localization
+
+**CRITICAL: Norwegian UI Content, English Code**
+
+Musikkfabrikken targets Norwegian users, requiring specific language conventions:
+
+- ✅ **User-Facing Content (Norwegian):**
+  - All UI text: buttons, labels, headers, messages, tooltips
+  - Error messages and notifications
+  - Empty states and placeholder text
+  - Date/time formatting (nb-NO locale)
+  - SEO content: meta titles, descriptions
+  - Email templates and user communications
+
+- ✅ **Code & Technical (English):**
+  - Variable names, function names, class names
+  - File names and directory structure
+  - Code comments and documentation
+  - Git commit messages
+  - API endpoint names and database fields
+  - Internal logging and debug messages
+
+**Examples:**
+```typescript
+// ✅ CORRECT: Norwegian UI, English code
+function formatTransactionDate(dateString: string): string {
+  // Code logic in English
+  return diffMinutes <= 1 ? 'Akkurat nå' : `${diffMinutes} minutter siden`
+}
+
+<Button onClick={handlePurchase}>Kjøp kreditter</Button>
+
+// ❌ WRONG: English UI text
+<Button onClick={handlePurchase}>Purchase Credits</Button>
+```
+
+**Configuration:**
+- Set in `.bmad/bmm/config.yaml`: `ui_content_language: Norwegian`
+- All workflows (create-story, dev-story, etc.) must respect this setting
+- Date formatting uses `nb-NO` locale: `toLocaleDateString('nb-NO')`
+
 ### Naming Conventions
 
 **Files & Directories:**

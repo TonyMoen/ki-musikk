@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
 
@@ -30,6 +30,42 @@ export async function GET() {
       )
     }
 
+    // Parse query parameters for pagination and filtering
+    const searchParams = request.nextUrl.searchParams
+    const page = parseInt(searchParams.get('page') || '1', 10)
+    const type = searchParams.get('type') || 'all'
+    const pageSize = 10
+
+    // Calculate offset for pagination
+    const offset = (page - 1) * pageSize
+
+    // Build transaction query with optional filtering
+    let transactionQuery = supabase
+      .from('credit_transaction')
+      .select('*', { count: 'exact' })
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + pageSize - 1)
+
+    // Apply transaction type filter if specified
+    if (type !== 'all' && (type === 'purchase' || type === 'deduction' || type === 'refund')) {
+      transactionQuery = transactionQuery.eq('transaction_type', type)
+    }
+
+    const { data: transactions, count, error: transactionError } = await transactionQuery
+
+    if (transactionError) {
+      console.error('Error fetching transactions:', transactionError)
+      return NextResponse.json(
+        { error: { code: 'DATABASE_ERROR', message: 'Failed to fetch transactions' } },
+        { status: 500 }
+      )
+    }
+
+    // Calculate pagination metadata
+    const totalCount = count || 0
+    const totalPages = Math.ceil(totalCount / pageSize)
+
     return NextResponse.json({
       data: {
         profile: {
@@ -39,7 +75,14 @@ export async function GET() {
           credit_balance: profile.credit_balance,
           created_at: profile.created_at
         },
-        balance: profile.credit_balance
+        balance: profile.credit_balance,
+        transactions: transactions || [],
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalCount,
+          pageSize
+        }
       }
     })
   } catch (error) {
