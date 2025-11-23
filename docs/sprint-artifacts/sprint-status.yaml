@@ -70,7 +70,7 @@ development_status:
   # THE CORE VALUE PROPOSITION - Norwegian pronunciation optimization
   # Largest epic with critical features for MVP success
   epic-3: backlog
-  3-1-create-genre-carousel-component: ready-for-dev
+  3-1-create-genre-carousel-component: review
   3-2-implement-ai-lyric-generation-with-song-concept-input: backlog
   3-3-build-norwegian-pronunciation-optimizer-with-gpt4: backlog
   3-4-create-phonetic-diff-viewer-component: backlog

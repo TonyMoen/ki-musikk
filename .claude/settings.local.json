@@ -49,7 +49,8 @@
       "Bash(\"C:\\Users\\tony-\\AppData\\Local\\Python\\pythoncore-3.11-64\\python.exe\" -c \"from hooks import on_agent_exit; print(on_agent_exit(''dev'', ''Developer'', ''dev-story'', ''ibe160'', ''Story 2.3: Stripe Credit Purchase Implementation'', [''stripe'', ''webhooks'', ''rls-fix''], [''src/lib/stripe.ts'']))\")",
       "Bash(\"C:\\Users\\tony-\\AppData\\Local\\Python\\pythoncore-3.11-64\\python.exe\" -c \"\nimport sys\nfrom hooks import on_agent_exit\n\nsession_id = on_agent_exit(\n    agent_name=''dev'',\n    persona=''Developer'',\n    workflow=''dev-story'',\n    project_name=''ibe160'',\n    conversation=''Story 2.3: Stripe Credit Purchase Flow - Complete implementation with E2E testing. Built credit purchase API, webhook handler, modal UI. Fixed RLS permissions bug. Added database trigger for user profiles. Verified with real Stripe test payments.'',\n    topics=[''stripe-checkout'', ''webhooks'', ''rls-fix'', ''credit-purchase'', ''payment-processing'', ''database-trigger''],\n    artifacts=[''src/lib/stripe.ts'', ''src/app/api/webhooks/stripe/route.ts'', ''src/components/credit-purchase-modal.tsx'', ''supabase/migrations/20251122_add_user_profile_trigger.sql'']\n)\nprint(f''Session saved: {session_id}'')\n\")",
       "Bash(npx shadcn@latest add:*)",
-      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\credits\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\credits\")"
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\credits\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\credits\")",
+      "Bash(node scripts/seed-genres.js:*)"
     ],
     "deny": [],
     "ask": []
