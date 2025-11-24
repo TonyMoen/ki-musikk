@@ -1,0 +1,436 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>8</storyId>
+    <title>Build Song Player Card Component</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-24</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-8-build-song-player-card-component.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to play my generated song directly in the browser with waveform visualization</iWant>
+    <soThat>I can immediately hear the result without downloading</soThat>
+    <tasks>
+- [ ] Task 1: Create song player card component structure (AC: Display song metadata and artwork)
+- [ ] Task 2: Implement audio playback with Howler.js (AC: Audio plays instantly <500ms)
+- [ ] Task 3: Add waveform visualization with wavesurfer.js (AC: Waveform shows amplitude, animates during playback)
+- [ ] Task 4: Implement progress bar with scrubbing (AC: Drag to seek)
+- [ ] Task 5: Add volume control (AC: Volume slider on desktop, hidden on mobile)
+- [ ] Task 6: Implement keyboard controls (AC: Accessibility - Space=play/pause, arrows=scrub)
+- [ ] Task 7: Add ARIA labels and screen reader support (AC: Accessibility compliance)
+- [ ] Task 8: Style component with Playful Nordic theme (AC: Match UX design spec)
+- [ ] Task 9: Integrate with song data and test (AC: All acceptance criteria verified)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+**Given** My song generation is complete
+**When** I see the song player card
+**Then** I see: Song title, Genre badge, Date created, 60x60px artwork (gradient with emoji)
+**And** Large play/pause button (48x48px) is displayed
+**And** Waveform visualization shows audio amplitude (SVG)
+**And** Progress bar allows scrubbing (drag to seek)
+**And** When I tap play, audio plays instantly (<500ms)
+**And** Waveform animates during playback
+**And** Current time / Total duration displayed (e.g., "1:23 / 2:45")
+**And** Volume control slider (mobile: hidden, desktop: visible)
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- Epic 3: Norwegian Song Creation (CORE) -->
+      <doc>
+        <path>docs/epics/epic-3-norwegian-song-creation-core.md</path>
+        <title>Epic 3: Story 3.8 - Build Song Player Card Component</title>
+        <section>Story 3.8</section>
+        <snippet>Users can play generated songs directly in browser with waveform visualization. Song player card displays: 60x60px artwork (gradient with emoji), large play/pause button (48x48px), waveform visualization (SVG), progress bar with scrubbing, volume control (desktop only). Audio plays instantly (&lt;500ms). Keyboard controls: Space=play/pause, arrows=scrub.</snippet>
+      </doc>
+
+      <!-- UX Design Specification -->
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design - Custom Component: Song Player Card</title>
+        <section>6.1 Component Library - Song Player Card</section>
+        <snippet>Card-based design with Playful Nordic theme. Anatomy: 60x60px gradient artwork, song metadata (title/genre/date), 48x48px play/pause button, waveform (SVG, full width, 60px height), progress bar (scrubable), volume slider (desktop only). States: Idle (play button), Playing (pause button, animated waveform), Loading (spinner), Error (red icon). Accessibility: ARIA labels, keyboard controls (Space, arrows), screen reader support.</snippet>
+      </doc>
+
+      <!-- Architecture: Implementation Patterns -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture - Audio Playback Pattern</title>
+        <section>Implementation Patterns - Audio Playback</section>
+        <snippet>Use Howler.js as single source of truth for audio state. Initialize with: src (audioUrl), html5: true (stream), preload: true (&lt;500ms start), onplay/onpause/onend handlers. Sync WaveSurfer with Howler (Howler controls playback, WaveSurfer displays waveform). Waveform colors: waveColor='#98c1d9', progressColor='#E94560'. Cleanup instances on unmount to prevent memory leaks.</snippet>
+      </doc>
+
+      <!-- Architecture: Language & Localization -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture - Language &amp; Localization</title>
+        <section>Implementation Patterns - Language &amp; Localization</section>
+        <snippet>Norwegian UI content, English code. All user-facing text in Norwegian: "Spill av" (Play), "Pause" (Pause), "Volum" (Volume), "Søk i sangen" (Seek). Date formatting uses nb-NO locale. Error messages in Norwegian: "Noe gikk galt med lydavspillingen" (Something went wrong with audio playback).</snippet>
+      </doc>
+
+      <!-- PRD: Playback Requirements -->
+      <doc>
+        <path>docs/prd.md</path>
+        <title>PRD - FR21-FR23: Playback Requirements</title>
+        <section>Track List &amp; Session Management</section>
+        <snippet>FR21: Users can view all generated songs in persistent track list. FR22: Users can play songs directly in browser. FR23: Users can download songs (MP3, WAV). Performance target: Instant playback start (&lt;500ms). Audio source: Signed URLs from Supabase Storage (24-hour expiration).</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <!-- Song Type Definition -->
+      <artifact>
+        <path>src/types/song.ts</path>
+        <kind>type</kind>
+        <symbol>Song</symbol>
+        <lines>32-51</lines>
+        <reason>Song interface defines all fields for song player: id, title, genre, audio_url, duration_seconds, status, created_at. Audio URL contains signed Supabase Storage URL or direct Suno URL.</reason>
+      </artifact>
+
+      <!-- Song API Endpoint -->
+      <artifact>
+        <path>src/app/api/songs/[id]/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/songs/[id]</symbol>
+        <lines>42-314</lines>
+        <reason>API endpoint for fetching song data. Returns audioUrl (signed URL), duration, title, genre, status. Handles signed URL generation for Supabase Storage files. Use this to fetch song data for player.</reason>
+      </artifact>
+
+      <!-- shadcn/ui Card Component -->
+      <artifact>
+        <path>src/components/ui/card.tsx</path>
+        <kind>component</kind>
+        <symbol>Card</symbol>
+        <lines>all</lines>
+        <reason>shadcn/ui Card component for consistent styling. Use Card wrapper for song player card layout.</reason>
+      </artifact>
+
+      <!-- shadcn/ui Button Component -->
+      <artifact>
+        <path>src/components/ui/button.tsx</path>
+        <kind>component</kind>
+        <symbol>Button</symbol>
+        <lines>all</lines>
+        <reason>shadcn/ui Button component for play/pause button. Use size="lg" variant for 48x48px touch target.</reason>
+      </artifact>
+
+      <!-- Supabase Client -->
+      <artifact>
+        <path>src/lib/supabase/client.ts</path>
+        <kind>service</kind>
+        <symbol>createClient</symbol>
+        <lines>all</lines>
+        <reason>Supabase client for fetching song data from browser. Use to call /api/songs/[id] or query song table directly.</reason>
+      </artifact>
+
+      <!-- Existing Genre Selection Component (Reference Pattern) -->
+      <artifact>
+        <path>src/components/genre-selection.tsx</path>
+        <kind>component</kind>
+        <symbol>GenreSelection</symbol>
+        <lines>all</lines>
+        <reason>Reference for genre badge styling and gradient artwork patterns. Song player should use similar genre-specific gradient backgrounds with emojis.</reason>
+      </artifact>
+
+      <!-- Generation Progress Modal (Reference Pattern) -->
+      <artifact>
+        <path>src/components/generation-progress-modal.tsx</path>
+        <kind>component</kind>
+        <symbol>GenerationProgressModal</symbol>
+        <lines>all</lines>
+        <reason>Reference for Norwegian UI patterns, loading states, and error handling. Similar patterns should be used for audio loading states.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <!-- Node.js Packages -->
+      <node>
+        <!-- Audio Playback -->
+        <package name="howler" version="latest" reason="Cross-browser audio playback library. Single source of truth for audio state. Install: npm install howler @types/howler" />
+        <package name="@types/howler" version="latest" reason="TypeScript types for Howler.js" />
+
+        <!-- Waveform Visualization -->
+        <package name="wavesurfer.js" version="latest" reason="SVG waveform visualization synchronized with Howler playback. Install: npm install wavesurfer.js" />
+
+        <!-- Already Installed -->
+        <package name="react" version="^18.2.0" reason="React framework (already installed)" />
+        <package name="next" version="^14.2.3" reason="Next.js framework (already installed)" />
+        <package name="lucide-react" version="^0.554.0" reason="Icons for play/pause/volume controls (already installed)" />
+        <package name="tailwindcss" version="^3.4.1" reason="Styling framework (already installed)" />
+        <package name="@supabase/supabase-js" version="^2.84.0" reason="Supabase client for data fetching (already installed)" />
+        <package name="date-fns" version="^4.1.0" reason="Date formatting for Norwegian locale (already installed)" />
+      </node>
+
+      <!-- UI Framework -->
+      <framework name="shadcn/ui" reason="Design system for Card, Button, Slider components (already configured)" />
+
+      <!-- Audio Codec Support -->
+      <browser-api name="HTML5 Audio API" reason="Native browser audio playback (supported by Howler.js)" />
+      <browser-api name="Web Storage API" reason="localStorage for volume preference persistence" />
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <!-- Language & Localization -->
+    <constraint type="language">
+      All user-facing text must be in Norwegian (Bokmål):
+      - "Spill av" (Play)
+      - "Pause" (Pause)
+      - "Volum" (Volume)
+      - "Søk i sangen" (Seek in song)
+      - "Sangavspiller" (Song player - ARIA label)
+      - "Noe gikk galt med lydavspillingen" (Something went wrong with audio playback)
+      Date formatting: Norwegian locale (nb-NO): "19. nov. 2025"
+      Time formatting: mm:ss (e.g., "1:23 / 2:45")
+    </constraint>
+
+    <!-- Accessibility (WCAG 2.1 AA) -->
+    <constraint type="accessibility">
+      - Keyboard controls: Space (play/pause), ArrowLeft/Right (seek ±5s), ArrowUp/Down (volume ±10%)
+      - ARIA labels: role="region" aria-label="Sangavspiller", play button aria-label="Spill av"/"Pause"
+      - Screen reader support: Announce playback state changes, aria-live region for time updates
+      - Focus management: Card receives focus when clicked, visible focus indicators
+      - Touch targets: Minimum 48x48px (play button, progress slider handles)
+      - Color contrast: Playful Nordic colors meet WCAG AA standards
+    </constraint>
+
+    <!-- Performance -->
+    <constraint type="performance">
+      - Audio playback start: &lt;500ms from play button click (requires preload: true)
+      - Use html5: true in Howler config (stream audio, don't download entirely)
+      - Cleanup Howler and WaveSurfer instances on component unmount (prevent memory leaks)
+      - Debounce scrubbing updates to reduce CPU usage
+      - Waveform animation: Smooth 60fps using requestAnimationFrame
+    </constraint>
+
+    <!-- Responsive Design -->
+    <constraint type="responsive">
+      - Mobile-first approach: Vertical stack layout (artwork above, controls below)
+      - Desktop enhancements: Horizontal layout, volume slider visible
+      - Volume control: Hidden on mobile (hidden md:flex), visible on desktop
+      - Card dimensions: Mobile (full width), Desktop (max 600px)
+      - Media queries via Tailwind: md: breakpoint (768px)
+    </constraint>
+
+    <!-- Audio Source -->
+    <constraint type="data">
+      - Audio URL source: Signed URLs from Supabase Storage (24-hour expiration)
+      - If URL expires, refresh mechanism needed (regenerate signed URL)
+      - Only play songs with status='completed' (skip 'generating', 'failed', 'cancelled')
+      - Duration data: song.duration_seconds provided by webhook from Suno
+      - Error messages: Display Norwegian error message from song.error_message if status='failed'
+    </constraint>
+
+    <!-- Styling -->
+    <constraint type="styling">
+      - Playful Nordic theme: Primary red (#E94560) for progress/accents
+      - Genre badge colors: Match genre carousel from Story 3.1
+      - Card styling: rounded-lg, shadow-md, bg-card (white)
+      - Hover states: Play button scales slightly (scale-105), waveform brightens
+      - Smooth transitions: 200ms ease for all state changes
+      - Typography: Song title (16px semibold), metadata (12px gray)
+    </constraint>
+
+    <!-- Architecture Patterns -->
+    <constraint type="architecture">
+      - Howler.js is single source of truth for audio state (not WaveSurfer)
+      - Sync WaveSurfer with Howler time updates via requestAnimationFrame
+      - Store volume preference in localStorage for persistence
+      - Concurrent playback: Pause other players when one starts playing (if multiple cards exist)
+      - File location: src/components/song-player-card.tsx (custom component)
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <!-- REST API -->
+    <interface>
+      <name>GET /api/songs/[id]</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Request: GET /api/songs/123
+        Response: {
+          data: {
+            id: string,
+            title: string,
+            genre: string,
+            audioUrl: string | null,
+            status: 'generating' | 'completed' | 'failed' | 'cancelled',
+            duration: number, // seconds
+            createdAt: string, // ISO 8601
+            originalLyrics?: string,
+            optimizedLyrics?: string,
+            canvasUrl?: string
+          }
+        }
+      </signature>
+      <path>src/app/api/songs/[id]/route.ts</path>
+    </interface>
+
+    <!-- Song Type Interface -->
+    <interface>
+      <name>Song</name>
+      <kind>TypeScript interface</kind>
+      <signature>
+        interface Song {
+          id: string
+          user_id: string
+          title: string
+          genre: string
+          audio_url?: string // Signed URL or direct Suno URL
+          duration_seconds?: number
+          status: 'generating' | 'completed' | 'failed' | 'cancelled'
+          error_message?: string
+          created_at: string
+          updated_at: string
+        }
+      </signature>
+      <path>src/types/song.ts</path>
+    </interface>
+
+    <!-- Howler.js API -->
+    <interface>
+      <name>Howl</name>
+      <kind>Audio library class</kind>
+      <signature>
+        const sound = new Howl({
+          src: [audioUrl],
+          html5: true,
+          preload: true,
+          onplay: () => void,
+          onpause: () => void,
+          onend: () => void,
+          onload: () => void,
+          onloaderror: (id, error) => void
+        })
+
+        Methods:
+        - sound.play() // Start playback
+        - sound.pause() // Pause playback
+        - sound.seek(seconds) // Seek to position
+        - sound.volume(level) // Set volume 0-1
+        - sound.duration() // Get total duration
+        - sound.playing() // Check if playing
+      </signature>
+      <path>External library: howler</path>
+    </interface>
+
+    <!-- WaveSurfer.js API -->
+    <interface>
+      <name>WaveSurfer</name>
+      <kind>Waveform library class</kind>
+      <signature>
+        const wavesurfer = WaveSurfer.create({
+          container: HTMLElement,
+          waveColor: '#98c1d9',
+          progressColor: '#E94560',
+          height: 60,
+          responsive: true
+        })
+
+        Methods:
+        - wavesurfer.load(url) // Load audio file
+        - wavesurfer.seekTo(progress) // Seek to position (0-1)
+        - wavesurfer.on('click', () => void) // Handle waveform click
+        - wavesurfer.destroy() // Cleanup
+      </signature>
+      <path>External library: wavesurfer.js</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Follow existing testing patterns from Story 3.7 (webhook handler) and Story 3.6 (progress modal).
+      - Test Norwegian UI text (all labels in Norwegian)
+      - Test accessibility: Keyboard controls (Space, arrows), ARIA labels, screen reader announcements
+      - Test performance: Audio playback &lt;500ms, waveform animation 60fps
+      - Test error handling: Failed audio load (Norwegian error message), expired signed URL
+      - Test responsive design: Mobile (vertical stack, no volume), Desktop (horizontal, volume visible)
+      - Test browser compatibility: iOS Safari (autoplay restrictions), Android Chrome, desktop browsers
+      - Test memory usage: No leaks after component unmount (cleanup Howler/WaveSurfer)
+      - Test concurrent playback: Pause other players when one starts
+    </standards>
+
+    <locations>
+      - Unit tests: src/components/song-player-card.test.tsx (co-located with component)
+      - Integration tests: Test with completed song from database (status='completed', audio_url exists)
+      - E2E tests: Playwright tests for full playback flow (play, pause, scrub, volume)
+    </locations>
+
+    <ideas>
+      <!-- Mapped to Acceptance Criteria -->
+
+      AC: Display song metadata and artwork
+      - Test: Song player card displays title, genre badge, date (Norwegian format: "19. nov. 2025")
+      - Test: 60x60px gradient artwork with genre emoji is rendered
+      - Test: Genre badge colors match genre carousel from Story 3.1
+
+      AC: Audio plays instantly (&lt;500ms)
+      - Test: Measure time from play button click to audio start (&lt;500ms target)
+      - Test: Howler preload: true is configured for instant playback
+      - Test: Loading state shows spinner while audio loads
+      - Test: Error state displays Norwegian error message if audio fails to load
+
+      AC: Waveform visualization shows amplitude, animates during playback
+      - Test: WaveSurfer waveform is rendered with correct colors (waveColor='#98c1d9', progressColor='#E94560')
+      - Test: Waveform animates during playback (progress updates smoothly)
+      - Test: Waveform is synchronized with Howler playback position
+      - Test: Click on waveform seeks to that position
+
+      AC: Progress bar allows scrubbing (drag to seek)
+      - Test: Progress bar displays current time / total duration (e.g., "1:23 / 2:45")
+      - Test: Dragging progress slider seeks audio to new position
+      - Test: Time format is mm:ss (Norwegian convention)
+      - Test: Touch-friendly dragging (min 48px touch target)
+
+      AC: Volume control slider (desktop: visible, mobile: hidden)
+      - Test: Volume slider is visible on desktop (md: breakpoint), hidden on mobile
+      - Test: Volume slider updates Howler volume (0-100%)
+      - Test: Volume preference is saved to localStorage
+      - Test: Mute/unmute toggle button works correctly
+      - Test: Volume icon changes based on level (VolumeX, Volume1, Volume2)
+
+      AC: Keyboard controls (Space=play/pause, arrows=scrub/volume)
+      - Test: Space key toggles play/pause
+      - Test: ArrowLeft skips backward 5 seconds
+      - Test: ArrowRight skips forward 5 seconds
+      - Test: ArrowUp increases volume 10%
+      - Test: ArrowDown decreases volume 10%
+      - Test: Space key doesn't scroll page (preventDefault)
+
+      AC: Accessibility compliance (WCAG 2.1 AA)
+      - Test: role="region" with aria-label="Sangavspiller"
+      - Test: Play/pause button has aria-label: "Spill av" / "Pause"
+      - Test: Progress slider has aria-label: "Søk i sangen"
+      - Test: Volume slider has aria-label: "Volum"
+      - Test: Playback state changes are announced to screen readers
+      - Test: aria-live region for time updates
+      - Test: All interactive elements are keyboard accessible
+      - Test: Screen reader testing with VoiceOver (Mac) or NVDA (Windows)
+
+      AC: Match UX design spec (Playful Nordic theme)
+      - Test: Card styling: rounded-lg, shadow-md, bg-card
+      - Test: Primary red (#E94560) for progress and accents
+      - Test: Genre badge colors match theme
+      - Test: Hover states: Play button scales slightly, waveform brightens
+      - Test: Smooth transitions for all state changes (200ms ease)
+      - Test: Mobile-first responsive design (vertical stack on mobile)
+      - Test: Card dimensions: Mobile (full width), Desktop (max 600px)
+      - Test: Subtle drop shadow on hover (elevation effect)
+
+      Edge Cases:
+      - Test: Expired signed URL (refresh mechanism if needed)
+      - Test: Song with status='generating' (don't show player)
+      - Test: Song with status='failed' (show error message)
+      - Test: Song with missing audio_url (show placeholder message)
+      - Test: Song with missing duration_seconds (show loading state for duration)
+      - Test: Multiple player cards on same page (concurrent playback handling)
+      - Test: Component unmount during playback (cleanup resources)
+      - Test: Browser autoplay policies (iOS Safari may block autoplay)
+    </ideas>
+  </tests>
+</story-context>

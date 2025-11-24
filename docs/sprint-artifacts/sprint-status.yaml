@@ -77,7 +77,7 @@ development_status:
   3-5-implement-song-generation-api-with-suno-integration: done
   3-6-create-ai-generation-progress-modal-component: done
   3-7-implement-webhook-handler-for-suno-completion: review
-  3-8-build-song-player-card-component: backlog
+  3-8-build-song-player-card-component: ready-for-dev
   3-9-implement-free-30-second-preview-generation: backlog
   3-10-add-genre-prompt-templates-to-database: backlog
   epic-3-retrospective: optional
