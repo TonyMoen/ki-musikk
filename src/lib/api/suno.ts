@@ -31,6 +31,7 @@ export interface SunoGenerateParams {
   model?: SunoModel
   callBackUrl?: string
   instrumental?: boolean
+  duration?: number // Song duration in seconds (e.g., 30 for preview, undefined for full)
   personaId?: string
   negativeTags?: string
   vocalGender?: 'm' | 'f'
@@ -122,6 +123,7 @@ export async function generateSong(
     model = 'V4',
     callBackUrl,
     instrumental = false,
+    duration,
     personaId,
     negativeTags,
     vocalGender,
@@ -165,6 +167,7 @@ export async function generateSong(
     prompt: lyrics, // Lyrics go in 'prompt' field when instrumental is false
     style,
     ...(callBackUrl && { callBackUrl }),
+    ...(duration !== undefined && { duration }),
     ...(personaId && { personaId }),
     ...(negativeTags && { negativeTags }),
     ...(vocalGender && { vocalGender }),

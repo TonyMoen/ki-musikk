@@ -27,6 +27,7 @@ import { CREDIT_COSTS } from '@/lib/constants'
 import { creditLogger, logError, logInfo } from '@/lib/utils/logger'
 import { generateSong, SunoApiError } from '@/lib/api/suno'
 import { optimizeLyrics } from '@/lib/phonetic/optimizer'
+import { checkPreviewLimit } from '@/lib/preview-limits'
 
 /**
  * Request body schema
@@ -38,6 +39,7 @@ interface SongGenerationRequest {
   optimizedLyrics?: string // optional pre-optimized lyrics from client
   phoneticEnabled?: boolean // apply pronunciation optimization (default: true)
   title?: string // optional custom title
+  previewMode?: boolean // generate 30-second free preview (no credit cost)
 }
 
 /**
@@ -104,7 +106,8 @@ export async function POST(request: NextRequest) {
       lyrics,
       optimizedLyrics,
       phoneticEnabled = true,
-      title
+      title,
+      previewMode = false
     } = body
 
     if (!genre) {
@@ -137,52 +140,75 @@ export async function POST(request: NextRequest) {
       genre,
       phoneticEnabled,
       hasLyrics: !!lyrics,
-      hasOptimizedLyrics: !!optimizedLyrics
+      hasOptimizedLyrics: !!optimizedLyrics,
+      previewMode
     })
 
-    // Step 3: Deduct credits atomically
-    let deductionTxn
-    try {
-      deductionTxn = await deductCredits(
-        user.id,
-        CREDIT_COSTS.SONG_GENERATION,
-        'Song generation',
-        undefined // songId will be assigned after Suno response
-      )
+    // Step 2.5: Check preview limit if in preview mode
+    if (previewMode) {
+      const previewCheck = await checkPreviewLimit(user.id)
 
-      creditLogger.deductionSuccess(
-        user.id,
-        CREDIT_COSTS.SONG_GENERATION,
-        deductionTxn.id,
-        deductionTxn.balance_after
-      )
-    } catch (error) {
-      if (error instanceof InsufficientCreditsError) {
-        creditLogger.insufficientCredits(
-          user.id,
-          CREDIT_COSTS.SONG_GENERATION,
-          0, // We don't have current balance here
-          'song_generation'
-        )
-
+      if (!previewCheck.allowed) {
         return errorResponse(
-          'INSUFFICIENT_CREDITS',
-          'Ikke nok kreditter. Kjøp en pakke for å fortsette.',
+          'PREVIEW_LIMIT_EXCEEDED',
+          previewCheck.message || 'Du har allerede opprettet en gratis forhåndsvisning i dag.',
           403
         )
       }
 
-      // Database or RPC error
-      logError('Credit deduction failed (system error)', error as Error, {
+      logInfo('Preview limit check passed', {
         userId: user.id,
-        amount: CREDIT_COSTS.SONG_GENERATION
+        message: previewCheck.message
       })
+    }
 
-      return errorResponse(
-        'CREDIT_DEDUCTION_FAILED',
-        'En feil oppstod under kreditttrekk. Prøv igjen senere.',
-        500
-      )
+    // Step 3: Deduct credits atomically (skip if preview mode)
+    let deductionTxn
+    if (!previewMode) {
+      try {
+        deductionTxn = await deductCredits(
+          user.id,
+          CREDIT_COSTS.SONG_GENERATION,
+          'Song generation',
+          undefined // songId will be assigned after Suno response
+        )
+
+        creditLogger.deductionSuccess(
+          user.id,
+          CREDIT_COSTS.SONG_GENERATION,
+          deductionTxn.id,
+          deductionTxn.balance_after
+        )
+      } catch (error) {
+        if (error instanceof InsufficientCreditsError) {
+          creditLogger.insufficientCredits(
+            user.id,
+            CREDIT_COSTS.SONG_GENERATION,
+            0, // We don't have current balance here
+            'song_generation'
+          )
+
+          return errorResponse(
+            'INSUFFICIENT_CREDITS',
+            'Ikke nok kreditter. Kjøp en pakke for å fortsette.',
+            403
+          )
+        }
+
+        // Database or RPC error
+        logError('Credit deduction failed (system error)', error as Error, {
+          userId: user.id,
+          amount: CREDIT_COSTS.SONG_GENERATION
+        })
+
+        return errorResponse(
+          'CREDIT_DEDUCTION_FAILED',
+          'En feil oppstod under kreditttrekk. Prøv igjen senere.',
+          500
+        )
+      }
+    } else {
+      logInfo('Preview mode - skipping credit deduction', { userId: user.id })
     }
 
     // Step 4: Load genre from database to get suno_prompt_template
@@ -253,14 +279,20 @@ export async function POST(request: NextRequest) {
 
     // Step 6: Call Suno API to initiate song generation
     let sunoTaskId: string
-    let estimatedTime: number = 120 // Default estimate in seconds
+    let estimatedTime: number = previewMode ? 60 : 120 // Preview: 60s, Full: 120s
     try {
+      // Add watermark to preview lyrics
+      const finalLyricsWithWatermark = previewMode
+        ? `${finalLyrics}\n\nCreated with Musikkfabrikken`
+        : finalLyrics
+
       const sunoResult = await generateSong({
         title: title || 'Untitled Song',
-        lyrics: finalLyrics,
+        lyrics: finalLyricsWithWatermark,
         style: genreData.suno_prompt_template,
         model: 'V4',
-        callBackUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/suno`
+        callBackUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/suno`,
+        duration: previewMode ? 30 : undefined // 30 seconds for preview, default for full song
       })
 
       sunoTaskId = sunoResult.data.taskId
@@ -269,56 +301,71 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         sunoTaskId,
         estimatedTime,
-        genre: genreData.name
+        genre: genreData.name,
+        previewMode
       })
     } catch (sunoError) {
-      // Suno API failed - refund credits and return error
+      // Suno API failed - refund credits (only if not preview) and return error
       logError('Suno API call failed', sunoError as Error, {
         userId: user.id,
-        genre: genreData.name
+        genre: genreData.name,
+        previewMode
       })
 
-      // Refund credits
-      try {
-        const refundTxn = await refundCredits(
-          user.id,
-          CREDIT_COSTS.SONG_GENERATION,
-          `Generering feilet - ${(sunoError as Error).message || 'Suno API-feil'}`,
-          undefined
-        )
+      // Refund credits (only if not preview mode)
+      if (!previewMode && deductionTxn) {
+        try {
+          const refundTxn = await refundCredits(
+            user.id,
+            CREDIT_COSTS.SONG_GENERATION,
+            `Generering feilet - ${(sunoError as Error).message || 'Suno API-feil'}`,
+            undefined
+          )
 
-        creditLogger.refundIssued(
-          user.id,
-          CREDIT_COSTS.SONG_GENERATION,
-          'Suno API failure',
-          refundTxn.id,
-          refundTxn.balance_after,
-          deductionTxn.id
-        )
+          creditLogger.refundIssued(
+            user.id,
+            CREDIT_COSTS.SONG_GENERATION,
+            'Suno API failure',
+            refundTxn.id,
+            refundTxn.balance_after,
+            deductionTxn.id
+          )
 
-        // Return user-friendly error message
+          // Return user-friendly error message
+          const errorMessage = sunoError instanceof SunoApiError
+            ? sunoError.message
+            : 'Sanggenereringen feilet. Prøv igjen senere.'
+
+          return errorResponse(
+            'GENERATION_FAILED',
+            `${errorMessage} Kredittene er tilbakebetalt.`,
+            500,
+            true
+          )
+        } catch (refundError) {
+          // CRITICAL: Refund failed
+          logError('CRITICAL: Credit refund failed after Suno API failure', refundError as Error, {
+            userId: user.id,
+            originalTransactionId: deductionTxn.id
+          })
+
+          return errorResponse(
+            'REFUND_FAILED',
+            'En kritisk feil oppstod. Kontakt support for tilbakebetaling.',
+            500,
+            false
+          )
+        }
+      } else {
+        // Preview mode - no refund needed, just return error
         const errorMessage = sunoError instanceof SunoApiError
           ? sunoError.message
-          : 'Sanggenereringen feilet. Prøv igjen senere.'
+          : 'Forhåndsvisningsgenerering feilet. Prøv igjen senere.'
 
         return errorResponse(
           'GENERATION_FAILED',
-          `${errorMessage} Kredittene er tilbakebetalt.`,
-          500,
-          true
-        )
-      } catch (refundError) {
-        // CRITICAL: Refund failed
-        logError('CRITICAL: Credit refund failed after Suno API failure', refundError as Error, {
-          userId: user.id,
-          originalTransactionId: deductionTxn.id
-        })
-
-        return errorResponse(
-          'REFUND_FAILED',
-          'En kritisk feil oppstod. Kontakt support for tilbakebetaling.',
-          500,
-          false
+          errorMessage,
+          500
         )
       }
     }
@@ -337,58 +384,71 @@ export async function POST(request: NextRequest) {
         optimized_lyrics: optimizedLyricsForDb,
         phonetic_enabled: phoneticEnabled,
         suno_song_id: sunoTaskId,
-        status: 'generating'
+        status: 'generating',
+        is_preview: previewMode
       })
       .select('id')
       .single()
 
     if (songError || !songData) {
-      // Song record creation failed - refund credits
+      // Song record creation failed - refund credits (only if not preview)
       logError('Song record creation failed', songError as Error, {
         userId: user.id,
-        sunoTaskId
+        sunoTaskId,
+        previewMode
       })
 
-      try {
-        await refundCredits(
-          user.id,
-          CREDIT_COSTS.SONG_GENERATION,
-          'Database error - song record creation failed',
-          undefined
-        )
+      if (!previewMode && deductionTxn) {
+        try {
+          await refundCredits(
+            user.id,
+            CREDIT_COSTS.SONG_GENERATION,
+            'Database error - song record creation failed',
+            undefined
+          )
 
+          return errorResponse(
+            'DATABASE_ERROR',
+            'Kunne ikke opprette sangopptak. Kredittene er tilbakebetalt.',
+            500,
+            true
+          )
+        } catch (refundError) {
+          logError('CRITICAL: Credit refund failed after database error', refundError as Error, {
+            userId: user.id
+          })
+
+          return errorResponse(
+            'REFUND_FAILED',
+            'En kritisk feil oppstod. Kontakt support for tilbakebetaling.',
+            500,
+            false
+          )
+        }
+      } else {
         return errorResponse(
           'DATABASE_ERROR',
-          'Kunne ikke opprette sangopptak. Kredittene er tilbakebetalt.',
-          500,
-          true
-        )
-      } catch (refundError) {
-        logError('CRITICAL: Credit refund failed after database error', refundError as Error, {
-          userId: user.id
-        })
-
-        return errorResponse(
-          'REFUND_FAILED',
-          'En kritisk feil oppstod. Kontakt support for tilbakebetaling.',
-          500,
-          false
+          'Kunne ikke opprette forhåndsvisningsopptak. Prøv igjen senere.',
+          500
         )
       }
     }
 
-    // Step 8: Update credit transaction with song_id
-    await supabase
-      .from('credit_transaction')
-      .update({ song_id: songData.id })
-      .eq('id', deductionTxn.id)
+    // Step 8: Update credit transaction with song_id (only if not preview)
+    if (!previewMode && deductionTxn) {
+      await supabase
+        .from('credit_transaction')
+        .update({ song_id: songData.id })
+        .eq('id', deductionTxn.id)
+    }
 
     logInfo('Song generation initiated successfully', {
       userId: user.id,
       songId: songData.id,
       sunoTaskId,
-      creditsDeducted: CREDIT_COSTS.SONG_GENERATION,
-      balanceAfter: deductionTxn.balance_after
+      creditsDeducted: previewMode ? 0 : CREDIT_COSTS.SONG_GENERATION,
+      balanceAfter: deductionTxn?.balance_after,
+      previewMode
     })
 
     // Step 9: Success - Return 202 Accepted with song ID
@@ -398,8 +458,9 @@ export async function POST(request: NextRequest) {
           songId: songData.id,
           status: 'generating',
           estimatedTime,
-          creditsDeducted: CREDIT_COSTS.SONG_GENERATION,
-          balanceAfter: deductionTxn.balance_after
+          isPreview: previewMode,
+          creditsDeducted: previewMode ? 0 : CREDIT_COSTS.SONG_GENERATION,
+          balanceAfter: deductionTxn?.balance_after
         }
       },
       { status: 202 } // 202 Accepted for async operation

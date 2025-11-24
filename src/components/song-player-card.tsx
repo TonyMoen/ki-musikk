@@ -17,6 +17,7 @@ export interface SongPlayerCardProps {
   duration?: number
   createdAt: string
   genreEmoji?: string
+  isPreview?: boolean // Free 30-second preview
 }
 
 export function SongPlayerCard({
@@ -26,7 +27,8 @@ export function SongPlayerCard({
   audioUrl,
   duration,
   createdAt,
-  genreEmoji = '🎵'
+  genreEmoji = '🎵',
+  isPreview = false
 }: SongPlayerCardProps) {
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false)
@@ -301,10 +303,18 @@ export function SongPlayerCard({
           <h3 className="text-lg font-semibold truncate" title={title}>
             {title}
           </h3>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
             <Badge variant="secondary" className="text-xs">
               {genre}
             </Badge>
+            {isPreview && (
+              <Badge
+                className="text-xs bg-[#FFC93C] text-black hover:bg-[#FFC93C]/90"
+                aria-label="Forhåndsvisning"
+              >
+                🔓 FORHÅNDSVISNING
+              </Badge>
+            )}
             <span className="text-xs text-muted-foreground">
               {formatDate(createdAt)}
             </span>

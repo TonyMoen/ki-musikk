@@ -45,6 +45,7 @@ export interface Song {
   error_message?: string
   canvas_url?: string
   shared_count: number
+  is_preview?: boolean  // Free 30-second preview (no credit cost)
   created_at: string
   updated_at: string
   deleted_at?: string

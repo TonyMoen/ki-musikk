@@ -1,0 +1,340 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.9</storyId>
+    <title>Implement Free 30-Second Preview Generation</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-24</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/stories/3-9-implement-free-30-second-preview-generation.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to generate a 30-second watermarked preview for free</iWant>
+    <soThat>I can test the pronunciation quality before purchasing credits</soThat>
+    <tasks>
+      <task id="1" title="Modify song generation API to support preview mode">
+        <subtask>Add `previewMode: boolean` parameter to /src/app/api/songs/generate/route.ts</subtask>
+        <subtask>Skip credit balance check when `previewMode === true`</subtask>
+        <subtask>Skip credit deduction transaction when in preview mode</subtask>
+        <subtask>Pass `duration: 30` to Suno API for 30-second clip</subtask>
+        <subtask>Add watermark instruction to Suno prompt: "Created with Musikkfabrikken"</subtask>
+        <subtask>Store preview flag in database: `is_preview: boolean` column in songs table</subtask>
+        <subtask>Update Song TypeScript interface to include `is_preview?: boolean`</subtask>
+      </task>
+      <task id="2" title="Implement preview generation limit (1 preview per day)">
+        <subtask>Create database query: Count previews created by user in last 24 hours</subtask>
+        <subtask>Create /src/lib/preview-limits.ts utility: `checkPreviewLimit(userId): Promise&lt;boolean&gt;`</subtask>
+        <subtask>Query: SELECT COUNT(*) FROM songs WHERE user_id = ? AND is_preview = true AND created_at &gt; NOW() - INTERVAL 24 HOUR</subtask>
+        <subtask>Return error if limit exceeded: "You've already created a free preview today. Try again in X hours."</subtask>
+        <subtask>Calculate remaining time until next preview allowed</subtask>
+      </task>
+      <task id="3" title="Update song creation UI with dual button layout">
+        <subtask>Modify song creation page to show both buttons</subtask>
+        <subtask>Primary button: "Generer full sang (10 kreditter)" - #E94560</subtask>
+        <subtask>Secondary button: "Generer gratis forhåndsvisning (30s)" - Outline style</subtask>
+        <subtask>Button logic: If credits &lt; 10, promote preview button to primary style</subtask>
+        <subtask>Disable "Generate Full Song" if credits &lt; 10, show tooltip: "Ikke nok kreditter"</subtask>
+        <subtask>Add info icon with tooltip explaining preview vs full song differences</subtask>
+      </task>
+      <task id="4" title="Display preview upgrade prompt after playback">
+        <subtask>Detect when preview song playback completes in SongPlayerCard</subtask>
+        <subtask>Show modal/toast: "Liker du det? Generer full sang for 10 kreditter"</subtask>
+        <subtask>Include "Generate Full Song" button (reuse lyrics/genre from preview)</subtask>
+        <subtask>"Lukk" (Close) button to dismiss</subtask>
+        <subtask>Only show prompt once per preview song (use localStorage or database flag)</subtask>
+      </task>
+      <task id="5" title="Mark previews distinctly in song list">
+        <subtask>Update SongPlayerCard component to detect `is_preview` flag</subtask>
+        <subtask>Add "FORHÅNDSVISNING" badge when `is_preview === true`</subtask>
+        <subtask>Badge styling: Yellow (#FFC93C) background</subtask>
+        <subtask>Show duration as "0:30" for previews</subtask>
+      </task>
+      <task id="6" title="Apply pronunciation optimization to previews">
+        <subtask>Ensure `previewMode` does not skip phonetic optimization step</subtask>
+        <subtask>Reuse existing optimization pipeline from Story 3.3</subtask>
+        <subtask>Verify phonetic toggle applies to previews</subtask>
+      </task>
+      <task id="7" title="Add database migration for preview support">
+        <subtask>Create Supabase migration: 20251124_add_preview_support.sql</subtask>
+        <subtask>Add `is_preview BOOLEAN DEFAULT FALSE` to songs table</subtask>
+        <subtask>Add index: CREATE INDEX idx_user_preview_created ON songs(user_id, is_preview, created_at)</subtask>
+        <subtask>Update RLS policies to allow preview songs without credit check</subtask>
+      </task>
+      <task id="8" title="Test preview generation end-to-end">
+        <subtask>Test with 0 credits: Preview button enabled, Full Song button disabled</subtask>
+        <subtask>Test preview generation: 30-second clip created successfully</subtask>
+        <subtask>Test preview limit: Second preview on same day blocked</subtask>
+        <subtask>Test preview playback: Song player works correctly</subtask>
+        <subtask>Test upgrade prompt: Modal appears after preview completes</subtask>
+        <subtask>Test full song conversion: Can generate full song from preview lyrics/genre</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">
+      <given>I am a new user with 0 credits</given>
+      <when>I complete lyrics and genre selection</when>
+      <then>I see TWO buttons: "Generer gratis forhåndsvisning (30s)" and "Generer full sang (10 kreditter)"</then>
+    </criterion>
+    <criterion id="AC2">
+      <given>I click "Generate Free Preview"</given>
+      <then>No credits are deducted</then>
+    </criterion>
+    <criterion id="AC3">
+      <given>Preview generation is initiated</given>
+      <then>Suno generates 30-second clip with watermark: "Created with Musikkfabrikken"</then>
+    </criterion>
+    <criterion id="AC4">
+      <given>Preview is generated</given>
+      <then>Preview follows same pronunciation optimization process</then>
+    </criterion>
+    <criterion id="AC5">
+      <given>Preview is complete</given>
+      <then>I can listen to preview in song player</then>
+    </criterion>
+    <criterion id="AC6">
+      <given>Preview playback completes</given>
+      <then>I see upgrade prompt: "Liker du det? Generer full sang for 10 kreditter"</then>
+    </criterion>
+    <criterion id="AC7">
+      <given>Preview is saved</given>
+      <then>Preview is saved to my track list (marked as "FORHÅNDSVISNING")</then>
+    </criterion>
+    <criterion id="AC8">
+      <given>I try to create a second preview on the same day</given>
+      <then>System blocks with message: "You've already created a free preview today. Try again in X hours."</then>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>Free Tier (30-Second Preview)</section>
+        <snippet>FR19: System shall generate 30-second preview clips for free (no credit cost). FR20: System shall limit free previews to 1 per user per 24 hours. FR21: System shall watermark preview clips: "Created with Musikkfabrikken"</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Credit System Patterns</section>
+        <snippet>Pre-paid credit packages with atomic deduction and rollback on failure. Free preview costs 0 credits (CREDIT_COSTS.FREE_PREVIEW: 0). Credit deduction uses database stored procedure with row locking.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Component Library - Dual Button Layout</section>
+        <snippet>Primary button: "Generer full sang (10 kreditter)" - #E94560. Secondary button: "Generer gratis forhåndsvisning (30s)" - Outline style. Button logic: If credits &lt; 10, promote preview button to primary style.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-3-norwegian-song-creation-core.md</path>
+        <title>Epic 3: Norwegian Song Creation (CORE)</title>
+        <section>Story 3.9: Implement Free 30-Second Preview Generation</section>
+        <snippet>Modify /src/app/api/songs/generate/route.ts to accept previewMode: boolean. No credit deduction for preview mode. Suno API parameter: duration=30. Watermark added by Suno or post-processing. Limit: 1 free preview per user per day.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/app/api/songs/generate/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>POST</symbol>
+        <lines>1-436</lines>
+        <reason>Main song generation API - needs modification to support previewMode parameter, skip credit deduction, and pass duration to Suno API</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/api/suno.ts</path>
+        <kind>api-integration</kind>
+        <symbol>generateSong</symbol>
+        <lines>113-295</lines>
+        <reason>Suno API wrapper - may need to accept duration parameter for 30-second previews</reason>
+      </artifact>
+      <artifact>
+        <path>src/types/song.ts</path>
+        <kind>type-definition</kind>
+        <symbol>Song</symbol>
+        <lines>32-51</lines>
+        <reason>Song interface - needs `is_preview?: boolean` field added</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/credits/transaction.ts</path>
+        <kind>utility</kind>
+        <symbol>deductCredits</symbol>
+        <lines>57-89</lines>
+        <reason>Credit deduction logic - should be skipped when previewMode === true</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>CREDIT_COSTS</symbol>
+        <lines>40-45</lines>
+        <reason>Already defines FREE_PREVIEW: 0 - confirms no credit cost for previews</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/song-player-card.tsx</path>
+        <kind>component</kind>
+        <symbol>SongPlayerCard</symbol>
+        <lines>N/A</lines>
+        <reason>Song player component - needs to detect is_preview flag, display "FORHÅNDSVISNING" badge, and show upgrade prompt after playback</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/phonetic/optimizer.ts</path>
+        <kind>utility</kind>
+        <symbol>optimizeLyrics</symbol>
+        <lines>N/A</lines>
+        <reason>Pronunciation optimization pipeline - must be reused for preview mode (no skipping)</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>next@15.x</package>
+        <purpose>App Router API routes, Server Components</purpose>
+      </node>
+      <node>
+        <package>@supabase/supabase-js</package>
+        <purpose>Database operations, RLS policies, migrations</purpose>
+      </node>
+      <node>
+        <package>@radix-ui/react-*</package>
+        <purpose>Badge component for "FORHÅNDSVISNING" label</purpose>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <purpose>Info icon for tooltip explaining preview vs full song</purpose>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="C1">
+      <title>Credit System Integrity</title>
+      <description>Preview mode (previewMode: true) MUST skip credit deduction entirely. Do NOT deduct and refund - simply bypass deduction logic.</description>
+    </constraint>
+    <constraint id="C2">
+      <title>Rate Limiting</title>
+      <description>Enforce 1 preview per 24 hours at API level (not client-side) to prevent abuse. Check BEFORE calling Suno API to avoid wasted generation cost.</description>
+    </constraint>
+    <constraint id="C3">
+      <title>Pronunciation Optimization Consistency</title>
+      <description>Preview mode MUST apply the same Norwegian pronunciation optimization as full songs. Use existing optimizeLyrics() pipeline from Story 3.3.</description>
+    </constraint>
+    <constraint id="C4">
+      <title>Database Schema</title>
+      <description>Add is_preview BOOLEAN DEFAULT FALSE to songs table. Add composite index: idx_user_preview_created ON songs(user_id, is_preview, created_at) for efficient limit checking.</description>
+    </constraint>
+    <constraint id="C5">
+      <title>Norwegian UI Language</title>
+      <description>All user-facing text in Norwegian: "Generer gratis forhåndsvisning (30s)", "Generer full sang (10 kreditter)", "FORHÅNDSVISNING", "Liker du det? Generer full sang for 10 kreditter"</description>
+    </constraint>
+    <constraint id="C6">
+      <title>Suno API Parameters</title>
+      <description>Pass duration: 30 to Suno API for 30-second clips. Add watermark to prompt: "Created with Musikkfabrikken"</description>
+    </constraint>
+    <constraint id="C7">
+      <title>Playful Nordic Theme Colors</title>
+      <description>Preview badge: Yellow #FFC93C background. Primary button (Full Song): Red #E94560. Secondary button (Preview): Outline style with #0F3460.</description>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>SongGenerationRequest (modified)</name>
+      <kind>API Request Body</kind>
+      <signature>
+        {
+          genre: string,
+          concept: string,
+          lyrics?: string,
+          optimizedLyrics?: string,
+          phoneticEnabled?: boolean,
+          title?: string,
+          previewMode?: boolean  // NEW: Indicates 30-second preview generation
+        }
+      </signature>
+      <path>src/app/api/songs/generate/route.ts</path>
+    </interface>
+    <interface>
+      <name>Song (modified)</name>
+      <kind>TypeScript Interface</kind>
+      <signature>
+        interface Song {
+          id: string
+          user_id: string
+          title: string
+          genre: string
+          concept?: string
+          original_lyrics?: string
+          optimized_lyrics?: string
+          phonetic_enabled: boolean
+          suno_song_id?: string
+          audio_url?: string
+          duration_seconds?: number
+          status: 'generating' | 'completed' | 'failed' | 'cancelled'
+          error_message?: string
+          canvas_url?: string
+          shared_count: number
+          is_preview?: boolean  // NEW: Marks 30-second preview songs
+          created_at: string
+          updated_at: string
+          deleted_at?: string
+        }
+      </signature>
+      <path>src/types/song.ts</path>
+    </interface>
+    <interface>
+      <name>checkPreviewLimit (new)</name>
+      <kind>Utility Function</kind>
+      <signature>
+        export async function checkPreviewLimit(
+          userId: string
+        ): Promise&lt;{ allowed: boolean; hoursUntilNext?: number }&gt;
+      </signature>
+      <path>src/lib/preview-limits.ts (NEW FILE)</path>
+    </interface>
+    <interface>
+      <name>SunoGenerateParams (modified)</name>
+      <kind>API Parameters</kind>
+      <signature>
+        export interface SunoGenerateParams {
+          title: string
+          lyrics: string
+          style: string
+          model?: SunoModel
+          callBackUrl?: string
+          instrumental?: boolean
+          personaId?: string
+          negativeTags?: string
+          vocalGender?: 'm' | 'f'
+          styleWeight?: number
+          weirdnessConstraint?: number
+          audioWeight?: number
+          duration?: number  // NEW: Duration in seconds (30 for preview)
+        }
+      </signature>
+      <path>src/lib/api/suno.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Manual E2E testing for this story. Test with real Suno API calls using test credits. Verify credit balance before and after preview generation. Test preview limit enforcement with multiple requests. Test pronunciation optimization applies correctly to previews.
+    </standards>
+    <locations>
+      - Manual testing via browser at http://localhost:3000
+      - Database verification via Supabase dashboard
+      - Credit transaction log inspection
+    </locations>
+    <ideas>
+      <idea criterion="AC1">Test dual button layout: Verify both buttons visible when user has 0 credits. Confirm "Generate Full Song" is disabled with tooltip.</idea>
+      <idea criterion="AC2">Test no credit deduction: Check credit_balance before and after preview generation. Verify no credit_transaction record created (or record with amount: 0).</idea>
+      <idea criterion="AC3">Test 30-second duration: Verify Suno API called with duration: 30. Check audio_url returned is ~30 seconds. Confirm watermark "Created with Musikkfabrikken" in prompt.</idea>
+      <idea criterion="AC4">Test pronunciation optimization: Generate preview with Norwegian lyrics containing tricky words. Verify optimizeLyrics() called server-side. Compare original_lyrics vs optimized_lyrics in database.</idea>
+      <idea criterion="AC5">Test song player: Play preview audio in browser. Verify waveform displays correctly. Confirm playback controls work (play/pause, scrubbing).</idea>
+      <idea criterion="AC6">Test upgrade prompt: Play preview to completion. Verify modal/toast appears with "Liker du det?" message. Click "Generate Full Song" - confirm reuses lyrics/genre.</idea>
+      <idea criterion="AC7">Test preview badge: Navigate to My Songs page. Find preview song in list. Verify "FORHÅNDSVISNING" badge displayed with #FFC93C background. Confirm duration shows "0:30".</idea>
+      <idea criterion="AC8">Test preview limit: Generate first preview successfully. Immediately attempt second preview. Verify error message: "You've already created a free preview today. Try again in X hours." Confirm hours calculation is accurate.</idea>
+    </ideas>
+  </tests>
+</story-context>
