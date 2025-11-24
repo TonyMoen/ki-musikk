@@ -5,10 +5,11 @@ import { GenreSelection } from '@/components/genre-selection'
 import { ConceptInput } from '@/components/concept-input'
 import { LyricsEditor } from '@/components/lyrics-editor'
 import { PronunciationToggle } from '@/components/pronunciation-toggle'
+import { PhoneticDiffViewer } from '@/components/phonetic-diff-viewer'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
-import { Loader2 } from 'lucide-react'
-import type { OptimizationResult } from '@/types/song'
+import { Loader2, Eye } from 'lucide-react'
+import type { OptimizationResult, PhoneticChange } from '@/types/song'
 
 export default function Home() {
   const [selectedGenre, setSelectedGenre] = useState<{
@@ -19,9 +20,11 @@ export default function Home() {
   const [lyrics, setLyrics] = useState('')
   const [originalLyrics, setOriginalLyrics] = useState('')
   const [optimizedLyrics, setOptimizedLyrics] = useState('')
+  const [phoneticChanges, setPhoneticChanges] = useState<PhoneticChange[]>([])
   const [pronunciationEnabled, setPronunciationEnabled] = useState(true)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isOptimizing, setIsOptimizing] = useState(false)
+  const [isDiffViewerOpen, setIsDiffViewerOpen] = useState(false)
   const { toast } = useToast()
 
   const handleGenreSelect = (genreId: string, genreName: string) => {
@@ -52,6 +55,7 @@ export default function Home() {
 
       setOriginalLyrics(result.originalLyrics)
       setOptimizedLyrics(result.optimizedLyrics)
+      setPhoneticChanges(result.changes)
 
       // Display optimized version if pronunciation is enabled
       if (pronunciationEnabled) {
@@ -181,6 +185,38 @@ export default function Home() {
     // Reset optimized versions when user manually edits
     setOriginalLyrics('')
     setOptimizedLyrics('')
+    setPhoneticChanges([])
+  }
+
+  const handleOpenDiffViewer = () => {
+    setIsDiffViewerOpen(true)
+  }
+
+  const handleCloseDiffViewer = () => {
+    setIsDiffViewerOpen(false)
+  }
+
+  const handleAcceptChanges = (mergedLyrics: string) => {
+    setLyrics(mergedLyrics)
+    setOptimizedLyrics(mergedLyrics)
+    setIsDiffViewerOpen(false)
+
+    toast({
+      title: 'Endringer godtatt',
+      description: 'Fonetiske optimaliseringer er anvendt'
+    })
+  }
+
+  const handleRevertChanges = () => {
+    setLyrics(originalLyrics)
+    setOptimizedLyrics(originalLyrics)
+    setPronunciationEnabled(false)
+    setIsDiffViewerOpen(false)
+
+    toast({
+      title: 'Tilbakestilt til original',
+      description: 'Bruker original tekst uten optimalisering'
+    })
   }
 
   const handleReoptimize = async () => {
@@ -272,23 +308,53 @@ export default function Home() {
               }
             />
 
-            {/* Re-optimize button if lyrics were manually edited */}
-            {lyrics &&
-              !isGenerating &&
-              !isOptimizing &&
-              !originalLyrics &&
-              pronunciationEnabled && (
-                <Button
-                  onClick={handleReoptimize}
-                  variant="outline"
-                  className="w-full mt-4"
-                >
-                  Optimaliser uttale
-                </Button>
-              )}
+            {/* Action buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 mt-4">
+              {/* Preview phonetic changes button - only show if optimization has been applied */}
+              {originalLyrics &&
+                optimizedLyrics &&
+                phoneticChanges.length > 0 &&
+                !isGenerating &&
+                !isOptimizing && (
+                  <Button
+                    onClick={handleOpenDiffViewer}
+                    variant="outline"
+                    className="flex-1 sm:flex-initial"
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    Forhåndsvis fonetiske endringer
+                  </Button>
+                )}
+
+              {/* Re-optimize button if lyrics were manually edited */}
+              {lyrics &&
+                !isGenerating &&
+                !isOptimizing &&
+                !originalLyrics &&
+                pronunciationEnabled && (
+                  <Button
+                    onClick={handleReoptimize}
+                    variant="outline"
+                    className="flex-1 sm:flex-initial"
+                  >
+                    Optimaliser uttale
+                  </Button>
+                )}
+            </div>
           </div>
         )}
       </div>
+
+      {/* Phonetic Diff Viewer Modal */}
+      <PhoneticDiffViewer
+        originalLyrics={originalLyrics}
+        optimizedLyrics={optimizedLyrics}
+        changes={phoneticChanges}
+        isOpen={isDiffViewerOpen}
+        onClose={handleCloseDiffViewer}
+        onAccept={handleAcceptChanges}
+        onRevert={handleRevertChanges}
+      />
     </main>
   )
 }

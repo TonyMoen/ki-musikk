@@ -72,9 +72,9 @@ development_status:
   epic-3: backlog
   3-1-create-genre-carousel-component: review
   3-2-implement-ai-lyric-generation-with-song-concept-input: review
-  3-3-build-norwegian-pronunciation-optimizer-with-gpt4: in-progress
-  3-4-create-phonetic-diff-viewer-component: ready-for-dev
-  3-5-implement-song-generation-api-with-suno-integration: backlog
+  3-3-build-norwegian-pronunciation-optimizer-with-gpt4: review
+  3-4-create-phonetic-diff-viewer-component: done
+  3-5-implement-song-generation-api-with-suno-integration: ready-for-dev
   3-6-create-ai-generation-progress-modal-component: backlog
   3-7-implement-webhook-handler-for-suno-completion: backlog
   3-8-build-song-player-card-component: backlog

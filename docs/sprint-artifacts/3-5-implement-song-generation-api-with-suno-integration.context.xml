@@ -1,0 +1,265 @@
+<story-context id="bmad-bmm-story-context" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.5</storyId>
+    <title>Implement Song Generation API with Suno Integration</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-24</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-5-implement-song-generation-api-with-suno-integration.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to generate a full Norwegian song from my lyrics and genre</iWant>
+    <soThat>I can hear my concept brought to life with authentic vocals</soThat>
+    <tasks>
+      - Task 1: Create Suno API wrapper library (AC: API calls Suno via sunoapi.org)
+      - Task 2: Create song generation API endpoint (AC: API endpoint created)
+      - Task 3: Implement atomic credit deduction (AC: 10 credits deducted atomically)
+      - Task 4: Create song database record (AC: Song record created with status='generating')
+      - Task 5: Implement Suno API integration (AC: API calls Suno)
+      - Task 6: Implement credit rollback on failure (AC: Credits refunded if generation fails)
+      - Task 7: Implement API response format (AC: Client receives 202 Accepted with song ID)
+      - Task 8: Create song status polling endpoint (AC: Polling fallback after 5 seconds)
+      - Task 9: Integration and testing (AC: All)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    **Given** I have lyrics ready (original or optimized) and genre selected
+    **When** I click "Generer sang med AI" (Generate Song with AI) button
+    **Then** System checks credit balance (requires 10 credits for full song)
+    **And** If sufficient credits, 10 credits are deducted atomically
+    **And** API calls Suno via sunoapi.org with: lyrics, genre prompt template, model version
+    **And** A `song` record is created in database with status='generating'
+    **And** User sees progress modal: "🎵 Genererer din norske sang... ~2 minutter"
+    **And** Progress modal shows steps: "Skriver tekst" → "Optimerer uttale" → "Genererer musikk"
+    **And** User can cancel generation (credits refunded)
+    **And** Suno webhook notifies when complete OR polling fallback after 5 seconds
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics/epic-3-norwegian-song-creation-core.md</path>
+        <title>Epic 3: Norwegian Song Creation (CORE)</title>
+        <section>Story 3.5: Implement Song Generation API with Suno Integration</section>
+        <snippet>API integration specifications: Suno API Endpoint sunoapi.org /api/custom_generate, Authentication via SUNO_API_KEY, Request Payload {lyrics, genre_prompt, model_version, webhook_url}, Response {song_id, status, estimated_time}, Cost $0.06 per song generation, Generation Time 120-180 seconds typical, Webhook /api/webhooks/suno for completion notification, Polling Fallback client polls /api/songs/[id] every 5 seconds.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>ADR-007: Async Song Generation with Webhook + Polling Fallback</section>
+        <snippet>Pattern: 1) POST /api/songs/generate returns 202 Accepted with song ID, 2) Client polls GET /api/songs/[id] every 5 seconds, 3) Suno webhook notifies /api/webhooks/suno on completion, 4) Webhook downloads audio to Supabase Storage and updates DB, 5) Client poll receives 'completed' status. Webhook is efficient, polling fallback ensures reliability.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Database Schema - Song Table</section>
+        <snippet>Song table structure: id UUID PRIMARY KEY, user_id UUID references user_profile, title TEXT, genre TEXT, concept TEXT, original_lyrics TEXT, optimized_lyrics TEXT, phonetic_enabled BOOLEAN, suno_song_id TEXT for tracking, audio_url TEXT for Supabase Storage, duration_seconds INTEGER, status TEXT CHECK (status IN 'generating', 'completed', 'failed'), error_message TEXT, created_at/updated_at TIMESTAMPTZ. RLS policies ensure users only access their own songs.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Credit System Patterns - Atomic Credit Deduction</section>
+        <snippet>Use Supabase RPC deduct_credits(p_user_id, p_amount, p_description, p_song_id). RPC locks user row (FOR UPDATE), validates balance, deducts credits, records transaction in credit_transaction table. Returns error if insufficient credits. Rollback on Suno failure: Insert refund transaction (+10 credits). All operations are atomic at database level.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Language & Localization - Norwegian UI Language</section>
+        <snippet>All user-facing content in Norwegian: Button labels "Generer sang med AI", Progress message "Genererer din norske sang... ~2 minutter", Error messages "Ikke nok kreditter", "Generering feilet. Kreditter refundert.", Status steps "Skriver tekst" → "Optimerer uttale" → "Genererer musikk". Code and technical elements remain in English.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR15-FR20: Song Generation & Processing</section>
+        <snippet>FR15: Users can generate full-length songs using credits. FR16: Users can view real-time generation status and progress. FR17: Users can cancel pending song generation requests. FR18: System automatically deducts credits upon successful generation. FR19: System automatically rolls back credits if generation fails. FR20: Users receive notifications when song generation completes.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>src/app/api/songs/generate/route.ts</path>
+        <kind>API route (placeholder)</kind>
+        <symbol>POST</symbol>
+        <lines>68-253</lines>
+        <reason>Existing placeholder implementation with credit deduction/refund logic - needs Suno API integration</reason>
+      </file>
+      <file>
+        <path>src/lib/credits/transaction.ts</path>
+        <kind>service</kind>
+        <symbol>deductCredits, refundCredits</symbol>
+        <lines>57-89, 92-100</lines>
+        <reason>Atomic credit operations using Supabase RPC - reuse for song generation credit flow</reason>
+      </file>
+      <file>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>service</kind>
+        <symbol>createClient</symbol>
+        <lines>36-61</lines>
+        <reason>Server-side Supabase client for database operations and authentication - use in API routes</reason>
+      </file>
+      <file>
+        <path>src/types/credit.ts</path>
+        <kind>types</kind>
+        <symbol>CreditTransaction, DeductCreditsParams, InsufficientCreditsError, CreditOperationError</symbol>
+        <lines>6-53</lines>
+        <reason>Type definitions for credit system - use for type safety in API routes</reason>
+      </file>
+      <file>
+        <path>src/app/api/credits/purchase/route.ts</path>
+        <kind>API route</kind>
+        <symbol>POST</symbol>
+        <lines>16-113</lines>
+        <reason>Reference implementation for API route pattern: authenticate, validate, business logic, error handling with Norwegian messages</reason>
+      </file>
+    </code>
+    <dependencies>
+      <node>
+        <package name="@supabase/supabase-js" version="^2.84.0" />
+        <package name="@supabase/ssr" version="^0.7.0" />
+        <package name="next" version="^14.2.3" />
+        <package name="stripe" version="^20.0.0" />
+        <package name="openai" version="^6.9.1" />
+        <package name="zod" version="^4.1.12" />
+        <package name="react" version="^18.2.0" />
+        <package name="typescript" version="^5" />
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    **Architecture & Patterns:**
+    - Use Next.js 14+ App Router with Server Actions and API routes
+    - Follow async operation pattern: Return 202 Accepted for long-running operations
+    - All API routes must authenticate via Supabase session (createClient + getUser)
+    - Use Supabase RLS policies to enforce data access (users only access their own songs)
+    - Credit deduction MUST happen before Suno API call, refund on failure
+    - Use database-level atomicity (RPC functions) for credit operations
+    - Never expose SUNO_API_KEY to client - keep server-side only
+
+    **Norwegian UI Language:**
+    - All user-facing text, button labels, error messages, and progress indicators MUST be in Norwegian
+    - Code, variable names, function names, and technical elements remain in English
+    - Examples: "Generer sang med AI", "Ikke nok kreditter", "Generering feilet. Kreditter refundert."
+
+    **Error Handling:**
+    - Try-catch at API route level with Norwegian error messages
+    - Distinguish between validation errors (400), auth errors (401), insufficient credits (403), and system errors (500)
+    - Always log errors with context (userId, amount, operation)
+    - Automatic credit refund on Suno API failure
+
+    **Database:**
+    - Song status must be one of: 'generating', 'completed', 'failed'
+    - Store both original_lyrics and optimized_lyrics (if phonetic enabled)
+    - Link credit_transaction to song record via foreign key song_id
+
+    **API Design:**
+    - Request validation using Zod schemas or manual validation
+    - Consistent error response format: { error: { code, message, details? } }
+    - CORS headers for preflight OPTIONS requests
+    - Cache headers (no-cache for dynamic endpoints)
+
+    **Security:**
+    - Validate authentication before any business logic
+    - Verify credit balance server-side (never trust client)
+    - Use environment variables for sensitive keys (SUNO_API_KEY, SUPABASE_SERVICE_ROLE_KEY)
+    - Supabase RLS policies enforce row-level security
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/songs/generate</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Request: { genre: string, concept: string, phoneticEnabled?: boolean, title?: string }
+        Response (202): { data: { songId: string, status: 'generating', estimatedTime: number, creditsDeducted: number, balanceAfter: number } }
+        Error (400/401/403/500): { error: { code: string, message: string, refunded?: boolean } }
+      </signature>
+      <path>src/app/api/songs/generate/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/songs/[id]</name>
+      <kind>REST endpoint (to be created)</kind>
+      <signature>
+        Request: GET /api/songs/{songId}
+        Response (200): { data: { id: string, title: string, status: 'generating' | 'completed' | 'failed', audio_url?: string, duration?: number, created_at: string, error_message?: string } }
+        Error (404): { error: { code: 'NOT_FOUND', message: string } }
+      </signature>
+      <path>src/app/api/songs/[id]/route.ts (to be created)</path>
+    </interface>
+    <interface>
+      <name>deductCredits</name>
+      <kind>function</kind>
+      <signature>
+        async function deductCredits(userId: string, amount: number, description: string, songId?: string): Promise&lt;CreditTransaction&gt;
+        Throws: InsufficientCreditsError | CreditOperationError
+      </signature>
+      <path>src/lib/credits/transaction.ts</path>
+    </interface>
+    <interface>
+      <name>refundCredits</name>
+      <kind>function</kind>
+      <signature>
+        async function refundCredits(userId: string, amount: number, description: string, songId?: string): Promise&lt;CreditTransaction&gt;
+        Throws: CreditOperationError
+      </signature>
+      <path>src/lib/credits/transaction.ts</path>
+    </interface>
+    <interface>
+      <name>Suno API /api/custom_generate (external)</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        POST https://sunoapi.org/api/custom_generate
+        Headers: { Authorization: Bearer {SUNO_API_KEY}, Content-Type: application/json }
+        Request: { lyrics: string, genre_prompt: string, model_version?: string, webhook_url?: string }
+        Response (200): { song_id: string, status: string, estimated_time: number }
+        Error (400/429/500): { error: string }
+      </signature>
+      <path>External Suno API - to be integrated in src/lib/api/suno.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing follows Next.js patterns with TypeScript. API routes should be tested with integration tests that verify authentication, validation, credit deduction/refund, and error handling. Database operations use Supabase client mocks. Norwegian error messages must be verified. Test credit rollback scenarios to ensure financial integrity.
+    </standards>
+    <locations>
+      - src/app/api/**/*.test.ts (API route tests)
+      - src/lib/**/*.test.ts (utility function tests)
+      - src/components/**/*.test.tsx (component tests)
+    </locations>
+    <ideas>
+      **API Route Tests (src/app/api/songs/generate/route.test.ts):**
+      - AC: System checks credit balance - Test POST returns 403 when user has &lt; 10 credits
+      - AC: 10 credits deducted atomically - Test deductCredits called with correct params, verify transaction record
+      - AC: API calls Suno - Test Suno API called with correct lyrics, genre prompt, model version
+      - AC: Song record created with status='generating' - Verify database insert with correct fields
+      - AC: Credits refunded if generation fails - Test credit refund on Suno API error, verify refund transaction
+      - Test authentication: Verify 401 when not logged in
+      - Test validation: Verify 400 when missing genre or concept
+      - Test error handling: Verify Norwegian error messages for all error cases
+
+      **Suno API Wrapper Tests (src/lib/api/suno.test.ts):**
+      - Test generateSong() function with valid params
+      - Test error handling for network failures, rate limits (429), invalid lyrics (400)
+      - Test timeout handling (30 seconds)
+      - Test API key authentication
+
+      **Song Status Polling Tests (src/app/api/songs/[id]/route.test.ts):**
+      - AC: Polling fallback after 5 seconds - Test GET returns current song status
+      - Test authentication and ownership verification (RLS)
+      - Test status='generating' returns 200 with progress estimate
+      - Test status='completed' returns 200 with audio_url
+      - Test status='failed' returns 200 with error_message
+      - Test 404 when song not found
+
+      **Integration Tests:**
+      - Test full flow: POST generate → credit deduction → Suno call → song record → GET status
+      - Test concurrent requests to ensure no race conditions
+      - Test phonetic enabled/disabled to verify correct lyrics sent
+      - Test genre prompt template substitution
+    </ideas>
+  </tests>
+</story-context>
