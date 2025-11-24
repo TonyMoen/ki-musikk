@@ -51,7 +51,12 @@
       "Bash(npx shadcn@latest add:*)",
       "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\credits\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\credits\")",
       "Bash(node scripts/seed-genres.js:*)",
-      "SlashCommand(/bmad:bmm:workflows:story-done)"
+      "SlashCommand(/bmad:bmm:workflows:story-done)",
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\api\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\api\")",
+      "WebSearch",
+      "WebFetch(domain:docs.sunoapi.org)",
+      "WebFetch(domain:old-docs.sunoapi.org)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []

@@ -25,15 +25,19 @@ import {
 } from '@/lib/credits/transaction'
 import { CREDIT_COSTS } from '@/lib/constants'
 import { creditLogger, logError, logInfo } from '@/lib/utils/logger'
+import { generateSong, SunoApiError } from '@/lib/api/suno'
+import { optimizeLyrics } from '@/lib/phonetic/optimizer'
 
 /**
  * Request body schema
  */
 interface SongGenerationRequest {
-  genre: string
-  concept: string
-  phoneticEnabled?: boolean
-  title?: string
+  genre: string // genre name or ID
+  concept: string // user's song concept description
+  lyrics?: string // optional pre-written lyrics (otherwise generated from concept)
+  optimizedLyrics?: string // optional pre-optimized lyrics from client
+  phoneticEnabled?: boolean // apply pronunciation optimization (default: true)
+  title?: string // optional custom title
 }
 
 /**
@@ -94,12 +98,36 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { genre, concept, phoneticEnabled = true, title } = body
+    const {
+      genre,
+      concept,
+      lyrics,
+      optimizedLyrics,
+      phoneticEnabled = true,
+      title
+    } = body
 
-    if (!genre || !concept) {
+    if (!genre) {
       return errorResponse(
         'MISSING_FIELDS',
-        'Mangler påkrevde felt: genre og konsept.',
+        'Mangler påkrevd felt: genre.',
+        400
+      )
+    }
+
+    if (!concept) {
+      return errorResponse(
+        'MISSING_FIELDS',
+        'Mangler påkrevd felt: konsept.',
+        400
+      )
+    }
+
+    // Must have either lyrics or optimizedLyrics
+    if (!lyrics && !optimizedLyrics) {
+      return errorResponse(
+        'MISSING_FIELDS',
+        'Mangler påkrevd felt: lyrics eller optimizedLyrics.',
         400
       )
     }
@@ -107,7 +135,9 @@ export async function POST(request: NextRequest) {
     logInfo('Song generation requested', {
       userId: user.id,
       genre,
-      phoneticEnabled
+      phoneticEnabled,
+      hasLyrics: !!lyrics,
+      hasOptimizedLyrics: !!optimizedLyrics
     })
 
     // Step 3: Deduct credits atomically
@@ -155,54 +185,105 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Step 4: Call Suno API (PLACEHOLDER - Epic 3 implementation)
-    // For now, we simulate API behavior for testing rollback logic
-    try {
-      // TODO Epic 3: Implement actual Suno API integration
-      // const sunoResult = await generateSongWithSuno({
-      //   genre,
-      //   concept,
-      //   phoneticEnabled,
-      //   title
-      // })
-      // const songId = sunoResult.id
+    // Step 4: Load genre from database to get suno_prompt_template
+    const { data: genreData, error: genreError } = await supabase
+      .from('genre')
+      .select('id, name, display_name, suno_prompt_template')
+      .eq('name', genre)
+      .eq('is_active', true)
+      .single()
 
-      // PLACEHOLDER: Simulate successful API call
-      const mockSongId = `mock-song-${Date.now()}`
-
-      logInfo('Song generation initiated (mock)', {
+    if (genreError || !genreData) {
+      logError('Genre not found in database', genreError as Error, {
         userId: user.id,
-        songId: mockSongId,
-        creditsDeducted: CREDIT_COSTS.SONG_GENERATION,
-        balanceAfter: deductionTxn.balance_after
+        genre
       })
-
-      // Step 5: Success - Credits remain deducted
-      return NextResponse.json(
-        {
-          data: {
-            songId: mockSongId,
-            status: 'generating',
-            estimatedTime: 120, // seconds
-            creditsDeducted: CREDIT_COSTS.SONG_GENERATION,
-            balanceAfter: deductionTxn.balance_after
-          }
-        },
-        { status: 202 } // 202 Accepted for async operation
+      return errorResponse(
+        'GENRE_NOT_FOUND',
+        `Genre "${genre}" ble ikke funnet.`,
+        404
       )
-    } catch (sunoError) {
-      // Step 6: Suno API failed - Refund credits automatically
-      logError('Suno API call failed, refunding credits', sunoError as Error, {
-        userId: user.id,
-        amount: CREDIT_COSTS.SONG_GENERATION,
-        originalTransactionId: deductionTxn.id
+    }
+
+    // Step 5: Select lyrics to use (optimized if phoneticEnabled, else original)
+    let finalLyrics: string
+    let originalLyricsForDb: string
+    let optimizedLyricsForDb: string | null = null
+
+    if (phoneticEnabled) {
+      // If client provided optimized lyrics, use those
+      if (optimizedLyrics) {
+        finalLyrics = optimizedLyrics
+        originalLyricsForDb = lyrics || ''
+        optimizedLyricsForDb = optimizedLyrics
+      } else if (lyrics) {
+        // Optimize lyrics server-side
+        try {
+          const optimization = await optimizeLyrics(lyrics)
+          finalLyrics = optimization.optimizedLyrics
+          originalLyricsForDb = optimization.originalLyrics
+          optimizedLyricsForDb = optimization.optimizedLyrics
+
+          logInfo('Lyrics optimized for pronunciation', {
+            userId: user.id,
+            changesCount: optimization.changes.length,
+            cacheHitRate: optimization.cacheHitRate
+          })
+        } catch (optimizationError) {
+          logError('Phonetic optimization failed, using original lyrics', optimizationError as Error, {
+            userId: user.id
+          })
+          // Fallback to original lyrics if optimization fails
+          finalLyrics = lyrics
+          originalLyricsForDb = lyrics
+        }
+      } else {
+        // Should never happen due to validation
+        return errorResponse(
+          'MISSING_FIELDS',
+          'Mangler tekster for generering.',
+          400
+        )
+      }
+    } else {
+      // Use original lyrics without optimization
+      finalLyrics = lyrics || optimizedLyrics || ''
+      originalLyricsForDb = lyrics || ''
+    }
+
+    // Step 6: Call Suno API to initiate song generation
+    let sunoTaskId: string
+    let estimatedTime: number = 120 // Default estimate in seconds
+    try {
+      const sunoResult = await generateSong({
+        title: title || 'Untitled Song',
+        lyrics: finalLyrics,
+        style: genreData.suno_prompt_template,
+        model: 'V4',
+        callBackUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/suno`
       })
 
+      sunoTaskId = sunoResult.data.taskId
+
+      logInfo('Suno API call successful', {
+        userId: user.id,
+        sunoTaskId,
+        estimatedTime,
+        genre: genreData.name
+      })
+    } catch (sunoError) {
+      // Suno API failed - refund credits and return error
+      logError('Suno API call failed', sunoError as Error, {
+        userId: user.id,
+        genre: genreData.name
+      })
+
+      // Refund credits
       try {
         const refundTxn = await refundCredits(
           user.id,
           CREDIT_COSTS.SONG_GENERATION,
-          `Generation failed - ${(sunoError as Error).message || 'API error'}`,
+          `Generering feilet - ${(sunoError as Error).message || 'Suno API-feil'}`,
           undefined
         )
 
@@ -215,22 +296,23 @@ export async function POST(request: NextRequest) {
           deductionTxn.id
         )
 
+        // Return user-friendly error message
+        const errorMessage = sunoError instanceof SunoApiError
+          ? sunoError.message
+          : 'Sanggenereringen feilet. Prøv igjen senere.'
+
         return errorResponse(
           'GENERATION_FAILED',
-          'Sanggenereringen feilet. Kredittene er tilbakebetalt.',
+          `${errorMessage} Kredittene er tilbakebetalt.`,
           500,
-          true // refunded flag
+          true
         )
       } catch (refundError) {
-        // CRITICAL: Refund failed - User was charged but didn't get service
-        logError('CRITICAL: Credit refund failed after API failure', refundError as Error, {
+        // CRITICAL: Refund failed
+        logError('CRITICAL: Credit refund failed after Suno API failure', refundError as Error, {
           userId: user.id,
-          amount: CREDIT_COSTS.SONG_GENERATION,
           originalTransactionId: deductionTxn.id
         })
-
-        // Alert admin - manual intervention needed
-        // TODO: Integrate with monitoring/alerting service
 
         return errorResponse(
           'REFUND_FAILED',
@@ -240,6 +322,88 @@ export async function POST(request: NextRequest) {
         )
       }
     }
+
+    // Step 7: Create song record in database with status='generating'
+    const songTitle = title || `${concept.substring(0, 50)}`
+
+    const { data: songData, error: songError } = await supabase
+      .from('song')
+      .insert({
+        user_id: user.id,
+        title: songTitle,
+        genre: genreData.name,
+        concept,
+        original_lyrics: originalLyricsForDb,
+        optimized_lyrics: optimizedLyricsForDb,
+        phonetic_enabled: phoneticEnabled,
+        suno_song_id: sunoTaskId,
+        status: 'generating'
+      })
+      .select('id')
+      .single()
+
+    if (songError || !songData) {
+      // Song record creation failed - refund credits
+      logError('Song record creation failed', songError as Error, {
+        userId: user.id,
+        sunoTaskId
+      })
+
+      try {
+        await refundCredits(
+          user.id,
+          CREDIT_COSTS.SONG_GENERATION,
+          'Database error - song record creation failed',
+          undefined
+        )
+
+        return errorResponse(
+          'DATABASE_ERROR',
+          'Kunne ikke opprette sangopptak. Kredittene er tilbakebetalt.',
+          500,
+          true
+        )
+      } catch (refundError) {
+        logError('CRITICAL: Credit refund failed after database error', refundError as Error, {
+          userId: user.id
+        })
+
+        return errorResponse(
+          'REFUND_FAILED',
+          'En kritisk feil oppstod. Kontakt support for tilbakebetaling.',
+          500,
+          false
+        )
+      }
+    }
+
+    // Step 8: Update credit transaction with song_id
+    await supabase
+      .from('credit_transaction')
+      .update({ song_id: songData.id })
+      .eq('id', deductionTxn.id)
+
+    logInfo('Song generation initiated successfully', {
+      userId: user.id,
+      songId: songData.id,
+      sunoTaskId,
+      creditsDeducted: CREDIT_COSTS.SONG_GENERATION,
+      balanceAfter: deductionTxn.balance_after
+    })
+
+    // Step 9: Success - Return 202 Accepted with song ID
+    return NextResponse.json(
+      {
+        data: {
+          songId: songData.id,
+          status: 'generating',
+          estimatedTime,
+          creditsDeducted: CREDIT_COSTS.SONG_GENERATION,
+          balanceAfter: deductionTxn.balance_after
+        }
+      },
+      { status: 202 } // 202 Accepted for async operation
+    )
   } catch (error) {
     // Unexpected server error
     logError('Unexpected error in song generation API', error as Error)

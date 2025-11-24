@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Generation API Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0F3460;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+        .status.warning { background: #fff3cd; color: #856404; }
+        button {
+            background: #E94560;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 8px 8px 8px 0;
+            transition: background 0.2s;
+        }
+        button:hover { background: #d13850; }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #0F3460;
+        }
+        pre {
+            background: #263238;
+            color: #aed581;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .log {
+            background: #263238;
+            color: #fff;
+            padding: 16px;
+            border-radius: 6px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+        .log-entry {
+            margin: 4px 0;
+            padding: 4px 0;
+        }
+        .log-entry.info { color: #4fc3f7; }
+        .log-entry.success { color: #81c784; }
+        .log-entry.error { color: #e57373; }
+        .log-entry.warn { color: #ffb74d; }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #0F3460;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E94560, #FFC93C);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Song Generation API Test</h1>
+        <p>Story 3.5: Suno Integration Testing Tool</p>
+
+        <!-- Status Display -->
+        <div id="status-display"></div>
+
+        <!-- Step 1: Authentication Check -->
+        <div class="section">
+            <h2>Step 1: Check Authentication</h2>
+            <p>First, make sure you're logged in to the main app.</p>
+            <button onclick="checkAuth()">Check Authentication</button>
+            <div id="auth-status"></div>
+        </div>
+
+        <!-- Step 2: Credit Balance -->
+        <div class="section">
+            <h2>Step 2: Check Credit Balance</h2>
+            <p>Verify you have at least 10 credits for song generation.</p>
+            <button onclick="checkCredits()">Check Balance</button>
+            <div id="credit-status"></div>
+        </div>
+
+        <!-- Step 3: Generate Song -->
+        <div class="section">
+            <h2>Step 3: Generate Song</h2>
+            <div class="form-group">
+                <label>Genre:</label>
+                <select id="genre" style="width: 100%; padding: 10px;">
+                    <option value="country-rock">Country Rock</option>
+                    <option value="norwegian-pop">Norwegian Pop</option>
+                    <option value="party-anthem">Party Anthem</option>
+                    <option value="ballad">Ballad</option>
+                    <option value="rap-hiphop">Rap/Hip-Hop</option>
+                    <option value="rock-ballad">Rock Ballad</option>
+                    <option value="indie-pop">Indie Pop</option>
+                    <option value="folk-acoustic">Folk/Acoustic</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Song Title:</label>
+                <input type="text" id="title" value="Lars sin bursdagssang">
+            </div>
+            <div class="form-group">
+                <label>Concept:</label>
+                <input type="text" id="concept" value="Funny birthday song for Lars who loves fishing">
+            </div>
+            <div class="form-group">
+                <label>Lyrics (Norwegian):</label>
+                <textarea id="lyrics" rows="6" style="width: 100%; padding: 10px; font-family: monospace;">Lars er mannen med fiskestanga
+Han fisker hele dagen langa
+På bursdagen hans vi synger
+At han er best med ørretfangst</textarea>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="phonetic" checked>
+                    Enable Phonetic Optimization (Uttalelse Bokmål)
+                </label>
+            </div>
+            <button onclick="generateSong()" id="generate-btn">🎵 Generate Song</button>
+            <div id="generation-status"></div>
+            <div id="progress-container" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill">0%</div>
+                </div>
+                <p id="progress-text"></p>
+            </div>
+        </div>
+
+        <!-- Step 4: Poll Song Status -->
+        <div class="section">
+            <h2>Step 4: Song Status</h2>
+            <p>Once generation starts, status will be polled automatically every 5 seconds.</p>
+            <div class="form-group">
+                <label>Song ID:</label>
+                <input type="text" id="song-id" placeholder="Will be auto-filled after generation">
+            </div>
+            <button onclick="pollSongStatus()" id="poll-btn" disabled>🔄 Manual Poll</button>
+            <button onclick="stopPolling()" id="stop-btn" disabled>⏹️ Stop Polling</button>
+            <div id="song-status"></div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="section">
+            <h2>Activity Log</h2>
+            <button onclick="clearLog()">Clear Log</button>
+            <div class="log" id="activity-log"></div>
+        </div>
+    </div>
+
+    <script>
+        let pollingInterval = null;
+        let currentSongId = null;
+
+        function log(message, type = 'info') {
+            const logEl = document.getElementById('activity-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${timestamp}] ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('activity-log').innerHTML = '';
+        }
+
+        function showStatus(elementId, message, type = 'info') {
+            const el = document.getElementById(elementId);
+            el.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        async function checkAuth() {
+            log('Checking authentication...', 'info');
+            try {
+                const response = await fetch('/api/credits/balance');
+                if (response.ok) {
+                    log('✅ Authentication successful', 'success');
+                    showStatus('auth-status', '✅ You are authenticated!', 'success');
+                } else if (response.status === 401) {
+                    log('❌ Not authenticated', 'error');
+                    showStatus('auth-status', '❌ Not authenticated. Please log in at <a href="/auth/login">/auth/login</a>', 'error');
+                } else {
+                    log(`⚠️ Unexpected response: ${response.status}`, 'warn');
+                    showStatus('auth-status', `⚠️ Unexpected response: ${response.status}`, 'warning');
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                showStatus('auth-status', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkCredits() {
+            log('Fetching credit balance...', 'info');
+            try {
+                const response = await fetch('/api/credits/balance');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                const balance = data.data.balance;
+                log(`💰 Current balance: ${balance} credits`, 'success');
+
+                if (balance >= 10) {
+                    showStatus('credit-status', `✅ Balance: ${balance} credits (sufficient for song generation)`, 'success');
+                } else {
+                    showStatus('credit-status', `⚠️ Balance: ${balance} credits (need 10 for song generation)`, 'warning');
+                }
+            } catch (error) {
+                log(`❌ Failed to fetch credits: ${error.message}`, 'error');
+                showStatus('credit-status', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function generateSong() {
+            const genre = document.getElementById('genre').value;
+            const title = document.getElementById('title').value;
+            const concept = document.getElementById('concept').value;
+            const lyrics = document.getElementById('lyrics').value;
+            const phoneticEnabled = document.getElementById('phonetic').checked;
+
+            log('🎵 Starting song generation...', 'info');
+            log(`Genre: ${genre}, Title: ${title}, Phonetic: ${phoneticEnabled}`, 'info');
+
+            const requestBody = {
+                genre,
+                title,
+                concept,
+                lyrics,
+                phoneticEnabled
+            };
+
+            try {
+                document.getElementById('generate-btn').disabled = true;
+                showStatus('generation-status', '⏳ Requesting song generation...', 'info');
+
+                const response = await fetch('/api/songs/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error?.message || `HTTP ${response.status}`);
+                }
+
+                // Success!
+                currentSongId = data.data.songId;
+                document.getElementById('song-id').value = currentSongId;
+
+                log(`✅ Song generation started! Song ID: ${currentSongId}`, 'success');
+                log(`📊 Credits deducted: ${data.data.creditsDeducted}`, 'info');
+                log(`💰 Balance after: ${data.data.balanceAfter}`, 'info');
+                log(`⏱️ Estimated time: ${data.data.estimatedTime} seconds`, 'info');
+
+                showStatus('generation-status',
+                    `✅ Generation started!<br>
+                    Song ID: ${currentSongId}<br>
+                    Estimated time: ~${Math.round(data.data.estimatedTime / 60)} minutes<br>
+                    Credits: ${data.data.creditsDeducted} deducted, ${data.data.balanceAfter} remaining`,
+                    'success');
+
+                // Show progress bar
+                document.getElementById('progress-container').style.display = 'block';
+
+                // Start automatic polling
+                startPolling();
+
+            } catch (error) {
+                log(`❌ Generation failed: ${error.message}`, 'error');
+                showStatus('generation-status', `❌ Error: ${error.message}`, 'error');
+                document.getElementById('generate-btn').disabled = false;
+            }
+        }
+
+        function startPolling() {
+            log('🔄 Starting automatic polling (every 5 seconds)...', 'info');
+            document.getElementById('poll-btn').disabled = false;
+            document.getElementById('stop-btn').disabled = false;
+
+            // Poll immediately
+            pollSongStatus();
+
+            // Then poll every 5 seconds
+            pollingInterval = setInterval(pollSongStatus, 5000);
+        }
+
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+                log('⏹️ Polling stopped', 'info');
+                document.getElementById('stop-btn').disabled = true;
+            }
+        }
+
+        async function pollSongStatus() {
+            const songId = document.getElementById('song-id').value || currentSongId;
+            if (!songId) {
+                showStatus('song-status', '⚠️ No song ID provided', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/songs/${songId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const song = data.data;
+
+                log(`📊 Status: ${song.status} (${song.progress || 0}%)`, 'info');
+
+                if (song.status === 'generating') {
+                    const progress = song.progress || 0;
+                    const progressFill = document.getElementById('progress-fill');
+                    progressFill.style.width = `${progress}%`;
+                    progressFill.textContent = `${progress}%`;
+
+                    document.getElementById('progress-text').textContent =
+                        `🎵 Generating... ${song.estimatedTimeRemaining || 0} seconds remaining`;
+
+                    showStatus('song-status',
+                        `⏳ Generating... ${progress}% complete<br>
+                        Time remaining: ~${song.estimatedTimeRemaining || 0} seconds`,
+                        'info');
+
+                } else if (song.status === 'completed') {
+                    stopPolling();
+                    const progressFill = document.getElementById('progress-fill');
+                    progressFill.style.width = '100%';
+                    progressFill.textContent = '100%';
+
+                    log('✅ Song generation COMPLETE!', 'success');
+                    log(`🎧 Audio URL: ${song.audioUrl}`, 'success');
+                    log(`⏱️ Duration: ${song.duration} seconds`, 'info');
+
+                    showStatus('song-status',
+                        `✅ Song generated successfully!<br>
+                        <a href="${song.audioUrl}" target="_blank">🎧 Play Song</a><br>
+                        Duration: ${song.duration} seconds`,
+                        'success');
+
+                    document.getElementById('generate-btn').disabled = false;
+
+                } else if (song.status === 'failed') {
+                    stopPolling();
+                    log(`❌ Song generation FAILED: ${song.errorMessage}`, 'error');
+
+                    showStatus('song-status',
+                        `❌ Generation failed<br>
+                        Error: ${song.errorMessage}`,
+                        'error');
+
+                    document.getElementById('generate-btn').disabled = false;
+                }
+
+            } catch (error) {
+                log(`❌ Polling error: ${error.message}`, 'error');
+                showStatus('song-status', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-check auth on page load
+        window.addEventListener('load', () => {
+            log('🎵 Song Generation Test Tool Loaded', 'success');
+            log('📝 Ready to test Story 3.5 implementation', 'info');
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

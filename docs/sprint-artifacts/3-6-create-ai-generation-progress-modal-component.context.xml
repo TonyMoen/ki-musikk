@@ -1,0 +1,504 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>6</storyId>
+    <title>Create AI Generation Progress Modal Component</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-24</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-6-create-ai-generation-progress-modal-component.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to see real-time progress while my song is generating</iWant>
+    <soThat>I know the system is working and approximately how long it will take</soThat>
+    <tasks>
+- Task 1: Create progress modal component shell (AC: Full-screen modal overlay)
+  - Create `/src/components/generation-progress-modal.tsx` with TypeScript
+  - Use shadcn/ui Dialog component as base for modal overlay
+  - Implement full-screen overlay with backdrop blur
+  - Create centered white card with rounded corners (Playful Nordic theme)
+  - Make modal non-dismissible during generation (no close X button)
+  - Add responsive design: full-width on mobile, max-width on desktop
+
+- Task 2: Implement animated progress circle (AC: 0-100% completion animation)
+  - Create circular progress indicator using SVG or shadcn/ui Progress component
+  - Animate progress from 0% to 100% smoothly (CSS transitions)
+  - Display percentage number in center of circle (e.g., "75%")
+  - Use primary red color (#E94560) for progress fill
+  - Gray background ring for unfilled portion
+  - Add pulsing animation during generation for visual feedback
+
+- Task 3: Implement stage-based status messages (AC: Status text updates through stages)
+  - Define three generation stages with Norwegian text (0-30%, 30-50%, 50-100%)
+  - Calculate current stage based on progress percentage
+  - Update status text dynamically as progress advances
+  - Add fade transition when switching between stages
+  - Display emoji + text below progress circle
+
+- Task 4: Implement time estimation logic (AC: Estimated time remaining)
+  - Calculate estimated total time (120-180 seconds from Suno API)
+  - Calculate elapsed time since generation started
+  - Estimate remaining time based on current progress percentage
+  - Display as "~X minutter igjen" or "~X sekunder igjen"
+  - Update countdown every second
+  - Handle edge case: If over estimated time, show "Snart ferdig..."
+
+- Task 5: Implement polling mechanism for real-time status (AC: Real-time progress)
+  - Poll `/api/songs/[id]` endpoint every 5 seconds
+  - Extract song status from API response: 'generating', 'completed', 'failed'
+  - Update progress percentage based on estimated time and elapsed time
+  - Stop polling when status becomes 'completed' or 'failed'
+  - Handle network errors gracefully (retry with exponential backoff)
+  - Cleanup polling interval on component unmount
+
+- Task 6: Implement cancel generation functionality (AC: Cancel button refunds credits)
+  - Add "Avbryt generering" button at bottom of modal (secondary style)
+  - Create `/src/app/api/songs/[id]/cancel/route.ts` endpoint for cancellation
+  - POST to cancel endpoint: Mark song as 'cancelled', refund 10 credits
+  - Use credit refund RPC function: `refund_credits(user_id, 10, song_id)`
+  - Show confirmation dialog: "Er du sikker? Kreditter blir refundert."
+  - On confirm: Call API, close modal, show toast: "Generering avbrutt. 10 kreditter refundert."
+  - Disable cancel button if generation is >90% complete
+
+- Task 7: Implement success celebration animation (AC: Confetti on success)
+  - Install canvas-confetti library: `npm install canvas-confetti`
+  - Trigger confetti animation when status='completed' and progress=100%
+  - Display success message: "🎉 Sangen din er klar!"
+  - Show "Spill av nå" (Play Now) button to proceed to song player
+  - Auto-close modal after 3 seconds or when user clicks button
+  - Confetti colors: Primary red (#E94560) and accent yellow (#FFD93D)
+
+- Task 8: Implement error handling UI (AC: Error message with retry)
+  - Detect when status='failed' from API response
+  - Display error icon (red X or alert triangle)
+  - Show Norwegian error message from API: `song.error_message`
+  - Generic fallback: "Noe gikk galt under genereringen."
+  - Display "Prøv igjen" button (restarts generation flow)
+  - Display "Lukk" button (closes modal, no retry)
+  - Verify credits were refunded (show balance update)
+
+- Task 9: Integration and testing (AC: All)
+  - Test full flow: Click "Generate Song" → Modal opens → Progress updates → Success
+  - Test cancellation: Click "Avbryt" → Confirm → Credits refunded → Modal closes
+  - Test error scenario: Simulate Suno failure → Error UI shown → Retry works
+  - Test time estimates: Verify countdown accuracy and "Snart ferdig" fallback
+  - Test stage transitions: Verify status messages update at correct percentages
+  - Test responsive design: Mobile (full-width) and desktop (centered card)
+  - Test confetti animation: Verify colors and timing
+  - Test accessibility: Keyboard navigation, screen reader announcements
+  - Verify Norwegian UI text throughout
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+**Given** Song generation has been initiated
+**When** The progress modal is displayed
+**Then** I see a full-screen modal overlay with center card (white, rounded)
+**And** Animated progress circle shows 0-100% completion
+**And** Status text updates through stages:
+  - 0-30%: "🎵 AI skriver norske tekster..."
+  - 30-50%: "🎤 Optimerer uttale..."
+  - 50-100%: "🎸 Genererer musikk med Suno..."
+**And** Estimated time remaining displayed: "~2 minutter igjen"
+**And** "Avbryt generering" (Cancel Generation) button at bottom (refunds credits)
+**And** On success: Transition to celebration animation (confetti)
+**And** On error: Display error message with "Prøv igjen" (Retry) button
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- Epic 3: Norwegian Song Creation (CORE) -->
+      <doc>
+        <path>docs/epics/epic-3-norwegian-song-creation-core.md</path>
+        <title>Epic 3: Norwegian Song Creation (CORE)</title>
+        <section>Story 3.6: Create AI Generation Progress Modal Component</section>
+        <snippet>Progress modal displays during 1-3 minute Suno generation. Full-screen overlay, animated progress circle (0-100%), stage messages (0-30%: lyrics, 30-50%: phonetic, 50-100%: Suno), estimated time, cancel button with credit refund, success confetti animation, error UI with retry.</snippet>
+      </doc>
+
+      <!-- UX Design Specification - Progress Modal -->
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>6.1 Custom Component: AI Generation Progress Modal</section>
+        <snippet>Full-screen modal with center card (white, rounded), animated progress circle showing 0-100%, status text through stages, estimated time remaining, cancel button (bottom, ghost style). Non-dismissible during generation. Progress updates via polling /api/songs/[id] every 5 seconds. Success → confetti animation with Playful Nordic colors (#E94560, #FFD93D). Error → red icon + retry button.</snippet>
+      </doc>
+
+      <!-- Architecture - Async Generation Pattern -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>ADR-007: Async Song Generation with Webhook + Polling Fallback</section>
+        <snippet>POST /api/songs/generate returns 202 Accepted with songId. Client polls GET /api/songs/[id] every 5 seconds. Webhook /api/webhooks/suno notifies on completion. Progress calculation: Math.min((elapsedSeconds / estimatedSeconds) * 100, 100). Component structure: Props → State → Effects → Event Handlers → Render. Cleanup polling interval on unmount.</snippet>
+      </doc>
+
+      <!-- Architecture - Component Patterns -->
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Implementation Patterns - Norwegian UI Language</section>
+        <snippet>ALL user-facing content in Norwegian (buttons, labels, messages, tooltips). Code and technical aspects in English (variables, functions, files). Norwegian date formatting: nb-NO locale. Example: "Akkurat nå", "X minutter siden". Norwegian stage messages: "AI skriver norske tekster", "Optimerer uttale", "Genererer musikk med Suno".</snippet>
+      </doc>
+
+      <!-- PRD - Generation Requirements -->
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR16-FR18: Song Generation Progress & Cancellation</section>
+        <snippet>FR16: Users view real-time generation status and progress. FR17: Users can cancel pending requests (credit refund). FR18: System deducts credits upon successful generation, rolls back on failure. Generation time: 1-3 minutes (Suno dependency). Progress transparency critical for user confidence.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <!-- Song Status API Endpoint (Polling) -->
+      <artifact>
+        <path>src/app/api/songs/[id]/route.ts</path>
+        <kind>API Route</kind>
+        <symbol>GET /api/songs/[id]</symbol>
+        <lines>42-314</lines>
+        <reason>Polling endpoint that returns song status ('generating', 'completed', 'failed'), progress percentage, estimated time remaining. Progress calculation: Math.min((elapsedSeconds / estimatedTotal) * 100, 95). Returns Norwegian error messages. Used by modal every 5 seconds.</reason>
+      </artifact>
+
+      <!-- Suno API Wrapper -->
+      <artifact>
+        <path>src/lib/api/suno.ts</path>
+        <kind>API Integration</kind>
+        <symbol>generateSong, getSongStatus, SunoApiError</symbol>
+        <lines>1-423</lines>
+        <reason>Suno API types and functions: SunoModel types ('V3_5', 'V4', 'V4_5', 'V4_5PLUS', 'V5'), SunoGenerateResponse with taskId, SunoTaskStatusResponse with status states, custom SunoApiError class with Norwegian messages. Status states: PENDING, TEXT_SUCCESS, FIRST_SUCCESS, SUCCESS, CREATE_TASK_FAILED, GENERATE_AUDIO_FAILED, CALLBACK_EXCEPTION, SENSITIVE_WORD_ERROR.</reason>
+      </artifact>
+
+      <!-- Credit Transaction Functions -->
+      <artifact>
+        <path>src/lib/credits/transaction.ts</path>
+        <kind>Utility Module</kind>
+        <symbol>deductCredits, refundCredits, InsufficientCreditsError, CreditOperationError</symbol>
+        <lines>1-174</lines>
+        <reason>Atomic credit operations for cancellation refunds. refundCredits(userId, 10, 'Cancelled song generation', songId) creates compensating transaction. Error types: InsufficientCreditsError (insufficient credits), CreditOperationError (database failure). Uses RPC functions for atomicity.</reason>
+      </artifact>
+
+      <!-- shadcn/ui Dialog Component -->
+      <artifact>
+        <path>src/components/ui/dialog.tsx</path>
+        <kind>UI Component (shadcn/ui)</kind>
+        <symbol>Dialog, DialogContent, DialogOverlay, DialogHeader, DialogTitle, DialogDescription</symbol>
+        <lines>1-122</lines>
+        <reason>Radix UI Dialog wrapper with animations. Use DialogOverlay for backdrop (fixed inset-0, bg-black/80), DialogContent for modal card (fixed center, rounded, shadow). Includes DialogHeader, DialogTitle, DialogDescription for content structure. Auto close button with X icon.</reason>
+      </artifact>
+
+      <!-- Example Modal Component Pattern -->
+      <artifact>
+        <path>src/components/credit-purchase-modal.tsx</path>
+        <kind>Component</kind>
+        <symbol>CreditPurchaseModal</symbol>
+        <lines>1-127</lines>
+        <reason>Reference implementation of modal pattern: useState for loading state, Dialog with open/onOpenChange props, DialogContent with DialogHeader/Title/Description structure, loading spinner with Loader2 icon, error handling with console.error + alert. Pattern to follow for progress modal.</reason>
+      </artifact>
+
+      <!-- Type Definitions -->
+      <artifact>
+        <path>src/types/song.ts</path>
+        <kind>Type Definitions</kind>
+        <symbol>Song types</symbol>
+        <lines>all</lines>
+        <reason>TypeScript types for Song model (id, title, genre, status, audio_url, etc.). Status type: 'generating' | 'completed' | 'failed'. Used for polling response typing.</reason>
+      </artifact>
+
+      <artifact>
+        <path>src/types/credit.ts</path>
+        <kind>Type Definitions</kind>
+        <symbol>Credit types</symbol>
+        <lines>all</lines>
+        <reason>CreditTransaction types, DeductCreditsParams, RefundCreditsParams. Error types: InsufficientCreditsError, CreditOperationError. Used for cancellation refund operations.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <!-- Node.js / Next.js -->
+      <node>
+        <package name="next" version="^14.2.3">App Router, API routes, server components</package>
+        <package name="react" version="^18.2.0">Hooks: useState, useEffect, useRef for polling logic</package>
+        <package name="react-dom" version="^18.2.0">Client-side rendering</package>
+      </node>
+
+      <!-- shadcn/ui Components (Radix UI) -->
+      <shadcn-ui>
+        <package name="@radix-ui/react-dialog" version="^1.1.15">Dialog, DialogContent, DialogOverlay for modal</package>
+        <package name="@radix-ui/react-progress" version="^1.1.8">Progress component for circular progress indicator</package>
+        <package name="@radix-ui/react-toast" version="^1.2.15">Toast notifications for success/error messages</package>
+      </shadcn-ui>
+
+      <!-- UI / Styling -->
+      <ui>
+        <package name="lucide-react" version="^0.554.0">Icons: Loader2 for spinner, X for close button, CheckCircle for success</package>
+        <package name="class-variance-authority" version="^0.7.1">CVA for component variants</package>
+        <package name="clsx" version="^2.1.1">Conditional className utility</package>
+        <package name="tailwind-merge" version="^3.4.0">Merge Tailwind classes without conflicts</package>
+        <package name="tailwindcss-animate" version="^1.0.7">Animation utilities for transitions</package>
+      </ui>
+
+      <!-- Task 7: Confetti Animation (NEW DEPENDENCY) -->
+      <confetti>
+        <package name="canvas-confetti" version="latest">SUCCESS celebration animation. Install: npm install canvas-confetti. Import: import confetti from 'canvas-confetti'. Usage: confetti({ colors: ['#E94560', '#FFD93D'] })</package>
+      </confetti>
+
+      <!-- Backend Services -->
+      <backend>
+        <package name="@supabase/supabase-js" version="^2.84.0">Supabase client for database queries</package>
+        <package name="@supabase/ssr" version="^0.7.0">Server-side auth helpers</package>
+      </backend>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <!-- Norwegian UI Language (CRITICAL) -->
+    <constraint>
+      ALL user-facing text MUST be in Norwegian (buttons, labels, stage messages, error messages, time estimates).
+      Example stage messages:
+      - 0-30%: "🎵 AI skriver norske tekster..."
+      - 30-50%: "🎤 Optimerer uttale..."
+      - 50-100%: "🎸 Genererer musikk med Suno..."
+      Example time: "~2 minutter igjen", "~30 sekunder igjen", "Snart ferdig..."
+      Example cancel button: "Avbryt generering"
+      Example confirmation: "Er du sikker? Kreditter blir refundert."
+      Example success: "🎉 Sangen din er klar!"
+      Example error: "Noe gikk galt under genereringen."
+      Code/variables/functions remain in English.
+    </constraint>
+
+    <!-- Polling Pattern -->
+    <constraint>
+      Poll /api/songs/[id] every 5 seconds using setInterval in useEffect.
+      Stop polling when status becomes 'completed' or 'failed'.
+      Cleanup interval on component unmount: clearInterval(intervalId).
+      Set max polling attempts: 60 attempts × 5s = 5 minutes max.
+      Handle network errors gracefully (retry with exponential backoff: 1s, 2s, 4s).
+      Progress calculation: Math.min((elapsedSeconds / estimatedSeconds) * 100, 100).
+      If elapsedSeconds > estimatedSeconds, show "Snart ferdig..." instead of negative time.
+    </constraint>
+
+    <!-- Component Structure -->
+    <constraint>
+      Use shadcn/ui Dialog component as modal base.
+      Modal MUST be non-dismissible during generation (no close X button, no click outside to close).
+      Only dismissible via: 1) Cancel button (before 90% complete), 2) Success completion, 3) Error state.
+      Full-screen overlay: backdrop-blur-sm bg-black/50.
+      Center card: bg-white rounded-lg shadow-xl p-8, max-width 600px on desktop, 95% width on mobile.
+      Responsive: full-width on mobile, centered card on desktop.
+    </constraint>
+
+    <!-- Progress Stages -->
+    <constraint>
+      Stage 1 (0-30%): "🎵 AI skriver norske tekster..."
+      Stage 2 (30-50%): "🎤 Optimerer uttale..."
+      Stage 3 (50-100%): "🎸 Genererer musikk med Suno..."
+      Calculate current stage based on progress percentage.
+      Add fade transition (CSS transition) when switching between stages.
+      Display emoji + text below progress circle.
+    </constraint>
+
+    <!-- Credit Refund on Cancellation -->
+    <constraint>
+      Cancel button must: 1) Show confirmation dialog, 2) Call /api/songs/[songId]/cancel endpoint, 3) Refund 10 credits via refundCredits() RPC function, 4) Stop polling, 5) Close modal, 6) Show toast: "Generering avbrutt. 10 kreditter refundert."
+      Disable cancel button if progress > 90% (too late to cancel, Suno may finish before cancel processes).
+      Create new API route: /src/app/api/songs/[id]/cancel/route.ts.
+      POST handler: Verify user owns song (RLS), update song status to 'cancelled', call refundCredits(user_id, 10, 'Cancelled song generation', song_id), return success.
+    </constraint>
+
+    <!-- Success Celebration -->
+    <constraint>
+      When status='completed' AND progress=100%, trigger confetti animation using canvas-confetti library.
+      Confetti colors: Primary red (#E94560) and accent yellow (#FFD93D).
+      Display success message: "🎉 Sangen din er klar!"
+      Show "Spill av nå" (Play Now) button to proceed to song player.
+      Auto-close modal after 3 seconds OR when user clicks button.
+      Trigger confetti ONCE (use flag to prevent multiple triggers).
+    </constraint>
+
+    <!-- Error Handling -->
+    <constraint>
+      Detect status='failed' from API response.
+      Display error icon (red X or alert triangle from lucide-react).
+      Show Norwegian error message from API: song.error_message.
+      Generic fallback: "Noe gikk galt under genereringen."
+      Display two buttons: "Prøv igjen" (Retry - restarts flow), "Lukk" (Close - dismisses modal).
+      Verify credits were refunded (check balance update or transaction log).
+    </constraint>
+
+    <!-- Accessibility -->
+    <constraint>
+      ARIA role="dialog" with aria-labelledby pointing to title.
+      ARIA role="progressbar" with aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}.
+      ARIA live region for status updates (aria-live="polite").
+      Keyboard: Escape key to cancel (if <90% complete).
+      Focus trap within modal during generation.
+      Screen reader announcements for stage transitions.
+    </constraint>
+
+    <!-- Testing Requirements -->
+    <constraint>
+      Test full flow: Click "Generate Song" → Modal opens → Progress updates → Success.
+      Test cancellation: Click "Avbryt" → Confirm → Credits refunded → Modal closes.
+      Test error scenario: Simulate Suno failure (status='failed') → Error UI shown → Retry works.
+      Test time estimates: Verify countdown accuracy and "Snart ferdig" fallback when over estimated time.
+      Test stage transitions: Verify status messages update at correct percentages (0%, 30%, 50%, 100%).
+      Test responsive design: Mobile (full-width) and desktop (centered card).
+      Test confetti animation: Verify colors (#E94560, #FFD93D) and timing (once on success).
+      Test accessibility: Keyboard navigation, screen reader announcements, focus trap.
+      Verify Norwegian UI text throughout all states.
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <!-- Polling API Interface -->
+    <interface>
+      <name>GET /api/songs/[id]</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+        Request: GET /api/songs/[id]
+        Response (status='generating'):
+        {
+          data: {
+            id: string,
+            title: string,
+            status: 'generating',
+            progress: number (0-95),
+            estimatedTimeRemaining: number (seconds),
+            createdAt: string,
+            updatedAt: string
+          }
+        }
+        Response (status='completed'):
+        {
+          data: {
+            id: string,
+            title: string,
+            status: 'completed',
+            audioUrl: string (signed URL),
+            duration: number,
+            createdAt: string
+          }
+        }
+        Response (status='failed'):
+        {
+          data: {
+            id: string,
+            status: 'failed',
+            errorMessage: string (Norwegian)
+          }
+        }
+      </signature>
+      <path>src/app/api/songs/[id]/route.ts:42-314</path>
+    </interface>
+
+    <!-- Cancellation API Interface (TO BE CREATED) -->
+    <interface>
+      <name>POST /api/songs/[id]/cancel</name>
+      <kind>REST API Endpoint (TO CREATE)</kind>
+      <signature>
+        Request: POST /api/songs/[id]/cancel
+        Response (success):
+        {
+          data: {
+            message: 'Song generation cancelled',
+            creditsRefunded: 10,
+            newBalance: number
+          }
+        }
+        Response (error):
+        {
+          error: {
+            code: 'CANCELLATION_FAILED',
+            message: 'Norwegian error message'
+          }
+        }
+      </signature>
+      <path>src/app/api/songs/[id]/cancel/route.ts (TO CREATE)</path>
+    </interface>
+
+    <!-- Credit Refund RPC Function -->
+    <interface>
+      <name>refundCredits</name>
+      <kind>Database RPC Function (Supabase)</kind>
+      <signature>
+        async function refundCredits(
+          userId: string,
+          amount: number,
+          description: string,
+          songId?: string
+        ): Promise&lt;CreditTransaction&gt;
+
+        Throws: CreditOperationError if database operation fails
+      </signature>
+      <path>src/lib/credits/transaction.ts:123-149</path>
+    </interface>
+
+    <!-- Component Props Interface -->
+    <interface>
+      <name>GenerationProgressModalProps</name>
+      <kind>React Component Props</kind>
+      <signature>
+        interface GenerationProgressModalProps {
+          open: boolean              // Modal open state
+          songId: string              // Song UUID to poll status
+          onComplete: (audioUrl: string) => void  // Callback when generation succeeds
+          onCancel: () => void        // Callback when user cancels
+          onError: (error: string) => void        // Callback when generation fails
+        }
+      </signature>
+      <path>src/components/generation-progress-modal.tsx (TO CREATE)</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      No formal test framework configured yet (Story 1.1-1.6 focused on foundation).
+      Manual testing approach for MVP:
+      - Component testing: Render in isolation, verify UI states manually
+      - Integration testing: Test with real Suno API calls using test credits
+      - E2E testing: Manual flow testing from "Generate Song" button through completion
+      - Accessibility testing: Manual keyboard navigation, screen reader testing (NVDA/JAWS)
+      Future: Add Jest + React Testing Library for automated component tests
+    </standards>
+    <locations>
+      No test directory structure yet.
+      Future structure (recommended):
+      - src/components/__tests__/ - Component unit tests
+      - src/app/api/__tests__/ - API route tests
+      - tests/e2e/ - End-to-end tests
+    </locations>
+    <ideas>
+      <!-- Map to Acceptance Criteria -->
+      <test id="AC1" criteria="Full-screen modal overlay with center card">
+        Test: Render component, verify DialogOverlay has bg-black/50, DialogContent has white bg + rounded corners + centered position. Check responsive: mobile full-width, desktop max-width 600px.
+      </test>
+
+      <test id="AC2" criteria="Animated progress circle shows 0-100%">
+        Test: Mock polling response with progress values (0%, 25%, 50%, 75%, 100%). Verify progress circle updates smoothly. Check percentage number displayed in center. Verify pulsing animation during generation.
+      </test>
+
+      <test id="AC3" criteria="Status text updates through stages">
+        Mock progress values: 15% → verify "🎵 AI skriver norske tekster...", 40% → verify "🎤 Optimerer uttale...", 75% → verify "🎸 Genererer musikk med Suno...". Test fade transition between stages.
+      </test>
+
+      <test id="AC4" criteria="Estimated time remaining displayed">
+        Mock API response with estimatedTimeRemaining: 120s → verify displays "~2 minutter igjen". Mock 30s → verify "~30 sekunder igjen". Mock elapsed > estimated → verify "Snart ferdig...". Test countdown updates every second.
+      </test>
+
+      <test id="AC5" criteria="Cancel button refunds credits">
+        Test: Click "Avbryt generering" → verify confirmation dialog shows "Er du sikker? Kreditter blir refundert." → confirm → verify POST /api/songs/[id]/cancel called → verify refundCredits() RPC executed → verify toast shows "Generering avbrutt. 10 kreditter refundert." → verify modal closes. Test cancel button disabled when progress > 90%.
+      </test>
+
+      <test id="AC6" criteria="Success: confetti animation">
+        Mock polling response: status='completed' + progress=100% → verify confetti fires ONCE with colors #E94560 and #FFD93D → verify success message "🎉 Sangen din er klar!" → verify "Spill av nå" button appears → verify modal auto-closes after 3s or on button click.
+      </test>
+
+      <test id="AC7" criteria="Error: retry button">
+        Mock polling response: status='failed' + errorMessage → verify red error icon displays → verify Norwegian error message shown → verify "Prøv igjen" button visible → click → verify restarts generation flow → verify "Lukk" button dismisses modal.
+      </test>
+
+      <test id="ALL" criteria="Integration and E2E testing">
+        Manual E2E test: 1) Generate real song with test credits → verify modal appears → observe progress updates → verify success confetti → verify song playable. 2) Generate song → cancel at 50% → verify credits refunded. 3) Force Suno error → verify error UI. 4) Test on mobile device (Chrome iOS/Android) → verify responsive layout. 5) Test with screen reader (NVDA) → verify announcements.
+      </test>
+    </ideas>
+  </tests>
+</story-context>
