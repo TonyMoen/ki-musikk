@@ -1,0 +1,193 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>7</storyId>
+    <title>Implement Webhook Handler for Suno Completion</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-24</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-7-implement-webhook-handler-for-suno-completion.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>to receive Suno completion webhooks and download audio files immediately</iWant>
+    <soThat>songs are available to users as soon as Suno finishes generation</soThat>
+    <tasks>
+- Task 1: Create webhook endpoint structure (AC: Webhook receives and processes Suno callbacks)
+  - Create `/src/app/api/webhooks/suno/route.ts` with POST handler
+  - Parse incoming webhook payload (JSON body)
+  - Extract song ID, audio URL, duration, status from webhook payload
+  - Add CORS headers if needed for sunoapi.org webhooks
+  - Return 200 OK response immediately (acknowledge receipt)
+  - Log all webhook events for debugging and monitoring
+
+- Task 2: Implement webhook signature verification (AC: Security - verify request authenticity)
+  - Add SUNO_WEBHOOK_SECRET to environment variables (.env.local)
+  - Extract signature from webhook headers (e.g., x-suno-signature)
+  - Compute expected signature using HMAC-SHA256 with secret + payload
+  - Compare computed signature with received signature
+  - Return 401 Unauthorized if signature mismatch
+  - Log signature verification failures for security monitoring
+
+- Task 3: Download audio file from Suno (AC: Download before 3-day auto-deletion)
+  - Extract audio_url from webhook payload
+  - Use fetch() or axios to download audio file from Suno URL
+  - Stream download to buffer or temp file (handle large files efficiently)
+  - Verify download successful (check Content-Type: audio/mpeg)
+  - Handle download errors gracefully (log + retry once)
+  - Set timeout: 30 seconds max (Suno files are typically 3-5MB)
+
+- Task 4: Upload audio to Supabase Storage (AC: Store in `songs` bucket)
+  - Initialize Supabase server client with service role key
+  - Generate unique file path: `songs/{userId}/{songId}.mp3`
+  - Upload downloaded audio buffer to Supabase Storage bucket `songs`
+  - Set content type: `audio/mpeg`
+  - Verify upload successful (check for error response)
+  - Generate signed URL with 24-hour expiration for client access
+  - Handle storage errors (log + return error response)
+
+- Task 5: Update song record in database (AC: Status='completed', audio_url, duration)
+  - Query song by Suno song ID from webhook payload
+  - Verify song exists and is currently status='generating'
+  - Update song record atomically: status='completed', audio_url, duration_seconds, updated_at
+  - Use RLS policies to ensure only service role can update
+  - Handle race condition: Check if already updated (idempotency)
+
+- Task 6: Implement idempotency for duplicate webhooks (AC: Handle webhook firing multiple times)
+  - Check song current status before processing
+  - If status='completed', return 200 OK immediately (already processed)
+  - If status='cancelled', return 200 OK (skip processing, credits already refunded)
+  - If status='failed', log warning (unexpected state)
+  - Only process if status='generating' (expected state)
+  - Prevent duplicate downloads and storage uploads
+
+- Task 7: Implement error handling and rollback (AC: Graceful failure handling)
+  - Wrap entire webhook handler in try-catch block
+  - If download fails: Mark song as 'failed', log error, return 500
+  - If storage upload fails: Mark song as 'failed', log error, return 500
+  - If database update fails: Log error, retry once, return 500
+  - Store error_message in song record for user visibility
+  - Do NOT refund credits on webhook failure (generation completed, issue is download)
+  - Log all errors with full context for debugging
+
+- Task 8: Add monitoring and logging (AC: Observability for webhook processing)
+  - Log webhook received event: timestamp, song ID, Suno song ID
+  - Log signature verification result (success/failure)
+  - Log download progress: started, size, completed
+  - Log storage upload progress: started, size, completed
+  - Log database update result: success/failure
+  - Log total processing time (target: <10 seconds)
+  - Use structured logging format for easier querying
+
+- Task 9: Test webhook flow end-to-end (AC: All acceptance criteria verified)
+  - Test successful webhook: Verify audio downloaded, uploaded, song updated
+  - Test signature verification: Send webhook with invalid signature, verify 401 response
+  - Test idempotency: Send duplicate webhook, verify no duplicate processing
+  - Test download failure: Mock failed download, verify song marked as 'failed'
+  - Test storage upload failure: Mock failed upload, verify error handling
+  - Test cancelled song: Send webhook for cancelled song, verify skipped processing
+  - Test completed song: Send webhook for completed song, verify skipped processing
+  - Verify signed URL accessibility: Fetch audio from signed URL in browser
+  - Test performance: Verify total processing time <10 seconds
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+**Given** Suno has completed song generation
+**When** Suno webhook calls `/api/webhooks/suno`
+**Then** Webhook verifies request signature (security)
+**And** Audio file is downloaded from Suno URL immediately (before 3-day auto-deletion)
+**And** Audio file is uploaded to Supabase Storage bucket `songs`
+**And** Song record is updated: status='completed', audio_url={signed URL}, duration_seconds
+**And** User receives notification if they're still online
+**And** If webhook fails, polling fallback detects completion within 10 seconds
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <artifact path="docs/architecture.md" title="Architecture Document" section="ADR-007: Async Song Generation with Webhook + Polling Fallback">
+        Defines the async generation pattern: webhook (primary) with polling fallback. Webhook downloads audio from Suno, updates database, and client polling detects status change. Includes security requirements (signature verification) and idempotency patterns.
+      </artifact>
+      <artifact path="docs/architecture.md" title="Architecture Document" section="Webhook Endpoints">
+        POST /api/webhooks/suno - Receives Suno song completion notification, downloads audio file to Supabase Storage, updates song status in database.
+      </artifact>
+      <artifact path="docs/architecture.md" title="Architecture Document" section="Integration Points - Suno API Integration">
+        Async pattern with webhook callback on completion. Fallback to polling if webhook fails. Webhook must download audio before 3-day Suno expiration and update song status.
+      </artifact>
+      <artifact path="docs/prd.md" title="Product Requirements Document" section="FR17: Song Generation & Processing">
+        System automatically downloads and stores generated songs from Suno API with immediate transfer to prevent 3-day auto-deletion.
+      </artifact>
+      <artifact path="docs/prd.md" title="Product Requirements Document" section="FR66-FR70: Error Handling & Resilience">
+        System gracefully handles Suno API failures, implements automatic retry logic, maintains session state during downtime, provides fallback mechanisms for webhook failures (polling), and prevents double-charging on concurrent requests.
+      </artifact>
+      <artifact path="docs/epics/epic-3-norwegian-song-creation-core.md" title="Epic 3" section="Story 3.7: Implement Webhook Handler for Suno Completion">
+        Complete story specification with acceptance criteria: verify signature, download audio immediately, upload to Supabase Storage, update database, handle idempotency, and provide polling fallback.
+      </artifact>
+    </docs>
+    <code>
+      <artifact path="src/lib/supabase/server.ts" kind="library" symbol="createClient" reason="Server-side Supabase client pattern. NOTE: Webhook needs SERVICE ROLE client (not this RLS-enforced client) to update song records without user session."/>
+      <artifact path="src/app/api/webhooks/stripe/route.ts" kind="webhook" symbol="POST handler" reason="Reference pattern for webhook handling: signature verification, idempotency check (stripe_session_id), service role client usage, structured error responses, comprehensive logging."/>
+      <artifact path="src/lib/api/suno.ts" kind="api-wrapper" symbol="SunoApiError, generateSong, getSongStatus" reason="Suno API integration types and error handling patterns. Webhook will receive callbacks from Suno after calling generateSong with callBackUrl parameter."/>
+      <artifact path="src/types/song.ts" kind="types" symbol="Song interface" lines="32-51" reason="Song database schema including status field ('generating' | 'completed' | 'failed' | 'cancelled'), audio_url, duration_seconds, error_message. Webhook updates these fields."/>
+      <artifact path="src/app/api/songs/generate/route.ts" kind="api-route" symbol="POST handler" reason="Song generation endpoint that calls Suno API. Webhook is the callback for this async operation. Review for song creation and credit deduction patterns."/>
+      <artifact path="src/app/api/songs/[id]/route.ts" kind="api-route" symbol="GET handler" reason="Song status polling endpoint used as fallback if webhook fails. Webhook and polling endpoint share the same database update logic."/>
+    </code>
+    <dependencies>
+      <node>
+        <package name="next" version="14.2.3">Next.js framework with App Router for API routes</package>
+        <package name="@supabase/supabase-js" version="2.84.0">Supabase client for database operations and storage uploads (will use createClient with service role key)</package>
+        <package name="typescript" version="5">TypeScript for type-safe webhook payload handling</package>
+        <package name="crypto" version="built-in">Node.js crypto module for HMAC-SHA256 signature verification</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="security">Must use SUPABASE_SERVICE_ROLE_KEY (not ANON_KEY) for webhook operations to bypass RLS and update song records without user session context.</constraint>
+    <constraint type="security">Must verify webhook signature using HMAC-SHA256 with SUNO_WEBHOOK_SECRET to prevent spoofing attacks. Return 401 Unauthorized if signature mismatch.</constraint>
+    <constraint type="idempotency">Must check song status before processing. If already 'completed' or 'cancelled', return 200 OK immediately without re-downloading audio. Prevents duplicate processing if webhook fires multiple times.</constraint>
+    <constraint type="performance">Must download audio file before Suno's 3-day auto-deletion deadline. Target total processing time: less than 10 seconds (download + upload + database update).</constraint>
+    <constraint type="storage">Upload to Supabase Storage bucket 'songs' with path format: songs/{userId}/{songId}.mp3. Generate signed URL with 24-hour expiration for secure client access.</constraint>
+    <constraint type="error-handling">If download or upload fails, mark song status='failed' with Norwegian error message in error_message field. Do NOT refund credits (generation completed, issue is download/storage).</constraint>
+    <constraint type="localization">Error messages stored in song.error_message must be in Norwegian (ui_content_language: Norwegian) for user visibility.</constraint>
+    <constraint type="logging">Use structured logging (logInfo, logError from @/lib/utils/logger) for monitoring and debugging. Log all webhook events with context (songId, taskId, processing time).</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="Suno Webhook Payload" kind="API" signature="{taskId: string, status: 'SUCCESS' | 'FAILED', response: {sunoData: [{audioUrl: string, duration: number, ...}]}}" path="Expected from Suno sunoapi.org">
+      Webhook payload structure from Suno API. Extract audioUrl from response.sunoData[0].audioUrl, duration from response.sunoData[0].duration. Status indicates success or failure.
+    </interface>
+    <interface name="Supabase Storage upload" kind="API" signature="supabase.storage.from('songs').upload(path, buffer, {contentType})" path="@supabase/supabase-js">
+      Upload audio file to Supabase Storage. Returns {data, error}. Must use service role client to bypass RLS policies.
+    </interface>
+    <interface name="Supabase Storage signed URL" kind="API" signature="supabase.storage.from('songs').createSignedUrl(path, expiresIn)" path="@supabase/supabase-js">
+      Generate signed URL for secure audio download. expiresIn in seconds (24 hours = 86400). Returns {data: {signedUrl}, error}.
+    </interface>
+    <interface name="Song database update" kind="Database" signature="supabase.from('song').update({status, audio_url, duration_seconds, updated_at}).eq('suno_song_id', taskId)" path="song table">
+      Update song record after successful download/upload. Use suno_song_id (Suno's taskId) to identify the song. Only service role can update without user session.
+    </interface>
+    <interface name="HMAC signature verification" kind="Security" signature="crypto.createHmac('sha256', secret).update(payload).digest('hex')" path="Node.js crypto module">
+      Verify webhook signature using HMAC-SHA256. Compare computed signature with received signature from x-suno-signature header using crypto.timingSafeEqual for timing-attack resistance.
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      End-to-end webhook testing with real Suno payloads (if available) or mocked payloads matching Suno's structure. Test all status transitions: generating → completed, generating → failed. Verify signature verification, idempotency, download/upload, and database updates. Use structured logging assertions to verify observability.
+    </standards>
+    <locations>
+      Co-located test file: src/app/api/webhooks/suno/route.test.ts (if testing infrastructure exists). Otherwise manual testing with curl or Postman to simulate webhook calls with valid/invalid signatures and various payloads.
+    </locations>
+    <ideas>
+      <idea ac="AC1: Signature verification">Send webhook with invalid signature, verify 401 Unauthorized response. Send webhook with valid signature, verify 200 OK and processing continues.</idea>
+      <idea ac="AC2: Successful webhook flow">Mock Suno webhook with SUCCESS status and audioUrl. Verify audio downloaded from audioUrl, uploaded to Supabase Storage, signed URL generated, song status updated to 'completed', audio_url and duration_seconds populated.</idea>
+      <idea ac="AC3: Idempotency">Send duplicate webhook for already-completed song. Verify returns 200 OK immediately without re-downloading or re-uploading audio.</idea>
+      <idea ac="AC4: Cancelled song handling">Send webhook for cancelled song (status='cancelled'). Verify returns 200 OK without processing (credits already refunded).</idea>
+      <idea ac="AC5: Download failure">Mock failed fetch() for audio download. Verify song status updated to 'failed' with Norwegian error message, no upload attempted, error logged.</idea>
+      <idea ac="AC6: Upload failure">Mock successful download but failed Supabase Storage upload. Verify song status='failed', error message set, error logged.</idea>
+      <idea ac="AC7: Performance">Time full webhook processing. Verify total time less than 10 seconds for typical 3-5MB audio file.</idea>
+      <idea ac="AC8: Signed URL accessibility">After successful webhook, fetch audio from signed URL in browser or with curl. Verify file downloads correctly and plays in audio player.</idea>
+    </ideas>
+  </tests>
+</story-context>
