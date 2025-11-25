@@ -86,7 +86,7 @@ development_status:
   # Enables users to manage, replay, download, and organize their songs
   # Note: 14-day auto-deletion with no warnings (background job)
   epic-4: backlog
-  4-1-create-my-songs-page-with-track-list: ready-for-dev
+  4-1-create-my-songs-page-with-track-list: done
   4-2-implement-song-detail-modal-with-full-player: backlog
   4-3-implement-song-download-functionality: backlog
   4-4-implement-song-deletion-with-confirmation: backlog
