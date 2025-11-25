@@ -60,7 +60,7 @@ development_status:
   epic-2: contexted
   2-1-implement-google-oauth-authentication: done
   2-2-display-user-profile-with-credit-balance: done
-  2-3-implement-credit-purchase-flow-with-stripe-checkout: review
+  2-3-implement-credit-purchase-flow-with-stripe-checkout: done
   2-4-display-credit-transaction-history: review
   2-5-implement-credit-balance-warnings: review
   2-6-implement-atomic-credit-deduction-with-rollback: review
