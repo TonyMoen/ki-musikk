@@ -133,7 +133,7 @@ development_status:
   # BLOCKS: None (but enhances all user-facing pages)
   # Dependencies: Epic 2 (User Authentication & Credit System)
   epic-9: backlog
-  9-1-responsive-header-with-navigation-and-auth-state: ready-for-dev
+  9-1-responsive-header-with-navigation-and-auth-state: review
   9-2-footer-component-with-essential-links: backlog
   9-3-layout-integration-and-consistency: backlog
   epic-9-retrospective: optional

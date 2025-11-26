@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Header } from "@/components/layout/header";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { LowCreditWarningWrapper } from "@/components/low-credit-warning-wrapper";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,10 +29,13 @@ export default async function RootLayout({
 
   return (
     <html lang="nb">
-      <body>
+      <body className="min-h-screen flex flex-col">
         <TooltipProvider delayDuration={400}>
+          <Header />
           <LowCreditWarningWrapper userId={user?.id} />
-          {children}
+          <main className="flex-1 pt-16 pb-16 md:pb-0">
+            {children}
+          </main>
           <BottomNavigation />
         </TooltipProvider>
       </body>

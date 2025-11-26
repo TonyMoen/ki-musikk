@@ -1,6 +1,6 @@
 # Story 9.1: Responsive Header with Navigation and Auth State
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -67,55 +67,55 @@ so that I can easily navigate the app and always know my credit balance.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create Header Component Structure (AC: #1, #2, #5)
-  - [ ] Create `/src/components/layout/header.tsx` - main header component
-  - [ ] Implement sticky header with `fixed top-0` positioning
-  - [ ] Create logo component with link to home page
-  - [ ] Add skeleton loader for auth loading state
+- [x] Task 1: Create Header Component Structure (AC: #1, #2, #5)
+  - [x] Create `/src/components/layout/header.tsx` - main header component
+  - [x] Implement sticky header with `fixed top-0` positioning
+  - [x] Create logo component with link to home page
+  - [x] Add skeleton loader for auth loading state
 
-- [ ] Task 2: Create Desktop Navigation (AC: #1, #2)
-  - [ ] Add navigation links for "Mine Sanger", "Priser" (visible when logged in)
-  - [ ] Add "Priser" only (visible when logged out)
-  - [ ] Style active link state
-  - [ ] Use Next.js Link component for client-side navigation
+- [x] Task 2: Create Desktop Navigation (AC: #1, #2)
+  - [x] Add navigation links for "Mine Sanger", "Priser" (visible when logged in)
+  - [x] Add "Priser" only (visible when logged out)
+  - [x] Style active link state
+  - [x] Use Next.js Link component for client-side navigation
 
-- [ ] Task 3: Create User Menu Dropdown (AC: #1, #6)
-  - [ ] Create `/src/components/layout/user-menu.tsx` - dropdown component
-  - [ ] Display user avatar (initials if no picture)
-  - [ ] Display credit balance prominently
-  - [ ] Add dropdown items: "Innstillinger", "Kjøp kreditter", "Logg ut"
-  - [ ] Use shadcn/ui DropdownMenu component
+- [x] Task 3: Create User Menu Dropdown (AC: #1, #6)
+  - [x] Create `/src/components/layout/user-menu.tsx` - dropdown component
+  - [x] Display user avatar (initials if no picture)
+  - [x] Display credit balance prominently
+  - [x] Add dropdown items: "Innstillinger", "Kjøp kreditter", "Logg ut"
+  - [x] Use shadcn/ui DropdownMenu component
 
-- [ ] Task 4: Create Mobile Navigation Sheet (AC: #3, #4)
-  - [ ] Create `/src/components/layout/mobile-nav.tsx` - slide-out navigation
-  - [ ] Add hamburger menu icon trigger
-  - [ ] Implement full navigation menu items
-  - [ ] Add close button and outside-click dismiss
-  - [ ] Use shadcn/ui Sheet component
+- [x] Task 4: Create Mobile Navigation Sheet (AC: #3, #4)
+  - [x] Create `/src/components/layout/mobile-nav.tsx` - slide-out navigation
+  - [x] Add hamburger menu icon trigger
+  - [x] Implement full navigation menu items
+  - [x] Add close button and outside-click dismiss
+  - [x] Use shadcn/ui Sheet component
 
-- [ ] Task 5: Integrate Auth State (AC: #1, #2, #3, #4, #5)
-  - [ ] Use Supabase client to get current session
-  - [ ] Query user's credit balance from user_profile table
-  - [ ] Handle auth loading state with skeleton
-  - [ ] Conditionally render logged in vs logged out views
-  - [ ] Handle sign out functionality
+- [x] Task 5: Integrate Auth State (AC: #1, #2, #3, #4, #5)
+  - [x] Use Supabase client to get current session
+  - [x] Query user's credit balance from user_profile table
+  - [x] Handle auth loading state with skeleton
+  - [x] Conditionally render logged in vs logged out views
+  - [x] Handle sign out functionality
 
-- [ ] Task 6: Add Header to Root Layout (AC: #1, #2, #3, #4)
-  - [ ] Update `/src/app/layout.tsx` to include Header component
-  - [ ] Ensure main content has proper top padding for sticky header
-  - [ ] Test on all existing pages
+- [x] Task 6: Add Header to Root Layout (AC: #1, #2, #3, #4)
+  - [x] Update `/src/app/layout.tsx` to include Header component
+  - [x] Ensure main content has proper top padding for sticky header
+  - [x] Test on all existing pages
 
-- [ ] Task 7: Implement Responsive Breakpoints (AC: #1, #3)
-  - [ ] Mobile view: < 768px (hamburger menu)
-  - [ ] Desktop view: >= 768px (full navigation)
-  - [ ] Test on various screen sizes
+- [x] Task 7: Implement Responsive Breakpoints (AC: #1, #3)
+  - [x] Mobile view: < 768px (hamburger menu)
+  - [x] Desktop view: >= 768px (full navigation)
+  - [x] Test on various screen sizes
 
-- [ ] Task 8: Build Verification and Testing (AC: #7)
-  - [ ] Run `npm run build` - ensure success
-  - [ ] Run `npm run lint` - no errors
-  - [ ] Manual test: Navigation works on desktop and mobile
-  - [ ] Manual test: Auth states display correctly
-  - [ ] Manual test: Credit balance updates
+- [x] Task 8: Build Verification and Testing (AC: #7)
+  - [x] Run `npm run build` - ensure success
+  - [x] Run `npm run lint` - no errors
+  - [x] Manual test: Navigation works on desktop and mobile
+  - [x] Manual test: Auth states display correctly
+  - [x] Manual test: Credit balance updates
 
 ## Dev Notes
 
@@ -288,6 +288,14 @@ export function UserMenu({ user, credits, onSignOut }) {
 
 ## Change Log
 
+**2025-11-26 - Story Completed (review status)**
+- All 8 tasks completed successfully
+- Created header.tsx, user-menu.tsx, mobile-nav.tsx components
+- Installed shadcn/ui components: dropdown-menu, sheet, avatar, skeleton
+- Updated root layout.tsx with Header and proper spacing
+- Build and lint pass with no errors
+- Ready for code review
+
 **2025-11-26 - Story Created (drafted status)**
 - Story drafted by SM agent using create-story workflow
 - Extracted from Epic 9: Core Navigation & Layout Components (Story 9.1)
@@ -305,11 +313,38 @@ export function UserMenu({ user, credits, onSignOut }) {
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
+- Installed missing shadcn/ui components: dropdown-menu, sheet, avatar, skeleton
+- Adapted navigation links since /priser page doesn't exist - linked to /settings?openPurchaseModal=true
+- Used existing credits-store for balance fetching
+- Followed existing patterns from bottom-navigation.tsx
+
 ### Completion Notes List
 
+- Created responsive header with sticky positioning (fixed top-0)
+- Desktop view shows full navigation with Mine Sanger, Priser links for logged-in users
+- Desktop logged-out view shows "Logg inn" and "Kom i gang" buttons
+- Mobile view shows compact header with credit balance and hamburger menu
+- Mobile slide-out Sheet contains all navigation items with user profile info
+- Auth state loading shows skeleton loader to prevent flickering
+- Credit balance displays prominently (desktop: in dropdown trigger, mobile: in header)
+- Balance updates via credits-store (Zustand) with real-time refresh capability
+- Build and lint pass with no errors
+
 ### File List
+
+**Created:**
+- src/components/layout/header.tsx
+- src/components/layout/user-menu.tsx
+- src/components/layout/mobile-nav.tsx
+- src/components/ui/dropdown-menu.tsx (shadcn)
+- src/components/ui/sheet.tsx (shadcn)
+- src/components/ui/avatar.tsx (shadcn)
+- src/components/ui/skeleton.tsx (shadcn)
+
+**Modified:**
+- src/app/layout.tsx (added Header, adjusted main content padding)
 
