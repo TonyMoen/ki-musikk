@@ -98,16 +98,10 @@ development_status:
   # Reason: Social/viral features are growth optimization, not core MVP functionality
   # Decision date: 2025-11-26
 
-  # Epic 6: Premium Features (6 stories)
-  # Canvas generation, mastering service, extended storage
-  epic-6: backlog
-  6-1-implement-canvas-generation-with-google-video-api: backlog
-  6-2-implement-canvas-preview-and-download: backlog
-  6-3-create-mastering-service-booking-flow: backlog
-  6-4-implement-mastering-completion-and-delivery: backlog
-  6-5-implement-sla-miss-auto-refund: backlog
-  6-6-implement-extended-storage-for-premium-users: backlog
-  epic-6-retrospective: optional
+  # Epic 6: Premium Features
+  # DEFERRED TO POST-MVP - Moved to docs/future-enhancements.md
+  # Reason: Secondary revenue streams. MVP focuses on core credits → songs model.
+  # Decision date: 2025-11-26
 
   # Epic 7: User Experience & Help (5 stories)
   # Polishes UX with tooltips, onboarding, help docs, examples

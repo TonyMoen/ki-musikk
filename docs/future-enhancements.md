@@ -123,10 +123,40 @@ Post-MVP features deferred to focus on core value proposition (Norwegian pronunc
 
 **Total Estimated Effort:** 1-2 weeks
 
-### Premium Features (Epic 6 - Post-MVP)
-- [ ] Canvas/album art generation
-- [ ] Mastering service booking
-- [ ] Extended storage (30 days)
+### Epic 6: Premium Features (Full Epic - Post-MVP)
+
+**Why Deferred:** Secondary revenue streams. MVP should validate core value proposition (credits → Norwegian songs) before adding complexity. Mastering service requires manual fulfillment overhead. Extended storage adds unnecessary tier logic.
+
+**Stories Deferred:**
+
+#### Story 6.1-6.2: Canvas/Album Art Generation
+- AI-generated visual canvas using Google Video API / Imagen
+- Custom prompts or auto-generate from song metadata
+- 1024x1024px PNG download
+- Cost: 5 credits per generation
+- **Effort:** Medium
+- **Revisit when:** Users request visual assets for social sharing
+
+#### Story 6.3-6.5: Mastering Service
+- Manual mastering by founder (20 credits / $10)
+- 24-hour SLA with auto-refund on miss
+- Admin dashboard for founder to upload mastered files
+- Email notifications for booking/completion
+- **Effort:** Large (manual fulfillment, admin UI, cron jobs)
+- **Revisit when:** Revenue justifies manual service overhead
+
+#### Story 6.6: Extended Storage (30 days)
+- Premium tier gets 30-day retention vs 14-day standard
+- Tier based on credit package purchased
+- **Effort:** Small
+- **Revisit when:** Users complain about 14-day limit (validate demand first)
+
+**Implement When:**
+- Canvas: After social sharing features (Epic 5) if users want visuals
+- Mastering: Only if founder capacity and revenue justify it
+- Extended storage: Only if user feedback indicates demand
+
+**Total Estimated Effort:** 2-3 weeks
 
 ---
 
