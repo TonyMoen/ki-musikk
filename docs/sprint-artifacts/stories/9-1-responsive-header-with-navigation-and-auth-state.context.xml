@@ -1,0 +1,360 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>9</epicId>
+    <storyId>1</storyId>
+    <title>Responsive Header with Navigation and Auth State</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/9-1-responsive-header-with-navigation-and-auth-state.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>a consistent header across all pages showing navigation and my account status</iWant>
+    <soThat>I can easily navigate the app and always know my credit balance</soThat>
+    <tasks>
+      <task id="1" ac="1,2,5">
+        <title>Create Header Component Structure</title>
+        <subtasks>
+          <subtask>Create `/src/components/layout/header.tsx` - main header component</subtask>
+          <subtask>Implement sticky header with `fixed top-0` positioning</subtask>
+          <subtask>Create logo component with link to home page</subtask>
+          <subtask>Add skeleton loader for auth loading state</subtask>
+        </subtasks>
+      </task>
+      <task id="2" ac="1,2">
+        <title>Create Desktop Navigation</title>
+        <subtasks>
+          <subtask>Add navigation links for "Mine Sanger", "Priser" (visible when logged in)</subtask>
+          <subtask>Add "Priser" only (visible when logged out)</subtask>
+          <subtask>Style active link state</subtask>
+          <subtask>Use Next.js Link component for client-side navigation</subtask>
+        </subtasks>
+      </task>
+      <task id="3" ac="1,6">
+        <title>Create User Menu Dropdown</title>
+        <subtasks>
+          <subtask>Create `/src/components/layout/user-menu.tsx` - dropdown component</subtask>
+          <subtask>Display user avatar (initials if no picture)</subtask>
+          <subtask>Display credit balance prominently</subtask>
+          <subtask>Add dropdown items: "Innstillinger", "Kjøp kreditter", "Logg ut"</subtask>
+          <subtask>Use shadcn/ui DropdownMenu component</subtask>
+        </subtasks>
+      </task>
+      <task id="4" ac="3,4">
+        <title>Create Mobile Navigation Sheet</title>
+        <subtasks>
+          <subtask>Create `/src/components/layout/mobile-nav.tsx` - slide-out navigation</subtask>
+          <subtask>Add hamburger menu icon trigger</subtask>
+          <subtask>Implement full navigation menu items</subtask>
+          <subtask>Add close button and outside-click dismiss</subtask>
+          <subtask>Use shadcn/ui Sheet component</subtask>
+        </subtasks>
+      </task>
+      <task id="5" ac="1,2,3,4,5">
+        <title>Integrate Auth State</title>
+        <subtasks>
+          <subtask>Use Supabase client to get current session</subtask>
+          <subtask>Query user's credit balance from user_profile table</subtask>
+          <subtask>Handle auth loading state with skeleton</subtask>
+          <subtask>Conditionally render logged in vs logged out views</subtask>
+          <subtask>Handle sign out functionality</subtask>
+        </subtasks>
+      </task>
+      <task id="6" ac="1,2,3,4">
+        <title>Add Header to Root Layout</title>
+        <subtasks>
+          <subtask>Update `/src/app/layout.tsx` to include Header component</subtask>
+          <subtask>Ensure main content has proper top padding for sticky header</subtask>
+          <subtask>Test on all existing pages</subtask>
+        </subtasks>
+      </task>
+      <task id="7" ac="1,3">
+        <title>Implement Responsive Breakpoints</title>
+        <subtasks>
+          <subtask>Mobile view: &lt; 768px (hamburger menu)</subtask>
+          <subtask>Desktop view: &gt;= 768px (full navigation)</subtask>
+          <subtask>Test on various screen sizes</subtask>
+        </subtasks>
+      </task>
+      <task id="8" ac="7">
+        <title>Build Verification and Testing</title>
+        <subtasks>
+          <subtask>Run `npm run build` - ensure success</subtask>
+          <subtask>Run `npm run lint` - no errors</subtask>
+          <subtask>Manual test: Navigation works on desktop and mobile</subtask>
+          <subtask>Manual test: Auth states display correctly</subtask>
+          <subtask>Manual test: Credit balance updates</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1" title="Desktop Header (Logged In)">
+      <given>I am logged in</given>
+      <when>I view any page</when>
+      <then>I see a header with: Logo "Musikkfabrikken" on the left (clickable → home/create page), Navigation links: "Mine Sanger", "Priser", User dropdown on the right showing: Avatar (or initials), credit balance (e.g., "25 kr")</then>
+      <and>User dropdown menu contains: "Innstillinger", "Kjøp kreditter", "Logg ut"</and>
+      <and>Header is sticky (fixed to top on scroll)</and>
+    </ac>
+    <ac id="2" title="Desktop Header (Logged Out)">
+      <given>I am not logged in</given>
+      <when>I view any page</when>
+      <then>I see a header with: Logo "Musikkfabrikken" on the left (clickable → home), Navigation links: "Priser", Auth buttons: "Logg inn" (secondary), "Kom i gang" (primary CTA)</then>
+    </ac>
+    <ac id="3" title="Mobile Header (Logged In)">
+      <given>I am on a mobile device and logged in</given>
+      <when>I view any page</when>
+      <then>I see a compact header with: Logo (icon or short text) on the left, Credit balance indicator (e.g., "25 kr"), Hamburger menu icon on the right</then>
+      <and>Tapping hamburger opens slide-out menu with: "Lag Sang" (home/create), "Mine Sanger", "Priser", "Innstillinger", "Kjøp kreditter", "Logg ut"</and>
+      <and>Menu can be closed by tapping outside or X button</and>
+    </ac>
+    <ac id="4" title="Mobile Header (Logged Out)">
+      <given>I am on a mobile device and not logged in</given>
+      <when>I view any page</when>
+      <then>I see a compact header with: Logo on the left, Hamburger menu with: "Priser", "Logg inn", "Kom i gang"</then>
+    </ac>
+    <ac id="5" title="Loading State">
+      <given>auth state is being determined</given>
+      <when>page loads</when>
+      <then>User area shows skeleton loader (no flickering between logged in/out states)</then>
+    </ac>
+    <ac id="6" title="Credit Balance Display">
+      <given>I am logged in</given>
+      <when>I view any page</when>
+      <then>My current credit balance is displayed prominently in header</then>
+      <and>Balance updates in real-time when credits are used/purchased</and>
+    </ac>
+    <ac id="7" title="Build Verification">
+      <criteria>Production build succeeds with no TypeScript or ESLint errors</criteria>
+    </ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>Project Structure</section>
+        <snippet>Components structure: src/components/layout/ for layout components like header.tsx and footer.tsx. Mobile-first CSS with Tailwind utilities.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>Implementation Patterns - Naming Conventions</section>
+        <snippet>Files: kebab-case.tsx (e.g., header.tsx, user-menu.tsx). Components: PascalCase names. Props interfaces: ComponentNameProps.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>Language &amp; Localization</section>
+        <snippet>All UI text in Norwegian (Bokmål), code in English. Date formatting uses nb-NO locale.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>Authentication Pattern</section>
+        <snippet>Use createServerComponentClient from @supabase/auth-helpers-nextjs for server-side auth. Get session with supabase.auth.getSession().</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Color System - Playful Nordic</section>
+        <snippet>Primary Red: #E94560 (main actions, CTAs). Secondary Navy: #0F3460 (supporting actions, headers). Background: #F8F9FA.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Navigation Patterns</section>
+        <snippet>Bottom navigation bar (mobile): Always visible, fixed at bottom. 3 items: Create | My Songs | Settings. Active state: #E94560 color + icon fill.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Responsive Strategy</section>
+        <snippet>Mobile-First Breakpoints: Mobile &lt;640px, Tablet 640-1024px, Desktop &gt;1024px. Touch targets minimum 48x48px.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Button Hierarchy</section>
+        <snippet>Primary action: #E94560 background, white text, 48px height. Secondary action: #0F3460 background, white text, 44px height.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-9-core-navigation-layout.md</path>
+        <title>Epic 9: Core Navigation &amp; Layout</title>
+        <section>Story 9.1 Technical Notes</section>
+        <snippet>Create header.tsx, mobile-nav.tsx (Sheet), user-menu.tsx (DropdownMenu). Use @supabase/ssr for server-side auth. Responsive breakpoint: 768px.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR3</section>
+        <snippet>Users can view their account profile with credit balance and usage history.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/app/layout.tsx</path>
+        <kind>layout</kind>
+        <symbol>RootLayout</symbol>
+        <lines>21-40</lines>
+        <reason>Root layout where Header component will be added. Currently includes BottomNavigation and TooltipProvider.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/layout/bottom-navigation.tsx</path>
+        <kind>component</kind>
+        <symbol>BottomNavigation</symbol>
+        <lines>1-57</lines>
+        <reason>Existing navigation component showing pattern for active states, credit balance display, and fixed positioning. Use as reference.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/supabase/client.ts</path>
+        <kind>service</kind>
+        <symbol>createClient</symbol>
+        <lines>22-30</lines>
+        <reason>Browser Supabase client for client-side auth state management in header.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>service</kind>
+        <symbol>createClient</symbol>
+        <lines>36-61</lines>
+        <reason>Server Supabase client for getting initial auth state in server components.</reason>
+      </artifact>
+      <artifact>
+        <path>src/stores/credits-store.ts</path>
+        <kind>store</kind>
+        <symbol>useCreditsStore</symbol>
+        <lines>1-31</lines>
+        <reason>Zustand store for credit balance. Use refreshBalance() to update header credit display. Already used in BottomNavigation.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/button.tsx</path>
+        <kind>component</kind>
+        <symbol>Button, buttonVariants</symbol>
+        <lines>1-57</lines>
+        <reason>shadcn/ui Button component with variants. Use for header action buttons.</reason>
+      </artifact>
+      <artifact>
+        <path>src/hooks/use-error-toast.tsx</path>
+        <kind>hook</kind>
+        <symbol>useErrorToast</symbol>
+        <lines>44-109</lines>
+        <reason>Error handling hook for sign-out failures and other header errors. From Story 7.5.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/credit-purchase-modal.tsx</path>
+        <kind>component</kind>
+        <symbol>CreditPurchaseModal</symbol>
+        <reason>Credit purchase modal to open from "Kjøp kreditter" in user menu.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>@supabase/ssr</package>
+        <version>^0.7.0</version>
+        <purpose>Server-side Supabase client for auth</purpose>
+      </node>
+      <node>
+        <package>@supabase/supabase-js</package>
+        <version>^2.84.0</version>
+        <purpose>Supabase client SDK</purpose>
+      </node>
+      <node>
+        <package>zustand</package>
+        <version>^5.0.8</version>
+        <purpose>State management for credits store</purpose>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <version>^0.554.0</version>
+        <purpose>Icons (Menu, X, User, Settings, CreditCard, LogOut)</purpose>
+      </node>
+      <node>
+        <package>@radix-ui/react-dropdown-menu</package>
+        <version>NOT INSTALLED</version>
+        <purpose>REQUIRED: DropdownMenu for user menu - needs `npx shadcn@latest add dropdown-menu`</purpose>
+      </node>
+      <node>
+        <package>@radix-ui/react-navigation-menu</package>
+        <version>NOT INSTALLED</version>
+        <purpose>OPTIONAL: NavigationMenu if needed - can use simple Links instead</purpose>
+      </node>
+      <node>
+        <package>@radix-ui/react-avatar</package>
+        <version>NOT INSTALLED</version>
+        <purpose>REQUIRED: Avatar for user profile picture - needs `npx shadcn@latest add avatar`</purpose>
+      </node>
+      <note>Missing shadcn/ui components: dropdown-menu, sheet, avatar, skeleton - run npx shadcn@latest add dropdown-menu sheet avatar skeleton</note>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint source="architecture">All UI text must be in Norwegian (Bokmål). Code comments and variable names in English.</constraint>
+    <constraint source="architecture">Use kebab-case for file names: header.tsx, user-menu.tsx, mobile-nav.tsx</constraint>
+    <constraint source="architecture">Use PascalCase for component names: Header, UserMenu, MobileNav</constraint>
+    <constraint source="architecture">Props interfaces follow pattern: HeaderProps, UserMenuProps, MobileNavProps</constraint>
+    <constraint source="ux-spec">Primary button color: #E94560 (bg-primary in Tailwind config)</constraint>
+    <constraint source="ux-spec">Touch targets minimum 48x48px for mobile</constraint>
+    <constraint source="ux-spec">Mobile breakpoint: &lt;768px (use md: prefix for desktop styles)</constraint>
+    <constraint source="dev-notes">Header must be sticky with z-50 to stay above content</constraint>
+    <constraint source="dev-notes">Use skeleton loader during auth loading to prevent flicker</constraint>
+    <constraint source="existing-code">Credit balance state from useCreditsStore - same pattern as BottomNavigation</constraint>
+    <constraint source="existing-code">Sign out via supabase.auth.signOut() - handle errors with useErrorToast</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Supabase Auth</name>
+      <kind>SDK</kind>
+      <signature>supabase.auth.getUser() → Promise&lt;{ data: { user: User | null }, error: Error | null }&gt;</signature>
+      <path>src/lib/supabase/server.ts</path>
+    </interface>
+    <interface>
+      <name>Supabase Sign Out</name>
+      <kind>SDK</kind>
+      <signature>supabase.auth.signOut() → Promise&lt;{ error: Error | null }&gt;</signature>
+      <path>src/lib/supabase/client.ts</path>
+    </interface>
+    <interface>
+      <name>Credits Balance API</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/credits/balance → { data: { balance: number } }</signature>
+      <path>src/app/api/credits/balance/route.ts</path>
+    </interface>
+    <interface>
+      <name>useCreditsStore</name>
+      <kind>Zustand store</kind>
+      <signature>{ balance: number, refreshBalance: () =&gt; Promise&lt;void&gt; }</signature>
+      <path>src/stores/credits-store.ts</path>
+    </interface>
+    <interface>
+      <name>User Profile Table</name>
+      <kind>Database</kind>
+      <signature>SELECT credit_balance FROM user_profile WHERE id = auth.uid()</signature>
+      <path>Database: user_profile table</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Manual testing only for MVP. Run npm run build and npm run lint for build verification. Component should render correctly in both auth states (logged in/out) and responsive states (mobile/desktop).</standards>
+    <locations>
+      <location>Manual testing via browser</location>
+      <location>npm run build</location>
+      <location>npm run lint</location>
+    </locations>
+    <ideas>
+      <idea ac="1,2">Test header renders correct nav items for logged in vs logged out</idea>
+      <idea ac="3,4">Test mobile hamburger menu opens/closes correctly</idea>
+      <idea ac="5">Test skeleton loader appears during auth loading</idea>
+      <idea ac="6">Test credit balance updates when credits store changes</idea>
+      <idea ac="7">Verify build completes without errors</idea>
+      <idea ac="1,3">Test Logo click navigates to home page</idea>
+      <idea ac="1">Test user dropdown opens and shows correct menu items</idea>
+      <idea ac="1">Test sign out functionality works and redirects appropriately</idea>
+    </ideas>
+  </tests>
+</story-context>

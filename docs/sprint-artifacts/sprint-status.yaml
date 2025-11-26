@@ -127,3 +127,13 @@ development_status:
   8-7-prevent-double-charging-on-concurrent-requests: backlog
   8-8-create-founder-admin-dashboard: deferred  # Use Supabase Studio + Stripe
   epic-8-retrospective: optional
+
+  # Epic 9: Core Navigation & Layout Components (3 stories)
+  # Establishes consistent site-wide navigation with auth/credit state visibility
+  # BLOCKS: None (but enhances all user-facing pages)
+  # Dependencies: Epic 2 (User Authentication & Credit System)
+  epic-9: backlog
+  9-1-responsive-header-with-navigation-and-auth-state: ready-for-dev
+  9-2-footer-component-with-essential-links: backlog
+  9-3-layout-integration-and-consistency: backlog
+  epic-9-retrospective: optional
