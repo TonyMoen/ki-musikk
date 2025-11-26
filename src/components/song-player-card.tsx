@@ -10,6 +10,8 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
+import { InfoTooltip } from '@/components/info-tooltip'
+import { TOOLTIPS } from '@/lib/constants'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -388,12 +390,15 @@ export function SongPlayerCard({
               {genre}
             </Badge>
             {isPreview && (
-              <Badge
-                className="text-xs bg-[#FFC93C] text-black hover:bg-[#FFC93C]/90"
-                aria-label="Forhåndsvisning"
-              >
-                🔓 FORHÅNDSVISNING
-              </Badge>
+              <span className="flex items-center gap-1">
+                <Badge
+                  className="text-xs bg-[#FFC93C] text-black hover:bg-[#FFC93C]/90"
+                  aria-label="Forhåndsvisning"
+                >
+                  🔓 FORHÅNDSVISNING
+                </Badge>
+                <InfoTooltip content={TOOLTIPS.freePreview} side="bottom" />
+              </span>
             )}
             <span className="text-xs text-muted-foreground">
               {formatDate(createdAt)}
@@ -458,20 +463,23 @@ export function SongPlayerCard({
         </Button>
 
         {/* Download Button */}
-        <Button
-          variant="secondary"
-          onClick={handleDownload}
-          disabled={isDownloading || isLoading || !!error}
-          className="flex items-center gap-2 min-w-[100px]"
-          aria-label="Last ned sang"
-        >
-          {isDownloading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Download className="h-4 w-4" />
-          )}
-          <span className="hidden sm:inline">Last ned</span>
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="secondary"
+            onClick={handleDownload}
+            disabled={isDownloading || isLoading || !!error}
+            className="flex items-center gap-2 min-w-[100px]"
+            aria-label="Last ned sang"
+          >
+            {isDownloading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+            <span className="hidden sm:inline">Last ned</span>
+          </Button>
+          <InfoTooltip content={TOOLTIPS.download} side="top" />
+        </div>
 
         {/* Delete Button */}
         <Button

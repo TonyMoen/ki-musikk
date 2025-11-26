@@ -3,13 +3,8 @@
 
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { Info } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from '@/components/ui/tooltip'
+import { InfoTooltip } from '@/components/info-tooltip'
+import { TOOLTIPS } from '@/lib/constants'
 
 export interface PronunciationToggleProps {
   enabled: boolean
@@ -32,20 +27,7 @@ export function PronunciationToggle({
           Uttalelse Bokmål
         </Label>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs">
-              <p className="text-sm">
-                Optimaliserer norsk uttale automatisk ved å bruke AI til å
-                foreslå fonetiske stavemåter. Dette gir autentisk norsk vokal
-                i stedet for &quot;amerikansk-klingende&quot; resultat.
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <InfoTooltip content={TOOLTIPS.pronunciation} side="right" />
       </div>
 
       <Switch

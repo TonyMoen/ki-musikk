@@ -45,3 +45,16 @@ export const CREDIT_COSTS = {
 } as const
 
 export type CreditCostType = keyof typeof CREDIT_COSTS
+
+/**
+ * Tooltip Constants (Norwegian)
+ * Centralized tooltip content for info icons throughout the app
+ */
+export const TOOLTIPS = {
+  pronunciation: 'Forbedrer automatisk norsk uttale for Suno AI',
+  credits: '1 kreditt ≈ kr 5. Full sang koster 10 kreditter.',
+  freePreview: '30-sekunders forhåndsvisning for å høre sangen din før kjøp',
+  download: 'Last ned hele sangen som MP3 (tilgjengelig i 14 dager)',
+} as const
+
+export type TooltipKey = keyof typeof TOOLTIPS

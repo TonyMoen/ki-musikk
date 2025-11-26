@@ -1,0 +1,283 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>2</storyId>
+    <title>Create Onboarding Flow for First-Time Users</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/7-2-create-onboarding-flow-for-first-time-users.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>new user</asA>
+    <iWant>guided onboarding when I first use Musikkfabrikken</iWant>
+    <soThat>I understand how to create my first Norwegian song</soThat>
+    <tasks>
+      <task id="1" ac="6,7">Add onboarding_completed Column to user_profile
+        <subtask>Create migration: supabase/migrations/XXXXXX_add_onboarding_completed.sql</subtask>
+        <subtask>Add column: onboarding_completed BOOLEAN DEFAULT false</subtask>
+        <subtask>Update TypeScript types if using generated types</subtask>
+      </task>
+      <task id="2" ac="1,6,7">Create Onboarding Hook
+        <subtask>Create /src/hooks/use-onboarding.ts</subtask>
+        <subtask>Fetch onboarding_completed from user_profile on mount</subtask>
+        <subtask>Provide completeOnboarding() function to update database</subtask>
+        <subtask>Return { showOnboarding, completeOnboarding, isLoading }</subtask>
+      </task>
+      <task id="3" ac="1,2,3,4,5">Create OnboardingModal Component
+        <subtask>Create /src/components/onboarding-modal.tsx</subtask>
+        <subtask>Use shadcn/ui Dialog component</subtask>
+        <subtask>Implement 3-screen wizard with useState for currentStep</subtask>
+        <subtask>Add progress indicator (step dots or "1/3" text)</subtask>
+        <subtask>Add Next/Back/Skip buttons</subtask>
+        <subtask>All text in Norwegian (Bokmål)</subtask>
+      </task>
+      <task id="4" ac="3">Implement Screen 1 - Genre Selection
+        <subtask>Display header: "Velg dine favorittsjangre"</subtask>
+        <subtask>Show genre carousel/grid (reuse GenreCarousel or genre data)</subtask>
+        <subtask>Multi-select up to 3 genres</subtask>
+        <subtask>Store selected genres in component state</subtask>
+        <subtask>Show selected count: "3 av 3 valgt"</subtask>
+      </task>
+      <task id="5" ac="3">Implement Screen 2 - Song Concept Input
+        <subtask>Display header: "Hva handler sangen din om?"</subtask>
+        <subtask>Textarea with placeholder: "Bursdagssang til en venn som elsker å fiske..."</subtask>
+        <subtask>Store concept in component state</subtask>
+        <subtask>Optional: Character count hint</subtask>
+      </task>
+      <task id="6" ac="3">Implement Screen 3 - Generate First Song
+        <subtask>Display header: "Lag din første sang!"</subtask>
+        <subtask>Explain credits briefly: "Gratis forhåndsvisning tilgjengelig"</subtask>
+        <subtask>CTA button: "Lag forhåndsvisning" or "Start"</subtask>
+        <subtask>On complete, call completeOnboarding() and close modal</subtask>
+      </task>
+      <task id="7" ac="5,7">Implement Skip Functionality
+        <subtask>Add "Hopp over" ghost button on all screens</subtask>
+        <subtask>On skip, call completeOnboarding() and close modal</subtask>
+        <subtask>Confirmation optional (or just skip immediately)</subtask>
+      </task>
+      <task id="8" ac="8">Add Spotlight Effect for Post-Onboarding
+        <subtask>After modal closes, trigger brief highlight on genre carousel</subtask>
+        <subtask>Options: pulse animation, ring highlight, or subtle glow</subtask>
+        <subtask>Duration: 2-3 seconds, then fade out</subtask>
+        <subtask>Use CSS animation or framer-motion</subtask>
+      </task>
+      <task id="9" ac="1,7">Integrate OnboardingModal into Create Page
+        <subtask>Update /src/app/page.tsx or create page component</subtask>
+        <subtask>Use useOnboarding() hook</subtask>
+        <subtask>Conditionally render OnboardingModal when showOnboarding === true</subtask>
+        <subtask>Pass onComplete callback to handle post-onboarding effects</subtask>
+      </task>
+      <task id="10" ac="9">Build Verification
+        <subtask>Run npm run build - success</subtask>
+        <subtask>Run npm run lint - no errors</subtask>
+        <subtask>No TypeScript errors</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Welcome Modal Trigger: A welcome modal appears when a user lands on "Create Song" page for the first time (onboarding_completed = false)</criterion>
+    <criterion id="2">Welcome Message: Modal displays: "Velkommen til Musikkfabrikken! La oss lage din første norske sang på under 5 minutter."</criterion>
+    <criterion id="3">3-Screen Wizard:
+      - Screen 1: "Velg dine favorittsjangre" - Multi-select up to 3 genres from carousel
+      - Screen 2: "Hva handler sangen din om?" - Concept input with pre-filled example: "Bursdagssang til en venn"
+      - Screen 3: "Lag din første sang!" - Explanation of credits + button to generate free preview</criterion>
+    <criterion id="4">Navigation: Progress indicators (1/3, 2/3, 3/3), Next/Back buttons</criterion>
+    <criterion id="5">Skip Option: "Hopp over" button available on all screens, sets onboarding_completed=true</criterion>
+    <criterion id="6">Completion Persistence: After completing onboarding, onboarding_completed boolean stored in user_profile</criterion>
+    <criterion id="7">No Repeat: Onboarding never shows again after completion or skip</criterion>
+    <criterion id="8">Post-Onboarding Highlight: After completion, genre carousel briefly highlighted with spotlight/pulse effect</criterion>
+    <criterion id="9">Build Verification: Production build succeeds with no TypeScript or ESLint errors</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>User Experience &amp; Help (FR51-FR55)</section>
+        <snippet>FR52: System displays helpful tooltips and guidance for non-technical users. FR53: Users can view examples of phonetic optimization in action.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>5.1 User Journey - Journey 4 (First-Time Onboarding)</section>
+        <snippet>Entry: First app open → Google Auth login. Welcome Screen with value prop. Quick Create Wizard (3 screens): Pick 3 favorite genres, Create first song concept input, Generating progress animation.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>7.1 Consistency Rules - Modal Patterns</section>
+        <snippet>Size: Large (80% width) or full-screen on mobile. Focus management: Focus trap within modal. Dismiss: Can't dismiss by clicking outside during onboarding (intentional).</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Implementation Patterns - Language &amp; Localization</section>
+        <snippet>User-Facing Content (Norwegian): All UI text in Norwegian. Code &amp; Technical (English): Variable names, function names in English. ui_content_language: Norwegian in config.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-7-user-experience-help.md</path>
+        <title>Epic 7: User Experience &amp; Help</title>
+        <section>Story 7.2</section>
+        <snippet>Create Onboarding Flow for First-Time Users. Store onboarding_completed in user_profile. Use shadcn/ui Dialog for modal. Track current step (1/3, 2/3, 3/3).</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/7-1-add-contextual-tooltips-throughout-app.md</path>
+        <title>Story 7.1 - Contextual Tooltips</title>
+        <section>Dev Agent Record</section>
+        <snippet>InfoTooltip component created at src/components/info-tooltip.tsx. TooltipProvider added to layout.tsx with 400ms delay. TOOLTIPS constants in src/lib/constants.ts.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/components/ui/dialog.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription</symbol>
+        <reason>shadcn/ui Dialog component to be used as the base for OnboardingModal wizard</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/genre-selection.tsx</path>
+        <kind>component</kind>
+        <symbol>GenreSelection</symbol>
+        <reason>Existing genre selection component - can be adapted or referenced for multi-select genre picking in onboarding Screen 1</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/info-tooltip.tsx</path>
+        <kind>component</kind>
+        <symbol>InfoTooltip</symbol>
+        <reason>InfoTooltip from Story 7.1 can be reused to explain credits on Screen 3</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/concept-input.tsx</path>
+        <kind>component</kind>
+        <symbol>ConceptInput</symbol>
+        <reason>Existing concept input component - can be referenced for Screen 2 implementation pattern</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/page.tsx</path>
+        <kind>page</kind>
+        <symbol>Home</symbol>
+        <lines>1-491</lines>
+        <reason>Main create song page where OnboardingModal will be integrated. Contains GenreSelection, ConceptInput usage patterns.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>TOOLTIPS, CREDIT_COSTS</symbol>
+        <reason>Contains TOOLTIPS constant for Norwegian text and CREDIT_COSTS for explaining free preview. Add onboarding-specific constants here.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/supabase/client.ts</path>
+        <kind>library</kind>
+        <symbol>createClient</symbol>
+        <reason>Browser client for Supabase operations - use to fetch/update user_profile.onboarding_completed</reason>
+      </artifact>
+      <artifact>
+        <path>src/hooks/use-toast.ts</path>
+        <kind>hook</kind>
+        <symbol>useToast</symbol>
+        <reason>Toast notification hook - use for success/skip feedback messages</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/button.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Button</symbol>
+        <reason>Button component for Next/Back/Skip/Start actions</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/progress.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Progress</symbol>
+        <reason>Progress bar component - can be used for step indicator (1/3, 2/3, 3/3)</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/textarea.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Textarea</symbol>
+        <reason>Textarea component for song concept input on Screen 2</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/layout.tsx</path>
+        <kind>layout</kind>
+        <symbol>RootLayout</symbol>
+        <reason>Contains TooltipProvider wrapper - ensures tooltips work in onboarding modal</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <npm>
+        <package name="next" version="^14.2.3">React framework with App Router</package>
+        <package name="react" version="^18.2.0">React library</package>
+        <package name="@radix-ui/react-dialog" version="^1.1.15">Dialog primitives for modal</package>
+        <package name="@radix-ui/react-progress" version="^1.1.8">Progress bar primitives</package>
+        <package name="@supabase/supabase-js" version="^2.84.0">Supabase client for database operations</package>
+        <package name="@supabase/ssr" version="^0.7.0">Supabase SSR helpers</package>
+        <package name="lucide-react" version="^0.554.0">Icon library for navigation arrows, check marks</package>
+        <package name="tailwindcss" version="^3.4.1">Utility CSS for animations and styling</package>
+        <package name="tailwindcss-animate" version="^1.0.7">Animation utilities for spotlight effect</package>
+        <package name="zustand" version="^5.0.8">State management (optional for persisting onboarding state)</package>
+      </npm>
+      <database>
+        <table name="user_profile">Add onboarding_completed BOOLEAN DEFAULT false column</table>
+      </database>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="pattern">Norwegian UI Text: All user-facing text must be in Norwegian (Bokmål). Code/variables remain in English.</constraint>
+    <constraint type="pattern">Component Pattern: Use shadcn/ui Dialog as base, follow existing component patterns in src/components/</constraint>
+    <constraint type="pattern">Hook Pattern: Follow existing hooks pattern (see src/hooks/use-toast.ts). Return object with state and functions.</constraint>
+    <constraint type="pattern">State Management: Use useState for wizard step tracking. Consider localStorage backup if Supabase unavailable.</constraint>
+    <constraint type="pattern">Accessibility: Focus trap in modal, keyboard navigation (Tab/Enter), ARIA labels on buttons</constraint>
+    <constraint type="architecture">Layer: Client component only ('use client'). No server actions needed.</constraint>
+    <constraint type="architecture">Database: Use RLS-enabled Supabase client. User can only update their own profile.</constraint>
+    <constraint type="testing">Build must pass: npm run build, npm run lint, no TypeScript errors</constraint>
+    <constraint type="ux">Modal cannot be dismissed by clicking outside (intentional for onboarding flow)</constraint>
+    <constraint type="ux">Spotlight effect: 2-3 seconds duration, subtle pulse animation on genre carousel after completion</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>useOnboarding Hook</name>
+      <kind>React Hook</kind>
+      <signature>function useOnboarding(): { showOnboarding: boolean, completeOnboarding: () => Promise&lt;void&gt;, isLoading: boolean }</signature>
+      <path>src/hooks/use-onboarding.ts (to be created)</path>
+    </interface>
+    <interface>
+      <name>OnboardingModal Props</name>
+      <kind>Component Interface</kind>
+      <signature>interface OnboardingModalProps { open: boolean; onComplete: () => void; onSkip: () => void }</signature>
+      <path>src/components/onboarding-modal.tsx (to be created)</path>
+    </interface>
+    <interface>
+      <name>Supabase user_profile Table</name>
+      <kind>Database Table</kind>
+      <signature>user_profile { id: UUID, display_name: TEXT, credit_balance: INTEGER, preferences: JSONB, onboarding_completed: BOOLEAN, created_at: TIMESTAMPTZ, updated_at: TIMESTAMPTZ }</signature>
+      <path>supabase/migrations/</path>
+    </interface>
+    <interface>
+      <name>Supabase Browser Client</name>
+      <kind>Library Function</kind>
+      <signature>function createClient(): SupabaseClient&lt;Database&gt;</signature>
+      <path>src/lib/supabase/client.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Build verification using npm run build and npm run lint. Manual testing for onboarding flow. Accessibility testing with keyboard navigation.</standards>
+    <locations>No dedicated test folder yet. Tests co-located with components if needed (*.test.tsx pattern).</locations>
+    <ideas>
+      <idea ac="1">Test that modal appears on first visit when onboarding_completed is false</idea>
+      <idea ac="2">Verify welcome message displays correct Norwegian text</idea>
+      <idea ac="3">Test all 3 wizard screens render correctly with proper content</idea>
+      <idea ac="4">Test Next/Back navigation between screens</idea>
+      <idea ac="5">Test Skip button calls completeOnboarding and closes modal</idea>
+      <idea ac="6">Verify onboarding_completed is set to true in database after completion</idea>
+      <idea ac="7">Test that modal does not appear on subsequent visits</idea>
+      <idea ac="8">Verify spotlight effect triggers on genre carousel after completion</idea>
+      <idea ac="9">Run npm run build and npm run lint to verify no errors</idea>
+    </ideas>
+  </tests>
+</story-context>

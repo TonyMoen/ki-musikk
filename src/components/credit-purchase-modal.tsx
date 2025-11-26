@@ -17,7 +17,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants'
+import { InfoTooltip } from '@/components/info-tooltip'
+import { CREDIT_PACKAGES, TOOLTIPS, type CreditPackage } from '@/lib/constants'
 
 interface CreditPurchaseModalProps {
   open: boolean
@@ -61,9 +62,12 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Purchase Credits</DialogTitle>
+          <DialogTitle className="text-2xl flex items-center gap-2">
+            Kjøp kreditter
+            <InfoTooltip content={TOOLTIPS.credits} side="bottom" />
+          </DialogTitle>
           <DialogDescription>
-            Choose a credit package to power your Norwegian song creations
+            Velg en kredittpakke for å lage norske sanger
           </DialogDescription>
         </DialogHeader>
 

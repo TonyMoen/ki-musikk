@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { LowCreditWarningWrapper } from "@/components/low-credit-warning-wrapper";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -28,9 +29,11 @@ export default async function RootLayout({
   return (
     <html lang="nb">
       <body>
-        <LowCreditWarningWrapper userId={user?.id} />
-        {children}
-        <BottomNavigation />
+        <TooltipProvider delayDuration={400}>
+          <LowCreditWarningWrapper userId={user?.id} />
+          {children}
+          <BottomNavigation />
+        </TooltipProvider>
       </body>
     </html>
   );
