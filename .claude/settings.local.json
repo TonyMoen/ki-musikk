@@ -72,7 +72,11 @@
       "Bash(del \"C:\\Users\\tony-\\SG-Tony\\docs\\epics\\epic-5-social-sharing-viral-features.md\")",
       "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\constants\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\constants\")",
       "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\help\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\help\")",
-      "Bash(del \"C:\\Users\\tony-\\SG-Tony\\src\\hooks\\use-error-toast.ts\")"
+      "Bash(del \"C:\\Users\\tony-\\SG-Tony\\src\\hooks\\use-error-toast.ts\")",
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\about\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\about\")",
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\contact\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\contact\")",
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\terms\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\terms\")",
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\privacy\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\privacy\")"
     ],
     "deny": [],
     "ask": []

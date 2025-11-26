@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { LowCreditWarningWrapper } from "@/components/low-credit-warning-wrapper";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -36,6 +37,7 @@ export default async function RootLayout({
           <main className="flex-1 pt-16 pb-16 md:pb-0">
             {children}
           </main>
+          <Footer />
           <BottomNavigation />
         </TooltipProvider>
       </body>

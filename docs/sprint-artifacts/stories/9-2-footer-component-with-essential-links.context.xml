@@ -1,0 +1,169 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>9</epicId>
+    <storyId>2</storyId>
+    <title>Footer Component with Essential Links</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/9-2-footer-component-with-essential-links.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>a footer with important links and information</iWant>
+    <soThat>I can find legal information and contact details when needed</soThat>
+    <tasks>
+      <task id="1" name="Create Footer Component" ac="1,2">
+        <subtask>Create /src/components/layout/footer.tsx</subtask>
+        <subtask>Add container with max-width consistent with app layout</subtask>
+        <subtask>Add copyright notice with current year</subtask>
+        <subtask>Style with muted colors and border-top</subtask>
+      </task>
+      <task id="2" name="Add Navigation Links" ac="1,3,5">
+        <subtask>Add "Om oss" link to /about</subtask>
+        <subtask>Add "Kontakt" link to /contact</subtask>
+        <subtask>Add "Vilkår" link to /terms</subtask>
+        <subtask>Add "Personvern" link to /privacy</subtask>
+        <subtask>Use Next.js Link component for client-side navigation</subtask>
+        <subtask>Add proper hover and focus states</subtask>
+      </task>
+      <task id="3" name="Implement Responsive Layout" ac="4">
+        <subtask>Mobile: Stack links vertically or in a grid</subtask>
+        <subtask>Desktop: Links in a horizontal row</subtask>
+        <subtask>Test on various screen sizes</subtask>
+      </task>
+      <task id="4" name="Add Footer to Root Layout" ac="1">
+        <subtask>Update /src/app/layout.tsx to include Footer component</subtask>
+        <subtask>Position Footer after main content area</subtask>
+        <subtask>Ensure sticky footer pattern (footer stays at bottom on short pages)</subtask>
+      </task>
+      <task id="5" name="Create Placeholder Pages" ac="5">
+        <subtask>Create /src/app/about/page.tsx - basic "Om oss" page</subtask>
+        <subtask>Create /src/app/contact/page.tsx - basic "Kontakt" page</subtask>
+        <subtask>Create /src/app/terms/page.tsx - basic "Vilkår" page</subtask>
+        <subtask>Create /src/app/privacy/page.tsx - basic "Personvern" page</subtask>
+        <subtask>Each page should have a heading and placeholder content</subtask>
+      </task>
+      <task id="6" name="Build Verification and Testing" ac="6">
+        <subtask>Run npm run build - ensure success</subtask>
+        <subtask>Run npm run lint - no errors</subtask>
+        <subtask>Manual test: Footer visible on all pages</subtask>
+        <subtask>Manual test: All links navigate correctly</subtask>
+        <subtask>Manual test: Responsive behavior works</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1" name="Footer Content">
+      <given>I am on any page</given>
+      <when>I scroll to the bottom</when>
+      <then>I see a footer containing:
+        - Secondary navigation links: "Om oss", "Kontakt", "Vilkår", "Personvern"
+        - Copyright notice: "© 2025 Musikkfabrikken. Alle rettigheter reservert."</then>
+    </criterion>
+    <criterion id="2" name="Visual Design">
+      <given>I view the footer</given>
+      <then>Footer has consistent styling with the rest of the app (Nordic theme)
+        - Uses muted colors to not distract from main content
+        - Links have proper hover states</then>
+    </criterion>
+    <criterion id="3" name="Accessibility">
+      <given>I view the footer</given>
+      <then>Links are accessible with proper contrast
+        - Links are keyboard navigable
+        - Links have appropriate focus states</then>
+    </criterion>
+    <criterion id="4" name="Responsive Layout">
+      <given>I am on a mobile device</given>
+      <when>I view the footer</when>
+      <then>Footer links stack appropriately on smaller screens
+        - Footer remains readable and usable</then>
+    </criterion>
+    <criterion id="5" name="Link Functionality">
+      <given>I click a footer link</given>
+      <then>I am navigated to the appropriate page:
+        - "Om oss" → /about
+        - "Kontakt" → /contact
+        - "Vilkår" → /terms
+        - "Personvern" → /privacy</then>
+    </criterion>
+    <criterion id="6" name="Build Verification">
+      <then>Production build succeeds with no TypeScript or ESLint errors</then>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics/epic-9-core-navigation-layout.md" title="Epic 9: Core Navigation &amp; Layout" section="Story 9.2">
+        Footer should contain secondary navigation links and copyright, with minimal styling to not distract from main content.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Project Structure">
+        Layout components should be placed in src/components/layout/. Footer.tsx is specified alongside header.tsx.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Implementation Patterns">
+        All UI text in Norwegian (Bokmål), code in English. Components use PascalCase, files use kebab-case. Mobile-first CSS with Tailwind.
+      </doc>
+      <doc path="docs/sprint-artifacts/9-1-responsive-header-with-navigation-and-auth-state.md" title="Story 9.1 - Header" section="Reference">
+        Header already implemented - provides pattern for layout component structure and sticky positioning.
+      </doc>
+    </docs>
+    <code>
+      <file path="src/app/layout.tsx" kind="layout" symbol="RootLayout" reason="Must integrate Footer component here after main content area">
+        <notes>Layout uses min-h-screen flex flex-col pattern. Main has flex-1. Footer should be added after main, before closing body.</notes>
+      </file>
+      <file path="src/components/layout/header.tsx" kind="component" symbol="Header" reason="Reference for component structure and styling patterns">
+        <notes>Uses 'use client', lucide-react icons, Next.js Link, Tailwind classes. Follow same patterns for Footer.</notes>
+      </file>
+      <file path="src/components/layout/bottom-navigation.tsx" kind="component" symbol="BottomNavigation" reason="Mobile bottom nav exists - footer should coordinate with this">
+        <notes>On mobile, bottom nav shows. Footer may need extra padding (pb-16) to not overlap.</notes>
+      </file>
+    </code>
+    <dependencies>
+      <npm>
+        <package name="next" version="^14.2.3">App Router, Link component for navigation</package>
+        <package name="lucide-react" version="^0.554.0">Optional icons if needed</package>
+        <package name="tailwindcss" version="^3.4.1">Styling with utility classes</package>
+        <package name="@radix-ui/react-slot" version="^1.2.4">Base for shadcn components</package>
+      </npm>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="language">All UI text must be in Norwegian (Bokmål). Code comments and variable names in English.</constraint>
+    <constraint type="pattern">Follow existing component patterns from header.tsx - consistent structure, prop interfaces, Tailwind classes.</constraint>
+    <constraint type="styling">Use muted colors (text-muted-foreground, bg-muted/30). Border-top to separate from content.</constraint>
+    <constraint type="responsive">Mobile-first design. Links should flex-wrap or stack on small screens.</constraint>
+    <constraint type="layout">Footer must work with sticky footer pattern - stays at bottom on short pages.</constraint>
+    <constraint type="accessibility">Links must have hover and focus states, keyboard navigable, proper contrast.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="Footer Component" kind="React Component">
+      <signature>export function Footer(): JSX.Element</signature>
+      <path>src/components/layout/footer.tsx</path>
+      <notes>No props needed - simple static footer component</notes>
+    </interface>
+    <interface name="Next.js Link" kind="Component Import">
+      <signature>import Link from 'next/link'</signature>
+      <notes>Use for all internal navigation links</notes>
+    </interface>
+    <interface name="Placeholder Page" kind="Next.js Page">
+      <signature>export default function PageName(): JSX.Element</signature>
+      <notes>Each page in /about, /contact, /terms, /privacy follows Next.js App Router convention</notes>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Manual testing - no automated tests required for MVP. Verify visual appearance and navigation on desktop and mobile viewports.</standards>
+    <locations>No test files required for this story.</locations>
+    <ideas>
+      <idea ac="1,2">Visually verify footer appears at bottom of all pages with correct content and styling</idea>
+      <idea ac="3">Tab through footer links to verify keyboard navigation and focus states</idea>
+      <idea ac="4">Test on mobile viewport (375px) - verify links wrap/stack appropriately</idea>
+      <idea ac="5">Click each footer link and verify navigation to correct placeholder page</idea>
+      <idea ac="6">Run npm run build and npm run lint - verify zero errors</idea>
+    </ideas>
+  </tests>
+</story-context>
