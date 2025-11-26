@@ -118,7 +118,7 @@ development_status:
   # Core reliability: error logging, retry logic, webhook fallback, double-charge prevention
   # Stories 8.2, 8.3, 8.5, 8.8 deferred to post-MVP (see future-enhancements.md)
   epic-8: backlog
-  8-1-implement-basic-error-logging: backlog
+  8-1-implement-basic-error-logging: drafted
   8-2-implement-suno-api-health-monitoring: deferred  # Use manual monitoring
   8-3-implement-api-cost-monitoring-and-alerts: deferred  # Use Suno/Stripe dashboards
   8-4-implement-automatic-retry-logic-for-api-failures: backlog
