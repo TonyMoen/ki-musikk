@@ -1,0 +1,254 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4</storyId>
+    <title>Implement Song Deletion with Confirmation</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-4-implement-song-deletion-with-confirmation.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>delete songs I no longer need</iWant>
+    <soThat>my library stays organized</soThat>
+    <tasks>
+      <task id="1" title="Create Delete API Endpoint">
+        <ac-refs>#4, #5, #8</ac-refs>
+        <subtasks>
+          <subtask>Create `/src/app/api/songs/[id]/route.ts` DELETE handler (or add to existing)</subtask>
+          <subtask>Verify user owns the song via RLS/auth check</subtask>
+          <subtask>Delete song record from `song` table (permanent hard delete)</subtask>
+          <subtask>Delete audio file from Supabase Storage bucket `songs`</subtask>
+          <subtask>Use database transaction to ensure atomic deletion (record + file)</subtask>
+          <subtask>Handle errors: song not found (404), unauthorized (401), storage error (500)</subtask>
+          <subtask>Return success response with deleted song ID</subtask>
+        </subtasks>
+      </task>
+      <task id="2" title="Create Confirmation Dialog Component">
+        <ac-refs>#1, #2, #3</ac-refs>
+        <subtasks>
+          <subtask>Create reusable deletion confirmation dialog (or use shadcn AlertDialog)</subtask>
+          <subtask>Norwegian text: "Slett '{song-title}'? Dette kan ikke angres."</subtask>
+          <subtask>"Avbryt" button (secondary/outline variant) closes dialog</subtask>
+          <subtask>"Slett" button (destructive variant - red) triggers deletion</subtask>
+          <subtask>Trap focus in dialog for accessibility</subtask>
+          <subtask>ESC key closes dialog without action</subtask>
+        </subtasks>
+      </task>
+      <task id="3" title="Integrate Delete Button in Song Player">
+        <ac-refs>#1</ac-refs>
+        <subtasks>
+          <subtask>Add delete button to song player modal action buttons row</subtask>
+          <subtask>Use Lucide `Trash2` icon with "Slett" label</subtask>
+          <subtask>Style as destructive variant (red/danger styling)</subtask>
+          <subtask>Position alongside Download, Share buttons</subtask>
+          <subtask>Clicking opens confirmation dialog</subtask>
+        </subtasks>
+      </task>
+      <task id="4" title="Implement Delete Flow with UI Updates">
+        <ac-refs>#4, #6, #7, #8, #9</ac-refs>
+        <subtasks>
+          <subtask>Call DELETE API when user confirms</subtask>
+          <subtask>Show loading state on confirm button during deletion</subtask>
+          <subtask>On success: Show toast "Sangen ble slettet"</subtask>
+          <subtask>On success: Close confirmation dialog</subtask>
+          <subtask>On success: Close song player modal</subtask>
+          <subtask>On success: Remove song from library list (optimistic update or refetch)</subtask>
+          <subtask>On error: Show toast "Kunne ikke slette sangen. Prøv igjen."</subtask>
+          <subtask>On error: Keep dialog open, allow retry</subtask>
+        </subtasks>
+      </task>
+      <task id="5" title="Testing and Validation">
+        <ac-refs>All</ac-refs>
+        <subtasks>
+          <subtask>Test delete button opens confirmation dialog</subtask>
+          <subtask>Test cancel button closes dialog without deleting</subtask>
+          <subtask>Test confirm deletes song from database</subtask>
+          <subtask>Test audio file removed from Supabase Storage</subtask>
+          <subtask>Test song disappears from library list</subtask>
+          <subtask>Test success toast appears in Norwegian</subtask>
+          <subtask>Test error handling: network failure, storage error</subtask>
+          <subtask>Test RLS: users cannot delete other users' songs</subtask>
+          <subtask>Test keyboard accessibility: ESC closes, Enter on Slett confirms</subtask>
+          <subtask>Build and lint pass with no errors</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Given I am viewing a song in the player modal, When I tap "Slett" (Delete) button with trash icon, Then a confirmation dialog appears: "Slett '{song-title}'? Dette kan ikke angres."</criterion>
+    <criterion id="2">Dialog displays two options: "Avbryt" (secondary button) and "Slett" (destructive red button)</criterion>
+    <criterion id="3">When I click "Avbryt" (Cancel), Then dialog closes and no deletion occurs</criterion>
+    <criterion id="4">When I confirm deletion by clicking "Slett", Then song record is permanently deleted from database</criterion>
+    <criterion id="5">Audio file is removed from Supabase Storage bucket</criterion>
+    <criterion id="6">Song disappears from my library immediately (optimistic UI update)</criterion>
+    <criterion id="7">Success toast: "Sangen ble slettet" (Song was deleted)</criterion>
+    <criterion id="8">If deletion fails, error toast: "Kunne ikke slette sangen. Prøv igjen." (Could not delete song. Try again.)</criterion>
+    <criterion id="9">Modal closes after successful deletion</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Musikkfabrikken PRD</title>
+        <section>Functional Requirements</section>
+        <snippet>FR24: Users can delete songs from their track list. FR27: System auto-deletes after 14 days (separate from manual delete). Deletion should be immediate and provide clear feedback.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture</title>
+        <section>Database Patterns</section>
+        <snippet>Hard DELETE from database (no soft delete pattern). Use Supabase transactions for atomic operations. RLS ensures users can only access their own data.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture</title>
+        <section>API Response Format</section>
+        <snippet>Error Response: { error: { code: string, message: string, details?: any } }. Status Codes: 200 Success, 401 Unauthorized, 404 Not Found, 500 Internal Server Error.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>UX Pattern Decisions - Confirmation Patterns</section>
+        <snippet>Delete: Always confirm with modal. "Delete '{title}'? This can't be undone." Destructive button: "Delete Forever". Safe button: "Cancel".</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-4-song-library-management.md</path>
+        <title>Epic 4: Song Library &amp; Management</title>
+        <section>Story 4.4</section>
+        <snippet>Permanent deletion: Hard DELETE from database (no soft delete). Remove audio file from Supabase Storage bucket immediately. Use database transaction to ensure both record and file are deleted atomically.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>src/app/api/songs/[id]/route.ts</path>
+        <kind>API Route</kind>
+        <symbol>GET handler (add DELETE handler here)</symbol>
+        <lines>1-335</lines>
+        <reason>Existing song API route - add DELETE handler to this file</reason>
+      </file>
+      <file>
+        <path>src/app/api/songs/[id]/download/route.ts</path>
+        <kind>API Route</kind>
+        <symbol>GET, sanitizeFilename, errorResponse</symbol>
+        <lines>1-231</lines>
+        <reason>Reference for Supabase Storage interaction pattern and error handling</reason>
+      </file>
+      <file>
+        <path>src/components/song-player-card.tsx</path>
+        <kind>Component</kind>
+        <symbol>SongPlayerCard</symbol>
+        <lines>1-441</lines>
+        <reason>Main component to add delete button and confirmation dialog</reason>
+      </file>
+      <file>
+        <path>src/app/songs/songs-page-client.tsx</path>
+        <kind>Client Component</kind>
+        <symbol>SongsPageClient</symbol>
+        <lines>1-176</lines>
+        <reason>Song library page - needs onDelete callback to remove song from list</reason>
+      </file>
+      <file>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>Utility</kind>
+        <symbol>createClient</symbol>
+        <lines>1-62</lines>
+        <reason>Server-side Supabase client for API routes</reason>
+      </file>
+      <file>
+        <path>src/hooks/use-toast.ts</path>
+        <kind>Hook</kind>
+        <symbol>useToast, toast</symbol>
+        <lines>1-195</lines>
+        <reason>Toast notification hook for success/error messages</reason>
+      </file>
+      <file>
+        <path>src/components/ui/button.tsx</path>
+        <kind>UI Component</kind>
+        <symbol>Button</symbol>
+        <reason>Button component with destructive variant for delete button</reason>
+      </file>
+      <file>
+        <path>src/components/ui/dialog.tsx</path>
+        <kind>UI Component</kind>
+        <symbol>Dialog, DialogContent</symbol>
+        <reason>Dialog component for confirmation modal (need AlertDialog for confirmation)</reason>
+      </file>
+    </code>
+    <dependencies>
+      <ecosystem name="node">
+        <package name="next" version="^14.2.3" />
+        <package name="react" version="^18.2.0" />
+        <package name="@supabase/supabase-js" version="^2.84.0" />
+        <package name="@supabase/ssr" version="^0.7.0" />
+        <package name="lucide-react" version="^0.554.0" />
+        <package name="@radix-ui/react-dialog" version="^1.1.15" />
+        <package name="@radix-ui/react-toast" version="^1.2.15" />
+        <package name="class-variance-authority" version="^0.7.1" />
+        <package name="tailwind-merge" version="^3.4.0" />
+      </ecosystem>
+      <note>AlertDialog component from shadcn/ui needed - may need to install via `npx shadcn@latest add alert-dialog`</note>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="pattern">Norwegian UI text required: "Slett", "Avbryt", "Sangen ble slettet", "Kunne ikke slette sangen. Prøv igjen."</constraint>
+    <constraint type="pattern">Use existing error handling pattern from download/route.ts with errorResponse helper</constraint>
+    <constraint type="pattern">Hard DELETE only - no soft delete pattern in this project</constraint>
+    <constraint type="pattern">RLS enforces data isolation - users can only delete their own songs</constraint>
+    <constraint type="pattern">Use destructive button variant for delete actions per UX spec</constraint>
+    <constraint type="pattern">API routes use `export const dynamic = 'force-dynamic'` for Vercel deployment</constraint>
+    <constraint type="accessibility">Focus trap required in confirmation dialog</constraint>
+    <constraint type="accessibility">ESC key must close dialog without action</constraint>
+    <constraint type="accessibility">ARIA labels on all interactive elements</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>DELETE /api/songs/[id]</name>
+      <kind>REST Endpoint</kind>
+      <signature>DELETE /api/songs/{songId} -> { success: boolean, deletedId: string } | { error: { code: string, message: string } }</signature>
+      <path>src/app/api/songs/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>SongPlayerCardProps</name>
+      <kind>TypeScript Interface</kind>
+      <signature>interface SongPlayerCardProps { songId: string; title: string; genre: string; audioUrl: string; duration?: number; createdAt: string; genreEmoji?: string; isPreview?: boolean; onDelete?: (songId: string) => void; onClose?: () => void; }</signature>
+      <path>src/components/song-player-card.tsx</path>
+    </interface>
+    <interface>
+      <name>supabase.storage.from('songs').remove()</name>
+      <kind>Supabase Storage API</kind>
+      <signature>remove(paths: string[]): Promise&lt;{ data: FileObject[] | null; error: StorageError | null }&gt;</signature>
+      <path>Supabase SDK</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      No test framework currently installed. Manual testing via browser and API testing with Thunder Client/Postman. All tests run via npm run build and npm run lint to verify no build errors.
+    </standards>
+    <locations>
+      <location>Manual testing via browser dev tools</location>
+      <location>npm run build - verifies TypeScript compilation</location>
+      <location>npm run lint - verifies ESLint rules</location>
+    </locations>
+    <ideas>
+      <idea ac-ref="1">Test delete button appears in song player action buttons row with Trash2 icon and "Slett" label</idea>
+      <idea ac-ref="2">Test confirmation dialog displays "Avbryt" and "Slett" buttons with correct styling</idea>
+      <idea ac-ref="3">Test clicking "Avbryt" closes dialog without API call</idea>
+      <idea ac-ref="4">Test DELETE /api/songs/{id} returns 200 and removes record from database</idea>
+      <idea ac-ref="5">Test audio file is removed from Supabase Storage bucket after deletion</idea>
+      <idea ac-ref="6">Test song card disappears from library list immediately after deletion</idea>
+      <idea ac-ref="7">Test success toast "Sangen ble slettet" appears after successful deletion</idea>
+      <idea ac-ref="8">Test error toast "Kunne ikke slette sangen. Prøv igjen." appears on API failure</idea>
+      <idea ac-ref="9">Test song player modal closes after successful deletion</idea>
+      <idea ac-ref="RLS">Test DELETE /api/songs/{id} returns 404 when trying to delete another user's song</idea>
+      <idea ac-ref="A11y">Test ESC key closes confirmation dialog, focus trapped inside dialog</idea>
+    </ideas>
+  </tests>
+</story-context>

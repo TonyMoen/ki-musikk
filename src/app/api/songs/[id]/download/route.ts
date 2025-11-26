@@ -1,0 +1,230 @@
+/**
+ * Song Download API Route
+ *
+ * Generates a signed URL for downloading a song from Supabase Storage.
+ * Verifies user ownership through RLS before providing download access.
+ *
+ * @route GET /api/songs/[id]/download
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { logError, logInfo } from '@/lib/utils/logger'
+
+export const dynamic = 'force-dynamic'
+
+/**
+ * Sanitize song title for use as filename
+ * Handles Norwegian characters and special characters
+ */
+function sanitizeFilename(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[æ]/g, 'ae')
+    .replace(/[ø]/g, 'o')
+    .replace(/[å]/g, 'a')
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .substring(0, 50) || 'sang'
+}
+
+/**
+ * Error response helper with Norwegian messages
+ */
+function errorResponse(
+  code: string,
+  message: string,
+  status: number
+): NextResponse {
+  return NextResponse.json(
+    {
+      error: {
+        code,
+        message
+      }
+    },
+    { status }
+  )
+}
+
+/**
+ * GET /api/songs/[id]/download
+ *
+ * Generate signed download URL for a song
+ *
+ * @param request - Next.js request object
+ * @param params - Route parameters containing song ID
+ * @returns JSON response with download URL and filename, or error
+ */
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // Await the params object
+    const { id: songId } = await params
+
+    // Step 1: Validate authentication
+    const supabase = await createClient()
+    const {
+      data: { user },
+      error: authError
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return errorResponse(
+        'UNAUTHORIZED',
+        'Ikke autentisert. Vennligst logg inn.',
+        401
+      )
+    }
+
+    // Step 2: Validate song ID
+    if (!songId || songId.trim().length === 0) {
+      return errorResponse(
+        'INVALID_ID',
+        'Ugyldig sang-ID.',
+        400
+      )
+    }
+
+    logInfo('Download requested', {
+      userId: user.id,
+      songId
+    })
+
+    // Step 3: Fetch song from database
+    // RLS policy ensures users can only access their own songs
+    const { data: song, error: songError } = await supabase
+      .from('song')
+      .select('id, title, audio_url, user_id, status')
+      .eq('id', songId)
+      .single()
+
+    // Step 4: Handle errors
+    if (songError) {
+      // Check if song doesn't exist or user doesn't have access (RLS)
+      if (songError.code === 'PGRST116') {
+        return errorResponse(
+          'NOT_FOUND',
+          'Sangen ble ikke funnet.',
+          404
+        )
+      }
+
+      logError('Database error fetching song for download', songError as Error, {
+        userId: user.id,
+        songId
+      })
+
+      return errorResponse(
+        'DATABASE_ERROR',
+        'Kunne ikke hente sangdata. Prøv igjen senere.',
+        500
+      )
+    }
+
+    if (!song) {
+      return errorResponse(
+        'NOT_FOUND',
+        'Sangen ble ikke funnet.',
+        404
+      )
+    }
+
+    // Step 5: Verify song is completed and has audio
+    if (song.status !== 'completed') {
+      return errorResponse(
+        'NOT_READY',
+        'Sangen er ikke klar for nedlasting ennå.',
+        400
+      )
+    }
+
+    if (!song.audio_url) {
+      return errorResponse(
+        'NO_AUDIO',
+        'Sangen har ingen lydfil tilgjengelig.',
+        404
+      )
+    }
+
+    // Step 6: Generate signed URL for download
+    // Audio URL could be a full URL (from Suno) or a storage path
+    let downloadUrl = song.audio_url
+
+    // If audio is stored in Supabase Storage (path starts with 'songs/')
+    if (song.audio_url.startsWith('songs/')) {
+      const storagePath = song.audio_url.replace('songs/', '')
+
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+        .from('songs')
+        .createSignedUrl(storagePath, 300, {
+          download: `${sanitizeFilename(song.title)}-musikkfabrikken.mp3`
+        })
+
+      if (signedUrlError || !signedUrlData?.signedUrl) {
+        logError('Failed to generate signed URL', signedUrlError as Error, {
+          userId: user.id,
+          songId,
+          storagePath
+        })
+
+        return errorResponse(
+          'STORAGE_ERROR',
+          'Kunne ikke generere nedlastingslenke. Prøv igjen.',
+          500
+        )
+      }
+
+      downloadUrl = signedUrlData.signedUrl
+    }
+
+    // Step 7: Return download URL and filename
+    const filename = `${sanitizeFilename(song.title)}-musikkfabrikken.mp3`
+
+    logInfo('Download URL generated', {
+      userId: user.id,
+      songId,
+      filename
+    })
+
+    return NextResponse.json(
+      {
+        data: {
+          downloadUrl,
+          filename
+        }
+      },
+      { status: 200 }
+    )
+  } catch (error) {
+    // Unexpected server error
+    logError('Unexpected error in download API', error as Error)
+
+    return errorResponse(
+      'INTERNAL_ERROR',
+      'En uventet feil oppstod. Prøv igjen senere.',
+      500
+    )
+  }
+}
+
+/**
+ * OPTIONS /api/songs/[id]/download
+ *
+ * CORS preflight handler
+ */
+export async function OPTIONS() {
+  return NextResponse.json(
+    {},
+    {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
+    }
+  )
+}

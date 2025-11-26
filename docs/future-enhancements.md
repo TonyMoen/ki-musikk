@@ -46,6 +46,14 @@ Post-MVP features deferred to focus on core value proposition (Norwegian pronunc
 - [ ] Playback speed control
 - [ ] Repeat/loop toggle
 
+### Download Enhancements
+- [ ] WAV format download option (lossless, ~30-50MB)
+  - API: `POST https://api.sunoapi.org/api/v1/wav/generate`
+  - Async conversion with webhook callback
+  - Consider as premium feature (extra credits)
+- [ ] Batch download (multiple songs as ZIP)
+- [ ] Download progress indicator for large files
+
 ### Social Features (Epic 5 - Post-MVP)
 - [ ] Social share sheet (TikTok, Facebook, Instagram)
 - [ ] Shareable song links with preview

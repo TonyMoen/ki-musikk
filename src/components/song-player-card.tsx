@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Howl } from 'howler'
 import WaveSurfer from 'wavesurfer.js'
-import { Play, Pause, Volume2, VolumeX, Volume1 } from 'lucide-react'
+import { Play, Pause, Volume2, VolumeX, Volume1, Download, Loader2 } from 'lucide-react'
+import { downloadSong } from '@/lib/utils/download'
+import { toast } from '@/hooks/use-toast'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
@@ -38,6 +40,7 @@ export function SongPlayerCard({
   const [volume, setVolume] = useState(80) // Default 80%
   const [isMuted, setIsMuted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isDownloading, setIsDownloading] = useState(false)
 
   // Refs
   const soundRef = useRef<Howl | null>(null)
@@ -238,6 +241,26 @@ export function SongPlayerCard({
     }
   }, [isMuted, volume])
 
+  // Handle download
+  const handleDownload = useCallback(async () => {
+    if (isDownloading) return
+
+    setIsDownloading(true)
+    const success = await downloadSong(songId, title)
+    setIsDownloading(false)
+
+    if (success) {
+      toast({
+        title: 'Sangen ble lastet ned!'
+      })
+    } else {
+      toast({
+        title: 'Kunne ikke laste ned sangen. Prøv igjen.',
+        variant: 'destructive'
+      })
+    }
+  }, [songId, title, isDownloading])
+
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -375,6 +398,22 @@ export function SongPlayerCard({
           ) : (
             <Play className="h-6 w-6" />
           )}
+        </Button>
+
+        {/* Download Button */}
+        <Button
+          variant="secondary"
+          onClick={handleDownload}
+          disabled={isDownloading || isLoading || !!error}
+          className="flex items-center gap-2 min-w-[100px]"
+          aria-label="Last ned sang"
+        >
+          {isDownloading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
+          <span className="hidden sm:inline">Last ned</span>
         </Button>
 
         {/* Volume Control (Desktop Only) */}

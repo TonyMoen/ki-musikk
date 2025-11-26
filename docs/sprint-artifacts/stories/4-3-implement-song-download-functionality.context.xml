@@ -1,0 +1,260 @@
+<story-context id="4-3-implement-song-download-functionality" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>3</storyId>
+    <title>Implement Song Download Functionality</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-3-implement-song-download-functionality.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>download my generated songs to my device</iWant>
+    <soThat>I can keep them permanently and share them offline</soThat>
+    <tasks>
+      <task id="1" title="Create Download API Endpoint" acs="#1, #2">
+        <subtask>Create `/src/app/api/songs/[id]/download/route.ts`</subtask>
+        <subtask>Verify user owns the song (RLS check via auth)</subtask>
+        <subtask>Generate signed URL from Supabase Storage with expiration (5 minutes)</subtask>
+        <subtask>Return signed URL or redirect to it</subtask>
+        <subtask>Handle errors: song not found, unauthorized, storage error</subtask>
+      </task>
+      <task id="2" title="Implement Download Function in Client" acs="#1, #3, #4, #7">
+        <subtask>Create download utility function in `/src/lib/utils/download.ts`</subtask>
+        <subtask>Sanitize song title for filename (remove special chars, spaces → hyphens)</subtask>
+        <subtask>Use browser download via anchor tag with `download` attribute</subtask>
+        <subtask>Handle download progress if needed (for slow connections)</subtask>
+        <subtask>Show loading state during download initiation</subtask>
+        <subtask>Show success toast on completion: "Sangen ble lastet ned!"</subtask>
+        <subtask>Show error toast on failure: "Kunne ikke laste ned sangen. Prøv igjen."</subtask>
+      </task>
+      <task id="3" title="Add Download Button to Song Player" acs="#1">
+        <subtask>Update song player modal/card component to include download button</subtask>
+        <subtask>Use Lucide `Download` icon with "Last ned" label</subtask>
+        <subtask>Style according to Playful Nordic theme (secondary button variant)</subtask>
+        <subtask>Position in action buttons row (alongside Share, Delete, etc.)</subtask>
+        <subtask>Disable button during active download (show spinner)</subtask>
+      </task>
+      <task id="4" title="Implement ID3 Metadata" acs="#5, #6">
+        <subtask>Research ID3 tag handling options</subtask>
+        <subtask>Implement chosen approach to set: Artist, Album, Title</subtask>
+        <subtask>Verify metadata displays correctly in audio players</subtask>
+      </task>
+      <task id="5" title="Testing and Validation">
+        <subtask>Test download initiates correctly from player modal</subtask>
+        <subtask>Test filename is sanitized correctly (Norwegian chars, spaces, special chars)</subtask>
+        <subtask>Test signed URL expires after 5 minutes</subtask>
+        <subtask>Test RLS: users cannot download other users' songs</subtask>
+        <subtask>Test downloaded file plays correctly in multiple audio players</subtask>
+        <subtask>Test ID3 metadata displays in audio players</subtask>
+        <subtask>Test error handling: network failure, storage error</subtask>
+        <subtask>Test Norwegian toast messages display correctly</subtask>
+        <subtask>Test on mobile (iOS Safari, Android Chrome)</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Given I am viewing a song (in player modal or song detail view), When I tap the "Last ned" (Download) button, Then Browser download dialog appears with filename: `{song-title}-musikkfabrikken.mp3`</criterion>
+    <criterion id="2">And Audio file downloads from Supabase Storage via signed URL</criterion>
+    <criterion id="3">And Download completes successfully within 10 seconds (typical for 3-5 MB file)</criterion>
+    <criterion id="4">And I see success toast: "Sangen ble lastet ned!"</criterion>
+    <criterion id="5">And Downloaded file is playable on all standard audio players (VLC, Windows Media Player, iTunes, etc.)</criterion>
+    <criterion id="6">And File metadata includes: Artist="Musikkfabrikken", Album="Norske AI-sanger", Title="{song title}"</criterion>
+    <criterion id="7">And If download fails, I see error toast: "Kunne ikke laste ned sangen. Prøv igjen."</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>Storage &amp; File Management (FR46-FR50)</section>
+        <snippet>FR46: Users can download generated songs to their device. FR47: Downloaded files should be standard MP3 format. FR48: Files should include metadata for identification.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Supabase Integration - Storage</section>
+        <snippet>Supabase Storage for audio files (14-day retention). Bucket: `songs`. Signed URLs for secure download with 24-hour validity.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>API Response Format</section>
+        <snippet>Success: { data: T }, Error: { error: { code: string, message: string } }. Status codes: 200 (Success), 401 (Unauthorized), 404 (Not Found), 500 (Internal Error).</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Language &amp; Localization</section>
+        <snippet>User-facing content in Norwegian. UI text, buttons, labels, error messages all in Norwegian. Code and technical elements in English.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>UX Pattern Decisions - Feedback Patterns</section>
+        <snippet>Success: Toast notification, top-center, green (#06D6A0), 3-second auto-dismiss. Error: Toast notification, red (#EF476F), manual dismiss.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-4-song-library-management.md</path>
+        <title>Epic 4: Song Library &amp; Management</title>
+        <section>Story 4.3: Implement Song Download Functionality</section>
+        <snippet>Generate signed download URL from Supabase Storage. Filename format: `{sanitized-title}-musikkfabrikken.mp3`. Audio format: MP3 ~128kbps. Set ID3 tags on file upload: artist, album, title.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>src/components/song-player-card.tsx</path>
+        <kind>component</kind>
+        <symbol>SongPlayerCard</symbol>
+        <lines>1-402</lines>
+        <reason>Main component where download button will be added. Contains play/pause, volume controls. Needs action buttons row for Download.</reason>
+      </file>
+      <file>
+        <path>src/app/songs/songs-page-client.tsx</path>
+        <kind>component</kind>
+        <symbol>SongsPageClient</symbol>
+        <lines>1-175</lines>
+        <reason>Contains song player modal integration. SongPlayerCard is rendered inside Dialog when song is selected.</reason>
+      </file>
+      <file>
+        <path>src/app/api/songs/[id]/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/songs/[id]</symbol>
+        <lines>1-335</lines>
+        <reason>Existing song status API. Shows pattern for signed URL generation (lines 250-261). Download endpoint will follow similar pattern.</reason>
+      </file>
+      <file>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>utility</kind>
+        <symbol>createClient</symbol>
+        <lines>1-61</lines>
+        <reason>Server-side Supabase client factory. Required for API route authentication and storage operations.</reason>
+      </file>
+      <file>
+        <path>src/hooks/use-toast.ts</path>
+        <kind>hook</kind>
+        <symbol>useToast, toast</symbol>
+        <lines>1-195</lines>
+        <reason>Toast notification system. Will be used for success/error feedback during download.</reason>
+      </file>
+      <file>
+        <path>src/types/song.ts</path>
+        <kind>types</kind>
+        <symbol>Song</symbol>
+        <lines>32-52</lines>
+        <reason>Song type definition. Contains audio_url field needed for download. Status field indicates if song is ready for download.</reason>
+      </file>
+      <file>
+        <path>src/lib/utils/logger.ts</path>
+        <kind>utility</kind>
+        <symbol>logInfo, logError</symbol>
+        <reason>Logging utility for API routes. Used for debugging and monitoring download operations.</reason>
+      </file>
+      <file>
+        <path>src/components/ui/button.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Button</symbol>
+        <reason>shadcn/ui Button component. Use variant="secondary" for download button styling.</reason>
+      </file>
+    </code>
+    <dependencies>
+      <node>
+        <package>@supabase/ssr</package>
+        <version>^0.7.0</version>
+        <purpose>Server-side Supabase client with SSR support</purpose>
+      </node>
+      <node>
+        <package>@supabase/supabase-js</package>
+        <version>^2.84.0</version>
+        <purpose>Supabase JavaScript client for storage operations</purpose>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <version>^0.554.0</version>
+        <purpose>Icons including Download icon for button</purpose>
+      </node>
+      <node>
+        <package>next</package>
+        <version>^14.2.3</version>
+        <purpose>Next.js App Router for API routes</purpose>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint source="Architecture">API routes must use createClient() from @/lib/supabase/server for authentication</constraint>
+    <constraint source="Architecture">RLS policies ensure users can only access their own songs - auth.uid() = user_id</constraint>
+    <constraint source="Architecture">File access uses signed URLs with expiration (5 minutes for download, 24 hours for playback)</constraint>
+    <constraint source="Architecture">Supabase Storage bucket name: `songs`</constraint>
+    <constraint source="Architecture">API routes: kebab-case paths, e.g., /api/songs/[id]/download/route.ts</constraint>
+    <constraint source="Architecture">Norwegian UI text for all user-facing content</constraint>
+    <constraint source="Architecture">API Response format: { data: T } for success, { error: { code, message } } for errors</constraint>
+    <constraint source="PRD">Audio format: MP3 ~128kbps</constraint>
+    <constraint source="PRD">Songs auto-deleted after 14 days - download essential for permanent keeping</constraint>
+    <constraint source="UX">Touch targets minimum 48x48px on mobile</constraint>
+    <constraint source="UX">Button variant: secondary for download action</constraint>
+    <constraint source="UX">Toast success: green, 3-second auto-dismiss</constraint>
+    <constraint source="UX">Toast error: red, manual dismiss required</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Download API Endpoint</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/songs/[id]/download → { downloadUrl: string, filename: string } | { error: { code, message } }</signature>
+      <path>src/app/api/songs/[id]/download/route.ts</path>
+    </interface>
+    <interface>
+      <name>Supabase Storage createSignedUrl</name>
+      <kind>SDK method</kind>
+      <signature>supabase.storage.from('songs').createSignedUrl(path: string, expiresIn: number) → { data: { signedUrl: string }, error }</signature>
+      <path>@supabase/supabase-js</path>
+    </interface>
+    <interface>
+      <name>SongPlayerCardProps</name>
+      <kind>TypeScript interface</kind>
+      <signature>{ songId: string, title: string, genre: string, audioUrl: string, duration?: number, createdAt: string, genreEmoji?: string, isPreview?: boolean }</signature>
+      <path>src/components/song-player-card.tsx:12-21</path>
+    </interface>
+    <interface>
+      <name>Toast function</name>
+      <kind>hook function</kind>
+      <signature>toast({ title?: ReactNode, description?: ReactNode, variant?: 'default' | 'destructive' })</signature>
+      <path>src/hooks/use-toast.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Project uses manual testing via browser and console verification. No automated test framework is currently configured. Tests should verify:
+      - API authentication (401 for unauthenticated)
+      - RLS enforcement (404 for other users' songs)
+      - Signed URL generation and expiration
+      - Filename sanitization (Norwegian characters, special chars)
+      - Toast notifications (success and error states)
+      - Mobile browser compatibility (iOS Safari, Android Chrome)
+    </standards>
+    <locations>
+      <location>Browser DevTools Network tab for API testing</location>
+      <location>Supabase Dashboard for storage/RLS verification</location>
+      <location>Multiple audio players for playback testing (VLC, iTunes, Windows Media Player)</location>
+    </locations>
+    <ideas>
+      <idea acRef="#1">Test download button click triggers API call with correct song ID</idea>
+      <idea acRef="#1">Test filename sanitization: "Min sang med æøå!" → "min-sang-med-aeoa-musikkfabrikken.mp3"</idea>
+      <idea acRef="#2">Test signed URL is valid Supabase storage URL with token</idea>
+      <idea acRef="#2">Test signed URL expires after 5 minutes</idea>
+      <idea acRef="#3">Test download completes for typical 3-5 MB file</idea>
+      <idea acRef="#4">Test success toast appears with correct Norwegian message</idea>
+      <idea acRef="#5">Test downloaded MP3 plays in VLC, iTunes, Windows Media Player</idea>
+      <idea acRef="#6">Test ID3 tags visible in audio player (Artist, Album, Title)</idea>
+      <idea acRef="#7">Test error toast appears on network failure</idea>
+      <idea acRef="#7">Test error toast appears when song not found (404)</idea>
+      <idea acRef="#7">Test error toast appears when unauthorized (401)</idea>
+    </ideas>
+  </tests>
+</story-context>
