@@ -24,7 +24,7 @@ export function PronunciationToggle({
           htmlFor="pronunciation-toggle"
           className="text-base font-medium cursor-pointer"
         >
-          Uttalelse Bokmål
+          Norsk uttale
         </Label>
 
         <InfoTooltip content={TOOLTIPS.pronunciation} side="right" />

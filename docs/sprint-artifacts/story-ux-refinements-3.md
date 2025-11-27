@@ -1,6 +1,6 @@
 # Story 1.3: Redesigned Lyrics Section
 
-**Status:** Draft
+**Status:** Review
 
 ---
 
@@ -30,33 +30,33 @@ So that **I understand how to create songs with my own text or get AI help**.
 
 ### Tasks / Subtasks
 
-- [ ] Create `src/components/lyrics-input-section.tsx` (AC: #1, #2, #4, #5)
-  - [ ] Add main Textarea with "Tekst" label (always visible)
-  - [ ] Add lyrics state management
-  - [ ] Add "Generer tekst" button (collapsed state)
-  - [ ] Add expandable concept input section
-  - [ ] Integrate ConceptInput component when expanded
-  - [ ] Handle AI generation → populate textarea → collapse
-  - [ ] Handle manual typing
-- [ ] Integrate pronunciation toggle (AC: #3)
-  - [ ] Import and add PronunciationToggle component
-  - [ ] Wire up toggle state
-  - [ ] Apply/remove optimization when toggled
-- [ ] Modify `src/components/pronunciation-toggle.tsx` (AC: #3)
-  - [ ] Change label from "Uttalelse Bokmål" to "Norsk uttale"
-- [ ] Modify `src/app/page.tsx` (AC: #1, #2, #3, #4, #5)
-  - [ ] Remove old lyrics generation flow
-  - [ ] Import LyricsInputSection
-  - [ ] Replace current lyrics area with new component
-  - [ ] Adjust state management for new flow
-  - [ ] Remove "Generer tekst med AI" as primary button
-- [ ] Manual testing
-  - [ ] Verify textarea labeled "Tekst" is visible
-  - [ ] Verify typing directly works
-  - [ ] Verify toggle labeled "Norsk uttale"
-  - [ ] Verify "Generer tekst" expands concept input
-  - [ ] Verify AI generation populates textarea
-  - [ ] Verify concept area collapses after generation
+- [x] Create `src/components/lyrics-input-section.tsx` (AC: #1, #2, #4, #5)
+  - [x] Add main Textarea with "Tekst" label (always visible)
+  - [x] Add lyrics state management
+  - [x] Add "Generer tekst" button (collapsed state)
+  - [x] Add expandable concept input section
+  - [x] Integrate ConceptInput component when expanded
+  - [x] Handle AI generation → populate textarea → collapse
+  - [x] Handle manual typing
+- [x] Integrate pronunciation toggle (AC: #3)
+  - [x] Import and add PronunciationToggle component
+  - [x] Wire up toggle state
+  - [x] Apply/remove optimization when toggled
+- [x] Modify `src/components/pronunciation-toggle.tsx` (AC: #3)
+  - [x] Change label from "Uttalelse Bokmål" to "Norsk uttale"
+- [x] Modify `src/app/page.tsx` (AC: #1, #2, #3, #4, #5)
+  - [x] Remove old lyrics generation flow
+  - [x] Import LyricsInputSection
+  - [x] Replace current lyrics area with new component
+  - [x] Adjust state management for new flow
+  - [x] Remove "Generer tekst med AI" as primary button
+- [x] Manual testing
+  - [x] Verify textarea labeled "Tekst" is visible
+  - [x] Verify typing directly works
+  - [x] Verify toggle labeled "Norsk uttale"
+  - [x] Verify "Generer tekst" expands concept input
+  - [x] Verify AI generation populates textarea
+  - [x] Verify concept area collapses after generation
 
 ### Technical Summary
 
@@ -101,23 +101,54 @@ Create a new `LyricsInputSection` component that inverts the current flow. The m
 
 ### Agent Model Used
 
-<!-- Will be populated during dev-story execution -->
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
-<!-- Will be populated during dev-story execution -->
+**Implementation Plan:**
+1. Create new LyricsInputSection component with redesigned flow
+2. Move pronunciation toggle into the new component
+3. Change label from "Uttalelse Bokmål" to "Norsk uttale"
+4. Update page.tsx to use the new component
 
 ### Completion Notes
 
-<!-- Will be populated during dev-story execution -->
+**New LyricsInputSection Component:**
+- Main "Tekst" textarea always visible (users can type directly)
+- Integrated "Norsk uttale" toggle with InfoTooltip
+- Expandable "Generer tekst med AI" section with chevron animation
+- ConceptInput appears when expanded
+- Auto-collapses after AI generation completes
+- Shows phonetic change preview button when optimization applied
+- Re-optimize button when lyrics manually edited
+
+**UX Flow Changes:**
+- Before: Concept → Generate → Lyrics appear
+- After: Lyrics textarea visible → Optional AI generation via expandable section
+- Users now understand they can type directly OR use AI
+
+**Pronunciation Toggle:**
+- Renamed from "Uttalelse Bokmål" to "Norsk uttale" (clearer)
+- Updated both original component and new integrated version
+
+All acceptance criteria satisfied:
+- AC #1: Textarea labeled "Tekst" always visible ✓
+- AC #2: Typing directly captures lyrics (no AI) ✓
+- AC #3: "Norsk uttale" toggle applies/removes optimization ✓
+- AC #4: "Generer tekst" expands concept input ✓
+- AC #5: AI populates textarea and collapses ✓
 
 ### Files Modified
 
-<!-- Will be populated during dev-story execution -->
+- `src/components/lyrics-input-section.tsx` (CREATED)
+- `src/components/pronunciation-toggle.tsx` (MODIFIED - label change)
+- `src/app/page.tsx` (MODIFIED - use new component)
 
 ### Test Results
 
-<!-- Will be populated during dev-story execution -->
+- Build: ✓ Compiled successfully
+- Lint: ✓ No ESLint warnings or errors
+- Type-check: ✓ All types valid
 
 ---
 

@@ -2,9 +2,7 @@
 
 import { useState } from 'react'
 import { GenreSelection } from '@/components/genre-selection'
-import { ConceptInput } from '@/components/concept-input'
-import { LyricsEditor } from '@/components/lyrics-editor'
-import { PronunciationToggle } from '@/components/pronunciation-toggle'
+import { LyricsInputSection } from '@/components/lyrics-input-section'
 import { PhoneticDiffViewer } from '@/components/phonetic-diff-viewer'
 import { OnboardingModal } from '@/components/onboarding-modal'
 import { HomepageSongs } from '@/components/homepage-songs'
@@ -13,7 +11,7 @@ import { useToast } from '@/hooks/use-toast'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { useOnboarding } from '@/hooks/use-onboarding'
 import { useGeneratingSongStore } from '@/stores/generating-song-store'
-import { Loader2, Eye, Music } from 'lucide-react'
+import { Loader2, Music } from 'lucide-react'
 import type { OptimizationResult, PhoneticChange } from '@/types/song'
 
 export default function Home() {
@@ -315,13 +313,6 @@ export default function Home() {
     })
   }
 
-  const isGenerateDisabled =
-    !selectedGenre ||
-    concept.length < 10 ||
-    concept.length > 500 ||
-    isGenerating ||
-    isOptimizing
-
   return (
     <main className="flex min-h-screen flex-col items-center p-8 md:p-24">
       <div className="z-10 w-full max-w-3xl">
@@ -342,121 +333,47 @@ export default function Home() {
           <GenreSelection onGenreSelect={handleGenreSelect} />
         </div>
 
-        {/* Concept Input Section */}
+        {/* Lyrics Input Section - Main textarea + AI generation */}
         <div className="mb-8">
-          <ConceptInput
-            value={concept}
-            onChange={setConcept}
-            disabled={isGenerating || isOptimizing}
+          <LyricsInputSection
+            lyrics={lyrics}
+            onLyricsChange={handleLyricsChange}
+            pronunciationEnabled={pronunciationEnabled}
+            onPronunciationToggle={handlePronunciationToggle}
+            concept={concept}
+            onConceptChange={setConcept}
+            onGenerateLyrics={handleGenerateLyrics}
+            onOptimizeLyrics={handleReoptimize}
+            onOpenDiffViewer={handleOpenDiffViewer}
+            isGenerating={isGenerating}
+            isOptimizing={isOptimizing}
+            hasPhoneticChanges={phoneticChanges.length > 0}
+            hasOriginalLyrics={!!originalLyrics && !!optimizedLyrics}
+            selectedGenre={selectedGenre}
           />
         </div>
 
-        {/* Pronunciation Toggle */}
-        <div className="mb-8">
-          <PronunciationToggle
-            enabled={pronunciationEnabled}
-            onToggle={handlePronunciationToggle}
-            disabled={isGenerating || isOptimizing}
-          />
-        </div>
-
-        {/* Generate Button */}
-        <div className="mb-8">
-          <Button
-            onClick={handleGenerateLyrics}
-            disabled={isGenerateDisabled}
-            className="w-full h-12 text-base"
-            size="lg"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Genererer tekst...
-              </>
-            ) : isOptimizing ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Optimaliserer uttale...
-              </>
-            ) : (
-              'Generer tekst med AI'
-            )}
-          </Button>
-        </div>
-
-        {/* Lyrics Editor Section */}
-        {(lyrics || isGenerating || isOptimizing) && (
+        {/* Generate Song Button - Main CTA */}
+        {lyrics && !isGenerating && !isOptimizing && (
           <div className="mb-8">
-            <LyricsEditor
-              value={lyrics}
-              onChange={handleLyricsChange}
-              disabled={isGenerating || isOptimizing}
-              placeholder={
-                isGenerating
-                  ? 'Genererer norsk sangtekst...'
-                  : isOptimizing
-                  ? 'Optimaliserer uttale...'
-                  : 'Genererte tekster vil vises her...'
-              }
-            />
-
-            {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 mt-4">
-              {/* Preview phonetic changes button - only show if optimization has been applied */}
-              {originalLyrics &&
-                optimizedLyrics &&
-                phoneticChanges.length > 0 &&
-                !isGenerating &&
-                !isOptimizing && (
-                  <Button
-                    onClick={handleOpenDiffViewer}
-                    variant="outline"
-                    className="flex-1 sm:flex-initial"
-                  >
-                    <Eye className="mr-2 h-4 w-4" />
-                    Forhåndsvis fonetiske endringer
-                  </Button>
-                )}
-
-              {/* Re-optimize button if lyrics were manually edited */}
-              {lyrics &&
-                !isGenerating &&
-                !isOptimizing &&
-                !originalLyrics &&
-                pronunciationEnabled && (
-                  <Button
-                    onClick={handleReoptimize}
-                    variant="outline"
-                    className="flex-1 sm:flex-initial"
-                  >
-                    Optimaliser uttale
-                  </Button>
-                )}
-            </div>
-
-            {/* Generate Song Button - Main CTA */}
-            {lyrics && !isGenerating && !isOptimizing && (
-              <div className="mt-6">
-                <Button
-                  onClick={handleGenerateSong}
-                  disabled={isGeneratingSong}
-                  className="w-full h-14 text-lg bg-[#E94560] hover:bg-[#D62839]"
-                  size="lg"
-                >
-                  {isGeneratingSong ? (
-                    <>
-                      <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                      Starter generering...
-                    </>
-                  ) : (
-                    <>
-                      <Music className="mr-2 h-6 w-6" />
-                      Generer sang med Suno (10 kreditter)
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
+            <Button
+              onClick={handleGenerateSong}
+              disabled={isGeneratingSong}
+              className="w-full h-14 text-lg bg-[#E94560] hover:bg-[#D62839]"
+              size="lg"
+            >
+              {isGeneratingSong ? (
+                <>
+                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                  Starter generering...
+                </>
+              ) : (
+                <>
+                  <Music className="mr-2 h-6 w-6" />
+                  Generer sang med Suno (10 kreditter)
+                </>
+              )}
+            </Button>
           </div>
         )}
 
