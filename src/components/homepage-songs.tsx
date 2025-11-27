@@ -7,9 +7,13 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useErrorToast } from '@/hooks/use-error-toast'
+import { useToast } from '@/hooks/use-toast'
+import { useGeneratingSongStore } from '@/stores/generating-song-store'
 import type { Song } from '@/types/song'
 
 const SONGS_PER_PAGE = 10
+const POLLING_INTERVAL = 5000 // 5 seconds
+const MAX_POLLING_ATTEMPTS = 60 // 5 minutes max
 
 export function HomepageSongs() {
   const [songs, setSongs] = useState<Song[]>([])
@@ -20,7 +24,13 @@ export function HomepageSongs() {
   const [selectedSong, setSelectedSong] = useState<Song | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { showError } = useErrorToast()
+  const { toast } = useToast()
   const hasFetchedRef = useRef(false)
+
+  // Generating song store
+  const { generatingSong, clearGeneratingSong } = useGeneratingSongStore()
+  const pollingAttemptsRef = useRef(0)
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   // Fetch songs for current page
   const fetchSongs = useCallback(async (showPageLoader = false) => {
@@ -69,6 +79,109 @@ export function HomepageSongs() {
       fetchSongs(false)
     }
   }, [fetchSongs])
+
+  // Poll generating song status
+  const pollSongStatus = useCallback(async () => {
+    if (!generatingSong) return
+
+    if (pollingAttemptsRef.current >= MAX_POLLING_ATTEMPTS) {
+      clearGeneratingSong()
+      showError(new Error('Tidsavbrudd: Genereringen tok for lang tid'), {
+        context: 'song-generation-timeout'
+      })
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/songs/${generatingSong.id}`)
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Failed to fetch song status')
+      }
+
+      const song = data.data
+
+      if (song.status === 'completed') {
+        // Success - clear store and refresh list
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current)
+          pollingIntervalRef.current = null
+        }
+        clearGeneratingSong()
+        pollingAttemptsRef.current = 0
+
+        toast({
+          title: 'Sangen er klar! 🎉',
+          description: 'Din norske sang er ferdig generert'
+        })
+
+        // Refresh songs list to show the new song
+        fetchSongs(false)
+      } else if (song.status === 'failed') {
+        // Failed - clear store and show error
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current)
+          pollingIntervalRef.current = null
+        }
+        clearGeneratingSong()
+        pollingAttemptsRef.current = 0
+
+        showError(new Error(song.error_message || 'Noe gikk galt under genereringen'), {
+          context: 'song-generation-failed'
+        })
+      } else if (song.status === 'cancelled') {
+        // Cancelled - clear store
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current)
+          pollingIntervalRef.current = null
+        }
+        clearGeneratingSong()
+        pollingAttemptsRef.current = 0
+
+        toast({
+          title: 'Generering avbrutt',
+          description: 'Sanggenereringen ble avbrutt'
+        })
+      }
+
+      pollingAttemptsRef.current++
+    } catch (error) {
+      console.error('Polling error:', error)
+      pollingAttemptsRef.current++
+
+      // After 3 consecutive failures, show error and stop
+      if (pollingAttemptsRef.current >= 3) {
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current)
+          pollingIntervalRef.current = null
+        }
+        clearGeneratingSong()
+        pollingAttemptsRef.current = 0
+
+        showError(new Error('Kunne ikke hente status. Sjekk nettverksforbindelsen.'), {
+          context: 'song-generation-network-error'
+        })
+      }
+    }
+  }, [generatingSong, clearGeneratingSong, showError, toast, fetchSongs])
+
+  // Start/stop polling when generating song changes
+  useEffect(() => {
+    if (generatingSong) {
+      // Start polling
+      pollingAttemptsRef.current = 0
+      pollSongStatus() // Poll immediately
+      pollingIntervalRef.current = setInterval(pollSongStatus, POLLING_INTERVAL)
+    }
+
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current)
+        pollingIntervalRef.current = null
+      }
+    }
+  }, [generatingSong, pollSongStatus])
 
   // Handle song card click
   const handleSongClick = (song: Song) => {
@@ -150,8 +263,8 @@ export function HomepageSongs() {
     )
   }
 
-  // Empty state
-  if (!isLoading && songs.length === 0 && currentPage === 0) {
+  // Empty state (don't show if a song is generating)
+  if (!isLoading && songs.length === 0 && currentPage === 0 && !generatingSong) {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
         <div className="text-5xl mb-4">🎵</div>
@@ -163,10 +276,28 @@ export function HomepageSongs() {
     )
   }
 
+  // Check if we have content to show (songs or generating song)
+  const hasContent = songs.length > 0 || generatingSong
+
   return (
     <>
       {/* Songs grid */}
       <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${(hasPrevious || hasMore) ? 'mb-6' : ''}`}>
+        {/* Generating song at top (only on first page) */}
+        {generatingSong && currentPage === 0 && (
+          <SongCard
+            key={`generating-${generatingSong.id}`}
+            song={{
+              id: generatingSong.id,
+              title: generatingSong.title,
+              genre: generatingSong.genre,
+              created_at: generatingSong.startedAt.toISOString(),
+            }}
+            onClick={() => {}}
+            isGenerating={true}
+          />
+        )}
+        {/* Regular songs */}
         {songs.map((song) => (
           <SongCard
             key={song.id}
@@ -175,6 +306,13 @@ export function HomepageSongs() {
           />
         ))}
       </div>
+
+      {/* Show generating indicator when no songs yet */}
+      {!hasContent && isLoading && (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      )}
 
       {/* Loading overlay for page changes only */}
       {isChangingPage && (

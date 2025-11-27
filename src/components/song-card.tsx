@@ -1,9 +1,10 @@
 'use client'
 
-import { PlayCircle } from 'lucide-react'
+import { PlayCircle, Loader2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatRelativeDate, formatDuration } from '@/lib/utils/date-formatter'
+import { cn } from '@/lib/utils'
 
 interface SongCardProps {
   song: {
@@ -15,25 +16,39 @@ interface SongCardProps {
     gradient_colors?: { from: string; to: string }
   }
   onClick: () => void
+  isGenerating?: boolean
 }
 
-export function SongCard({ song, onClick }: SongCardProps) {
+export function SongCard({ song, onClick, isGenerating = false }: SongCardProps) {
   const gradientFrom = song.gradient_colors?.from || '#E94560'
   const gradientTo = song.gradient_colors?.to || '#FFC93C'
 
+  const handleClick = () => {
+    if (!isGenerating) {
+      onClick()
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.key === 'Enter' || e.key === ' ') && !isGenerating) {
+      e.preventDefault()
+      onClick()
+    }
+  }
+
   return (
     <Card
-      className="cursor-pointer hover:shadow-lg transition-shadow"
-      onClick={onClick}
-      tabIndex={0}
+      className={cn(
+        'transition-shadow',
+        isGenerating
+          ? 'cursor-default animate-pulse'
+          : 'cursor-pointer hover:shadow-lg'
+      )}
+      onClick={handleClick}
+      tabIndex={isGenerating ? -1 : 0}
       role="button"
-      aria-label={`Spill av ${song.title}`}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onClick()
-        }
-      }}
+      aria-label={isGenerating ? `Genererer ${song.title}` : `Spill av ${song.title}`}
+      onKeyDown={handleKeyDown}
     >
       <CardContent className="flex items-center gap-4 p-4">
         {/* Gradient artwork thumbnail */}
@@ -43,7 +58,11 @@ export function SongCard({ song, onClick }: SongCardProps) {
             background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`
           }}
         >
-          <PlayCircle className="w-8 h-8 text-white" />
+          {isGenerating ? (
+            <Loader2 className="w-8 h-8 text-white animate-spin" />
+          ) : (
+            <PlayCircle className="w-8 h-8 text-white" />
+          )}
         </div>
 
         {/* Song info */}
@@ -55,14 +74,20 @@ export function SongCard({ song, onClick }: SongCardProps) {
             <Badge variant="secondary" className="text-xs">
               {song.genre}
             </Badge>
-            {song.duration_seconds && (
-              <span className="text-xs">
-                {formatDuration(song.duration_seconds)}
+            {isGenerating ? (
+              <span className="text-xs text-[#E94560] font-medium">
+                Genererer...
               </span>
+            ) : (
+              song.duration_seconds && (
+                <span className="text-xs">
+                  {formatDuration(song.duration_seconds)}
+                </span>
+              )
             )}
           </div>
           <p className="text-xs text-gray-500 mt-1">
-            {formatRelativeDate(song.created_at)}
+            {isGenerating ? 'Vennligst vent...' : formatRelativeDate(song.created_at)}
           </p>
         </div>
       </CardContent>

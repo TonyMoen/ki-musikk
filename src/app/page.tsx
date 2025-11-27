@@ -6,13 +6,13 @@ import { ConceptInput } from '@/components/concept-input'
 import { LyricsEditor } from '@/components/lyrics-editor'
 import { PronunciationToggle } from '@/components/pronunciation-toggle'
 import { PhoneticDiffViewer } from '@/components/phonetic-diff-viewer'
-import { GenerationProgressModal } from '@/components/generation-progress-modal'
 import { OnboardingModal } from '@/components/onboarding-modal'
 import { HomepageSongs } from '@/components/homepage-songs'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { useOnboarding } from '@/hooks/use-onboarding'
+import { useGeneratingSongStore } from '@/stores/generating-song-store'
 import { Loader2, Eye, Music } from 'lucide-react'
 import type { OptimizationResult, PhoneticChange } from '@/types/song'
 
@@ -31,12 +31,11 @@ export default function Home() {
   const [isOptimizing, setIsOptimizing] = useState(false)
   const [isDiffViewerOpen, setIsDiffViewerOpen] = useState(false)
   const [isGeneratingSong, setIsGeneratingSong] = useState(false)
-  const [progressModalOpen, setProgressModalOpen] = useState(false)
-  const [currentSongId, setCurrentSongId] = useState<string | null>(null)
   const [showGenreSpotlight, setShowGenreSpotlight] = useState(false)
   const { toast } = useToast()
   const { showError } = useErrorToast()
   const { showOnboarding, completeOnboarding, isLoading: isOnboardingLoading } = useOnboarding()
+  const { setGeneratingSong } = useGeneratingSongStore()
 
   const handleGenreSelect = (genreId: string, genreName: string) => {
     setSelectedGenre({ id: genreId, name: genreName })
@@ -267,9 +266,18 @@ export default function Home() {
         throw new Error(data.error?.message || 'Kunne ikke starte generering')
       }
 
-      // Open progress modal with song ID
-      setCurrentSongId(data.data.songId)
-      setProgressModalOpen(true)
+      // Add song to generating store - it will appear in the songs list with generating state
+      setGeneratingSong({
+        id: data.data.songId,
+        title: concept || 'Min sang',
+        genre: selectedGenre.name,
+        startedAt: new Date()
+      })
+
+      toast({
+        title: 'Generering startet! 🎵',
+        description: 'Sangen vil vises i listen nedenfor når den er ferdig'
+      })
     } catch (error) {
       showError(error, {
         context: 'song-generation',
@@ -278,35 +286,6 @@ export default function Home() {
     } finally {
       setIsGeneratingSong(false)
     }
-  }
-
-  const handleSongComplete = (audioUrl: string) => {
-    toast({
-      title: 'Sangen er klar! 🎉',
-      description: 'Din norske sang er ferdig generert'
-    })
-
-    setProgressModalOpen(false)
-    setCurrentSongId(null)
-
-    // TODO: Navigate to song player or show audio player
-    console.log('Song completed with audio URL:', audioUrl)
-  }
-
-  const handleSongCancel = () => {
-    setProgressModalOpen(false)
-    setCurrentSongId(null)
-
-    toast({
-      title: 'Generering avbrutt',
-      description: 'Kreditter har blitt refundert'
-    })
-  }
-
-  const handleSongError = (error: string) => {
-    showError(new Error(error), {
-      context: 'song-generation-callback'
-    })
   }
 
   const handleOnboardingComplete = async (selectedGenres: string[], songConcept: string) => {
@@ -499,15 +478,6 @@ export default function Home() {
         onClose={handleCloseDiffViewer}
         onAccept={handleAcceptChanges}
         onRevert={handleRevertChanges}
-      />
-
-      {/* Generation Progress Modal */}
-      <GenerationProgressModal
-        open={progressModalOpen}
-        songId={currentSongId}
-        onComplete={handleSongComplete}
-        onCancel={handleSongCancel}
-        onError={handleSongError}
       />
 
       {/* Onboarding Modal for First-Time Users */}
