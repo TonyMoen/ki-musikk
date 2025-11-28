@@ -388,7 +388,7 @@ export function SongPlayerCard({
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 overflow-hidden">
         {/* Metadata */}
         <div className="mb-2">
           <h3 className="text-lg font-semibold truncate" title={title}>
@@ -461,7 +461,7 @@ export function SongPlayerCard({
       </div>
 
       {/* Controls */}
-      <div className="flex flex-col md:flex-row gap-2 items-center justify-center md:justify-end">
+      <div className="flex flex-col md:flex-row gap-2 items-center justify-center md:justify-end flex-shrink-0">
         {/* Play/Pause Button */}
         <Button
           size="lg"
