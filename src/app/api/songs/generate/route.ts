@@ -51,6 +51,7 @@ interface SongGenerationRequest {
   phoneticEnabled?: boolean // apply pronunciation optimization (default: true)
   title?: string // optional custom title
   previewMode?: boolean // generate 30-second free preview (no credit cost)
+  vocalGender?: 'm' | 'f' | null // voice gender selection ('m' = male, 'f' = female, null = let Suno decide)
 }
 
 /**
@@ -118,7 +119,8 @@ export async function POST(request: NextRequest) {
       optimizedLyrics,
       phoneticEnabled = true,
       title,
-      previewMode = false
+      previewMode = false,
+      vocalGender
     } = body
 
     if (!genre) {
@@ -301,9 +303,10 @@ export async function POST(request: NextRequest) {
         title: title || 'Untitled Song',
         lyrics: finalLyricsWithWatermark,
         style: genreData.suno_prompt_template,
-        model: 'V4',
+        model: 'V5',
         callBackUrl: `${(process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/$/, '')}/api/webhooks/suno`,
-        duration: previewMode ? 30 : undefined // 30 seconds for preview, default for full song
+        duration: previewMode ? 30 : undefined, // 30 seconds for preview, default for full song
+        vocalGender: vocalGender || undefined // Only pass if user made a selection
       })
 
       sunoTaskId = sunoResult.data.taskId

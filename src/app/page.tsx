@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { GenreSelection } from '@/components/genre-selection'
+import { VoiceGenderSelector, type VocalGender } from '@/components/voice-gender-selector'
 import { LyricsInputSection } from '@/components/lyrics-input-section'
 import { PhoneticDiffViewer } from '@/components/phonetic-diff-viewer'
 import { OnboardingModal } from '@/components/onboarding-modal'
@@ -30,6 +31,7 @@ export default function Home() {
   const [isDiffViewerOpen, setIsDiffViewerOpen] = useState(false)
   const [isGeneratingSong, setIsGeneratingSong] = useState(false)
   const [showGenreSpotlight, setShowGenreSpotlight] = useState(false)
+  const [vocalGender, setVocalGender] = useState<VocalGender>(null)
   const { toast } = useToast()
   const { showError } = useErrorToast()
   const { showOnboarding, completeOnboarding, isLoading: isOnboardingLoading } = useOnboarding()
@@ -254,7 +256,8 @@ export default function Home() {
           concept: concept,
           lyrics: originalLyrics || lyrics, // Send as 'lyrics' not 'originalLyrics'
           optimizedLyrics: pronunciationEnabled && optimizedLyrics ? optimizedLyrics : null,
-          phoneticEnabled: pronunciationEnabled
+          phoneticEnabled: pronunciationEnabled,
+          vocalGender: vocalGender // Pass voice gender selection (null = let Suno decide)
         })
       })
 
@@ -331,6 +334,14 @@ export default function Home() {
             Velg sjanger
           </h2>
           <GenreSelection onGenreSelect={handleGenreSelect} />
+        </div>
+
+        {/* Voice Gender Selection Section */}
+        <div className="mb-8">
+          <VoiceGenderSelector
+            value={vocalGender}
+            onChange={setVocalGender}
+          />
         </div>
 
         {/* Lyrics Input Section - Main textarea + AI generation */}

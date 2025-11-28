@@ -120,7 +120,7 @@ export async function generateSong(
     title,
     lyrics,
     style,
-    model = 'V4',
+    model = 'V5',
     callBackUrl,
     instrumental = false,
     duration,

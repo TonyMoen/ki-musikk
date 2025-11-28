@@ -1,0 +1,218 @@
+<story-context id="3-12-add-voice-gender-selection-and-upgrade-to-v5" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>12</storyId>
+    <title>Add Voice Gender Selection and Upgrade to V5</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-28</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-12-add-voice-gender-selection-and-upgrade-to-v5.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user creating a song</asA>
+    <iWant>to choose between a male or female voice for my song</iWant>
+    <soThat>the generated vocals match my creative vision</soThat>
+    <tasks>
+      <task id="1" status="pending">
+        <title>Create voice selector component</title>
+        <description>Create toggle/button group component for Mann/Kvinne with "Stemme" label, styled to match existing UI (playful Nordic theme), positioned below genre carousel</description>
+        <acceptanceCriteria>AC1, AC2, AC5</acceptanceCriteria>
+      </task>
+      <task id="2" status="pending">
+        <title>Integrate with song generation form</title>
+        <description>Add state for selected voice gender in homepage, pass vocalGender to generate API call, update generate endpoint to accept vocalGender parameter</description>
+        <acceptanceCriteria>AC1, AC3</acceptanceCriteria>
+      </task>
+      <task id="3" status="pending">
+        <title>Update API to pass vocalGender to Suno</title>
+        <description>Modify /api/songs/generate to include vocalGender in Suno request, only send parameter if user made a selection</description>
+        <acceptanceCriteria>AC3</acceptanceCriteria>
+      </task>
+      <task id="4" status="pending">
+        <title>Upgrade to V5 model</title>
+        <description>Change default model from 'V4' to 'V5' in suno.ts and songs/generate/route.ts</description>
+        <acceptanceCriteria>AC4</acceptanceCriteria>
+      </task>
+      <task id="5" status="pending">
+        <title>Testing</title>
+        <description>Test generation with male/female/no-preference voice selections, verify V5 model is being used</description>
+        <acceptanceCriteria>AC1-AC5</acceptanceCriteria>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">User can select voice gender (Mann/Kvinne) via toggle button below genre carousel</criterion>
+    <criterion id="AC2">Default selection is no preference (let Suno decide) OR a sensible default</criterion>
+    <criterion id="AC3">Selected voice gender is passed to Suno API in generate request</criterion>
+    <criterion id="AC4">Model upgraded from V4 to V5 for all song generations</criterion>
+    <criterion id="AC5">UI clearly shows current selection state</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Musikkfabrikken - Product Requirements Document</title>
+        <section>Song Creation &amp; Processing (FR5-FR20)</section>
+        <snippet>Users can generate full-length songs using credits. System checks credit balance (requires 10 credits for full song). Credits are deducted atomically with automatic rollback on failure.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken - Architecture Document</title>
+        <section>Suno API Integration</section>
+        <snippet>Suno API via sunoapi.org wrapper for music generation. Supports models V3.5, V4, V4.5, V5. Async pattern with webhook callback + polling fallback. Cost: $0.06 per song.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>Musikkfabrikken UX Design Specification</title>
+        <section>Visual Foundation - Color System</section>
+        <snippet>Playful Nordic theme: Primary Red #E94560, Secondary Navy #0F3460, Accent Yellow #FFC93C. Button heights minimum 48px, touch-friendly design.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-3-norwegian-song-creation-core.md</path>
+        <title>Epic 3: Norwegian Song Creation (CORE)</title>
+        <section>Story 3.5: Implement Song Generation API</section>
+        <snippet>API calls Suno via sunoapi.org with: lyrics, genre prompt template, model version. Suno webhook notifies when complete OR polling fallback after 5 seconds.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>ibe160 - Technical Specification</title>
+        <section>Existing Codebase Structure</section>
+        <snippet>Next.js 14.2.3 App Router, React 18.2.0, Tailwind CSS 3.4.1, shadcn/ui components. File naming: kebab-case. Component naming: PascalCase. Norwegian UI text throughout.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <file>
+        <path>src/lib/api/suno.ts</path>
+        <kind>API wrapper</kind>
+        <symbol>SunoGenerateParams</symbol>
+        <lines>27-41</lines>
+        <reason>Contains vocalGender parameter already defined in interface ('m' | 'f'). Model defaults to 'V4' on line 123 - needs change to 'V5'</reason>
+      </file>
+      <file>
+        <path>src/lib/api/suno.ts</path>
+        <kind>API wrapper</kind>
+        <symbol>generateSong</symbol>
+        <lines>114-298</lines>
+        <reason>Main function that calls Suno API. Already accepts vocalGender in params but defaults model to 'V4' on line 123</reason>
+      </file>
+      <file>
+        <path>src/app/api/songs/generate/route.ts</path>
+        <kind>API route</kind>
+        <symbol>POST handler</symbol>
+        <lines>85-491</lines>
+        <reason>Song generation endpoint. Calls generateSong with model: 'V4' hardcoded on line 304. Needs to accept vocalGender from request body and pass it through</reason>
+      </file>
+      <file>
+        <path>src/app/page.tsx</path>
+        <kind>Page component</kind>
+        <symbol>Home</symbol>
+        <lines>1-406</lines>
+        <reason>Homepage with song creation flow. Voice selector component should be added after GenreSelection (line 333). handleGenerateSong (line 224) needs to pass vocalGender to API</reason>
+      </file>
+      <file>
+        <path>src/components/genre-selection.tsx</path>
+        <kind>Component</kind>
+        <symbol>GenreSelection</symbol>
+        <lines>1-182</lines>
+        <reason>Reference for UI pattern. Voice selector should use similar toggle/button group pattern with gradient styling when selected</reason>
+      </file>
+      <file>
+        <path>src/components/ui/button.tsx</path>
+        <kind>UI component</kind>
+        <symbol>Button</symbol>
+        <lines>N/A</lines>
+        <reason>shadcn/ui Button component to reuse for voice gender toggle buttons</reason>
+      </file>
+    </code>
+
+    <dependencies>
+      <node>
+        <package>next</package>
+        <version>^14.2.3</version>
+      </node>
+      <node>
+        <package>react</package>
+        <version>^18.2.0</version>
+      </node>
+      <node>
+        <package>tailwindcss</package>
+        <version>^3.4.1</version>
+      </node>
+      <node>
+        <package>zustand</package>
+        <version>^5.0.8</version>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <version>^0.554.0</version>
+      </node>
+      <node>
+        <package>@radix-ui/react-switch</package>
+        <version>^1.2.6</version>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <interfaces>
+    <interface>
+      <name>SunoGenerateParams</name>
+      <kind>TypeScript interface</kind>
+      <signature>vocalGender?: 'm' | 'f'</signature>
+      <path>src/lib/api/suno.ts:37</path>
+    </interface>
+    <interface>
+      <name>SunoModel</name>
+      <kind>TypeScript type</kind>
+      <signature>type SunoModel = 'V3_5' | 'V4' | 'V4_5' | 'V4_5PLUS' | 'V5'</signature>
+      <path>src/lib/api/suno.ts:22</path>
+    </interface>
+    <interface>
+      <name>SongGenerationRequest</name>
+      <kind>TypeScript interface</kind>
+      <signature>interface with genre, concept, lyrics, optimizedLyrics, phoneticEnabled, title, previewMode</signature>
+      <path>src/app/api/songs/generate/route.ts:46-54</path>
+    </interface>
+    <interface>
+      <name>POST /api/songs/generate</name>
+      <kind>REST endpoint</kind>
+      <signature>POST body: { genre, concept, lyrics, phoneticEnabled, title, previewMode } → Response: { songId, status, estimatedTime }</signature>
+      <path>src/app/api/songs/generate/route.ts</path>
+    </interface>
+  </interfaces>
+
+  <constraints>
+    <constraint type="ui-language">All UI text must be in Norwegian (Mann/Kvinne, Stemme, etc.)</constraint>
+    <constraint type="code-language">All code (variables, comments, functions) must be in English</constraint>
+    <constraint type="styling">Use Tailwind CSS with existing color scheme: Primary #E94560, Secondary #0F3460, Accent #FFC93C</constraint>
+    <constraint type="component-pattern">Follow existing GenreSelection pattern for toggle buttons with gradient backgrounds on selection</constraint>
+    <constraint type="touch-targets">All interactive elements must be minimum 48x48px for touch accessibility</constraint>
+    <constraint type="file-naming">Use kebab-case for files (e.g., voice-gender-selector.tsx)</constraint>
+    <constraint type="api-compatibility">vocalGender parameter is already in SunoGenerateParams interface - ensure API passes it correctly</constraint>
+    <constraint type="backward-compatible">Existing songs generated without vocalGender must continue to work (parameter is optional)</constraint>
+  </constraints>
+
+  <tests>
+    <standards>
+      Manual testing via local dev server (http://localhost:3000) and Vercel preview deploys. No automated test framework currently configured. Run npm run build and npm run lint before committing.
+    </standards>
+    <locations>
+      <location>Manual testing via browser</location>
+      <location>npm run build (type checking)</location>
+      <location>npm run lint (code quality)</location>
+    </locations>
+    <ideas>
+      <idea acId="AC1">Test voice selector renders with Mann/Kvinne options below genre carousel</idea>
+      <idea acId="AC2">Test default state shows no selection or "Tilfeldig" option</idea>
+      <idea acId="AC3">Test network request includes vocalGender='m' when Mann selected</idea>
+      <idea acId="AC3">Test network request includes vocalGender='f' when Kvinne selected</idea>
+      <idea acId="AC3">Test network request omits vocalGender when no preference selected</idea>
+      <idea acId="AC4">Test network request includes model='V5' (check browser DevTools network tab)</idea>
+      <idea acId="AC5">Test selected button has visual distinction (gradient background, border)</idea>
+      <idea acId="AC5">Test keyboard navigation works (Tab, Enter/Space to select)</idea>
+    </ideas>
+  </tests>
+</story-context>
