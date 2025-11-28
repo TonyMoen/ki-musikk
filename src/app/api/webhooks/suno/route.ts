@@ -22,11 +22,12 @@ export const dynamic = 'force-dynamic'
  */
 interface SunoWebhookPayload {
   taskId: string // Suno's internal task ID
-  status: 'SUCCESS' | 'GENERATE_AUDIO_FAILED' | 'CALLBACK_EXCEPTION'
+  status: 'FIRST_SUCCESS' | 'SUCCESS' | 'GENERATE_AUDIO_FAILED' | 'CALLBACK_EXCEPTION'
   response?: {
     sunoData?: Array<{
       id: string // Suno song ID
-      audioUrl: string // URL to download audio file
+      audioUrl: string // URL to download audio file (available at SUCCESS)
+      streamAudioUrl?: string // Streaming URL (available at FIRST_SUCCESS)
       duration: number // Song duration in seconds
       title: string
       tags: string
@@ -309,7 +310,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true, message: 'Song cancelled' })
     }
 
-    if (song.status !== 'generating') {
+    // Allow 'generating' or 'partial' status to proceed
+    // 'partial' can receive SUCCESS webhook to upgrade to 'completed'
+    if (song.status !== 'generating' && song.status !== 'partial') {
       logError(
         'Unexpected song status',
         new Error(`Status: ${song.status}`),
@@ -326,7 +329,48 @@ export async function POST(request: Request) {
       )
     }
 
-    // 7. Handle generation failure
+    // 7. Handle FIRST_SUCCESS - early playback available
+    if (status === 'FIRST_SUCCESS') {
+      const sunoData = response?.sunoData?.[0]
+
+      if (sunoData?.streamAudioUrl) {
+        // Update song with partial status and stream URL (no download needed)
+        await supabase
+          .from('song')
+          .update({
+            status: 'partial',
+            stream_audio_url: sunoData.streamAudioUrl,
+            duration_seconds: sunoData.duration ? Math.round(sunoData.duration) : null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', song.id)
+
+        const totalTime = Date.now() - startTime
+
+        logInfo('FIRST_SUCCESS webhook processed - partial status set', {
+          songId: song.id,
+          taskId,
+          streamAudioUrl: sunoData.streamAudioUrl,
+          totalTimeMs: totalTime,
+        })
+
+        return NextResponse.json({
+          received: true,
+          songId: song.id,
+          status: 'partial',
+          processingTimeMs: totalTime,
+        })
+      } else {
+        // FIRST_SUCCESS but no streamAudioUrl - log and wait for SUCCESS
+        logInfo('FIRST_SUCCESS received but no streamAudioUrl, waiting for SUCCESS', {
+          songId: song.id,
+          taskId,
+        })
+        return NextResponse.json({ received: true, message: 'Waiting for final audio' })
+      }
+    }
+
+    // 8. Handle generation failure
     if (status !== 'SUCCESS') {
       const errorMsg = errorMessage || 'Generering mislyktes hos Suno'
 

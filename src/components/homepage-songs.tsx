@@ -28,7 +28,7 @@ export function HomepageSongs() {
   const hasFetchedRef = useRef(false)
 
   // Generating song store
-  const { generatingSong, clearGeneratingSong } = useGeneratingSongStore()
+  const { generatingSong, updateGeneratingSong, clearGeneratingSong } = useGeneratingSongStore()
   const pollingAttemptsRef = useRef(0)
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -102,7 +102,24 @@ export function HomepageSongs() {
 
       const song = data.data
 
-      if (song.status === 'completed') {
+      if (song.status === 'partial') {
+        // Early playback available (FIRST_SUCCESS)
+        // Update store with stream URL but KEEP polling for final audio
+        if (song.streamAudioUrl && !generatingSong?.isPartial) {
+          updateGeneratingSong({
+            isPartial: true,
+            streamAudioUrl: song.streamAudioUrl,
+            duration: song.duration
+          })
+
+          toast({
+            title: 'Klar til avspilling! 🎵',
+            description: 'Du kan nå spille av sangen mens vi ferdigstiller'
+          })
+        }
+        // Continue polling for completed status
+        pollingAttemptsRef.current++
+      } else if (song.status === 'completed') {
         // Success - clear store and refresh list
         if (pollingIntervalRef.current) {
           clearInterval(pollingIntervalRef.current)
@@ -111,10 +128,18 @@ export function HomepageSongs() {
         clearGeneratingSong()
         pollingAttemptsRef.current = 0
 
-        toast({
-          title: 'Sangen er klar! 🎉',
-          description: 'Din norske sang er ferdig generert'
-        })
+        // Only show toast if we weren't already in partial state
+        if (!generatingSong?.isPartial) {
+          toast({
+            title: 'Sangen er klar! 🎉',
+            description: 'Din norske sang er ferdig generert'
+          })
+        } else {
+          toast({
+            title: 'Ferdigstilt! ✨',
+            description: 'Sangen er nå ferdig generert i full kvalitet'
+          })
+        }
 
         // Refresh songs list to show the new song
         fetchSongs(false)
@@ -164,7 +189,7 @@ export function HomepageSongs() {
         })
       }
     }
-  }, [generatingSong, clearGeneratingSong, showError, toast, fetchSongs])
+  }, [generatingSong, updateGeneratingSong, clearGeneratingSong, showError, toast, fetchSongs])
 
   // Start/stop polling when generating song changes
   useEffect(() => {
@@ -291,10 +316,30 @@ export function HomepageSongs() {
               id: generatingSong.id,
               title: generatingSong.title,
               genre: generatingSong.genre,
+              duration_seconds: generatingSong.duration,
               created_at: generatingSong.startedAt.toISOString(),
             }}
-            onClick={() => {}}
-            isGenerating={true}
+            onClick={() => {
+              // Allow click only if partial (has audio ready)
+              if (generatingSong.isPartial && generatingSong.streamAudioUrl) {
+                setSelectedSong({
+                  id: generatingSong.id,
+                  user_id: '',
+                  title: generatingSong.title,
+                  genre: generatingSong.genre,
+                  status: 'partial',
+                  stream_audio_url: generatingSong.streamAudioUrl,
+                  duration_seconds: generatingSong.duration,
+                  phonetic_enabled: false,
+                  shared_count: 0,
+                  created_at: generatingSong.startedAt.toISOString(),
+                  updated_at: new Date().toISOString(),
+                })
+                setIsModalOpen(true)
+              }
+            }}
+            isGenerating={!generatingSong.isPartial}
+            isPartial={generatingSong.isPartial}
           />
         )}
         {/* Regular songs */}
@@ -348,20 +393,21 @@ export function HomepageSongs() {
       {/* Song Player Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-4xl p-6">
-          {selectedSong && selectedSong.audio_url && (
+          {selectedSong && (selectedSong.audio_url || selectedSong.stream_audio_url) && (
             <SongPlayerCard
               songId={selectedSong.id}
               title={selectedSong.title}
               genre={selectedSong.genre}
-              audioUrl={selectedSong.audio_url}
+              audioUrl={selectedSong.audio_url || selectedSong.stream_audio_url || ''}
               duration={selectedSong.duration_seconds}
               createdAt={selectedSong.created_at}
               isPreview={selectedSong.is_preview}
+              isPartial={selectedSong.status === 'partial'}
               onDelete={handleSongDelete}
               onClose={handleCloseModal}
             />
           )}
-          {selectedSong && !selectedSong.audio_url && (
+          {selectedSong && !selectedSong.audio_url && !selectedSong.stream_audio_url && (
             <div className="text-center py-8 text-gray-600">
               Sangen er ikke klar ennå. Prøv igjen om litt.
             </div>

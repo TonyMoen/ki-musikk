@@ -57,8 +57,9 @@ export interface Database {
           phonetic_enabled: boolean
           suno_song_id: string | null
           audio_url: string | null
+          stream_audio_url: string | null  // Early playback URL from FIRST_SUCCESS
           duration_seconds: number | null
-          status: 'generating' | 'completed' | 'failed'
+          status: 'generating' | 'partial' | 'completed' | 'failed' | 'cancelled'
           error_message: string | null
           canvas_url: string | null
           shared_count: number
@@ -78,8 +79,9 @@ export interface Database {
           phonetic_enabled?: boolean
           suno_song_id?: string | null
           audio_url?: string | null
+          stream_audio_url?: string | null
           duration_seconds?: number | null
-          status: 'generating' | 'completed' | 'failed'
+          status: 'generating' | 'partial' | 'completed' | 'failed' | 'cancelled'
           error_message?: string | null
           canvas_url?: string | null
           shared_count?: number
@@ -99,8 +101,9 @@ export interface Database {
           phonetic_enabled?: boolean
           suno_song_id?: string | null
           audio_url?: string | null
+          stream_audio_url?: string | null
           duration_seconds?: number | null
-          status?: 'generating' | 'completed' | 'failed'
+          status?: 'generating' | 'partial' | 'completed' | 'failed' | 'cancelled'
           error_message?: string | null
           canvas_url?: string | null
           shared_count?: number

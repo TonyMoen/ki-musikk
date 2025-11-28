@@ -34,6 +34,7 @@ export interface SongPlayerCardProps {
   createdAt: string
   genreEmoji?: string
   isPreview?: boolean // Free 30-second preview
+  isPartial?: boolean // Early playback (FIRST_SUCCESS) - still finalizing
   onDelete?: (songId: string) => void // Callback when song is deleted
   onClose?: () => void // Callback to close the player modal
 }
@@ -47,6 +48,7 @@ export function SongPlayerCard({
   createdAt,
   genreEmoji = '🎵',
   isPreview = false,
+  isPartial = false,
   onDelete,
   onClose
 }: SongPlayerCardProps) {
@@ -404,6 +406,14 @@ export function SongPlayerCard({
                 </Badge>
                 <InfoTooltip content={TOOLTIPS.freePreview} side="bottom" />
               </span>
+            )}
+            {isPartial && (
+              <Badge
+                className="text-xs bg-[#FFC93C] text-black hover:bg-[#FFC93C]/90 animate-pulse"
+                aria-label="Ferdigstilles"
+              >
+                ⏳ Ferdigstilles...
+              </Badge>
             )}
             <span className="text-xs text-muted-foreground">
               {formatDate(createdAt)}

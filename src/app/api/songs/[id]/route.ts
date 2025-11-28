@@ -101,6 +101,7 @@ export async function GET(
         phonetic_enabled,
         suno_song_id,
         audio_url,
+        stream_audio_url,
         duration_seconds,
         status,
         error_message,
@@ -182,8 +183,37 @@ export async function GET(
               elapsedSeconds
             })
 
-            // Handle completed generation
+            // Handle FIRST_SUCCESS - early playback available
             const firstSong = sunoStatus.data.response?.sunoData?.[0]
+            if (sunoStatus.data.status === 'FIRST_SUCCESS' && firstSong?.streamAudioUrl) {
+              const adminClient = getAdminClient()
+
+              // Update database with partial status and stream URL (no download needed)
+              await adminClient
+                .from('song')
+                .update({
+                  status: 'partial',
+                  stream_audio_url: firstSong.streamAudioUrl,
+                  duration_seconds: firstSong.duration ? Math.round(firstSong.duration) : null,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', songId)
+
+              // Return partial status with stream URL for immediate playback
+              response.status = 'partial'
+              response.progress = 75 // Show good progress but not complete
+              response.streamAudioUrl = firstSong.streamAudioUrl
+              response.duration = firstSong.duration
+
+              logInfo('Song partially ready (FIRST_SUCCESS via polling)', {
+                userId: user.id,
+                songId,
+                streamAudioUrl: firstSong.streamAudioUrl
+              })
+              break
+            }
+
+            // Handle completed generation (SUCCESS)
             if (sunoStatus.data.status === 'SUCCESS' && firstSong?.audioUrl) {
               // Use admin client to bypass RLS for update
               const adminClient = getAdminClient()
@@ -294,6 +324,106 @@ export async function GET(
           songId,
           progress: progressPercent,
           elapsedSeconds
+        })
+        break
+
+      case 'partial':
+        // Song has early playback available (FIRST_SUCCESS)
+        // Use streamAudioUrl for immediate playback while waiting for final audio
+        response.streamAudioUrl = song.stream_audio_url
+        response.duration = song.duration_seconds
+        response.progress = 85 // Show good progress but not complete
+        response.originalLyrics = song.original_lyrics
+        response.optimizedLyrics = song.optimized_lyrics
+
+        // Continue polling Suno API to check for SUCCESS (final audio)
+        if (song.suno_song_id) {
+          try {
+            const { getSongStatus } = await import('@/lib/api/suno')
+            const sunoStatus = await getSongStatus(song.suno_song_id)
+
+            logInfo('Checking for SUCCESS while partial', {
+              userId: user.id,
+              songId,
+              sunoStatus: sunoStatus.data.status
+            })
+
+            const firstSong = sunoStatus.data.response?.sunoData?.[0]
+            if (sunoStatus.data.status === 'SUCCESS' && firstSong?.audioUrl) {
+              // SUCCESS! Download final audio to storage
+              const adminClient = getAdminClient()
+
+              let finalAudioUrl = firstSong.audioUrl
+              try {
+                const audioResponse = await fetch(firstSong.audioUrl, {
+                  signal: AbortSignal.timeout(30000)
+                })
+                if (audioResponse.ok) {
+                  const audioBuffer = await audioResponse.arrayBuffer()
+                  const filePath = `${user.id}/${songId}.mp3`
+
+                  const { error: uploadError } = await adminClient.storage
+                    .from('songs')
+                    .upload(filePath, audioBuffer, {
+                      contentType: 'audio/mpeg',
+                      upsert: true
+                    })
+
+                  if (!uploadError) {
+                    const { data: signedUrlData } = await adminClient.storage
+                      .from('songs')
+                      .createSignedUrl(filePath, 86400)
+
+                    if (signedUrlData?.signedUrl) {
+                      finalAudioUrl = signedUrlData.signedUrl
+                      logInfo('Audio uploaded to storage (partial→completed)', {
+                        songId,
+                        filePath
+                      })
+                    }
+                  }
+                }
+              } catch (downloadError) {
+                logError('Audio download failed, using Suno URL', downloadError as Error, { songId })
+              }
+
+              // Update database to completed
+              await adminClient
+                .from('song')
+                .update({
+                  status: 'completed',
+                  audio_url: finalAudioUrl,
+                  duration_seconds: firstSong.duration ? Math.round(firstSong.duration) : song.duration_seconds,
+                  canvas_url: firstSong.imageUrl || null,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', songId)
+
+              // Return completed status
+              response.status = 'completed'
+              response.progress = 100
+              response.audioUrl = finalAudioUrl
+              response.duration = firstSong.duration || song.duration_seconds
+
+              logInfo('Song completed (partial→completed via polling)', {
+                userId: user.id,
+                songId
+              })
+              break
+            }
+          } catch (sunoError) {
+            // Suno check failed - just continue with partial status
+            logError('Failed to check for SUCCESS while partial', sunoError as Error, {
+              songId
+            })
+          }
+        }
+
+        logInfo('Song status: partial (early playback available)', {
+          userId: user.id,
+          songId,
+          hasStreamUrl: !!song.stream_audio_url,
+          duration: song.duration_seconds
         })
         break
 

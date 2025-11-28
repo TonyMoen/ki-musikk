@@ -40,8 +40,9 @@ export interface Song {
   phonetic_enabled: boolean
   suno_song_id?: string
   audio_url?: string
+  stream_audio_url?: string  // Early playback URL from Suno at FIRST_SUCCESS
   duration_seconds?: number
-  status: 'generating' | 'completed' | 'failed' | 'cancelled'
+  status: 'generating' | 'partial' | 'completed' | 'failed' | 'cancelled'
   error_message?: string
   canvas_url?: string
   shared_count: number
