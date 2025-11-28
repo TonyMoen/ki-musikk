@@ -113,12 +113,12 @@ export function GenreSelection({
   if (isLoading) {
     return (
       <div className={`w-full ${className}`}>
-        <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {/* Loading skeleton */}
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="min-h-[44px] w-[140px] rounded-lg bg-gray-200 animate-pulse"
+              className="h-[52px] rounded-lg bg-gray-200 animate-pulse"
             />
           ))}
         </div>
@@ -136,7 +136,7 @@ export function GenreSelection({
 
   return (
     <div role="radiogroup" aria-label="Velg sjanger" className={`w-full ${className}`}>
-      <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {genres.map((genre) => {
           const isSelected = selectedId === genre.id
           const gradientFrom = genre.gradient_colors?.from || '#E94560'
@@ -154,9 +154,9 @@ export function GenreSelection({
                   : 'white',
               }}
               className={`
-                min-h-[44px] min-w-[44px] px-4 py-2 rounded-lg
+                h-[52px] w-full px-3 py-2 rounded-lg
                 transition-all duration-200
-                flex items-center gap-2
+                flex items-center justify-center gap-2
                 ${
                   isSelected
                     ? 'border-[3px] border-[#E94560] text-white hover:opacity-90'
@@ -168,10 +168,10 @@ export function GenreSelection({
               aria-checked={isSelected}
               tabIndex={0}
             >
-              <span className="text-2xl" role="img" aria-label={genre.display_name}>
+              <span className="text-xl" role="img" aria-label={genre.display_name}>
                 {genre.emoji}
               </span>
-              <span className="font-medium text-sm md:text-base">{genre.display_name}</span>
+              <span className="font-medium text-sm truncate">{genre.display_name}</span>
             </Button>
           )
         })}
