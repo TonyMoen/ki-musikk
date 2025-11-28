@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { SongCard } from '@/components/song-card'
 import { SongPlayerCard } from '@/components/song-player-card'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { useToast } from '@/hooks/use-toast'
@@ -393,6 +393,12 @@ export function HomepageSongs() {
       {/* Song Player Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-4xl p-6">
+          <DialogTitle className="sr-only">
+            {selectedSong?.title || 'Sangavspiller'}
+          </DialogTitle>
+          <DialogDescription className="sr-only">
+            Spill av og administrer sangen din
+          </DialogDescription>
           {selectedSong && (selectedSong.audio_url || selectedSong.stream_audio_url) && (
             <SongPlayerCard
               songId={selectedSong.id}
