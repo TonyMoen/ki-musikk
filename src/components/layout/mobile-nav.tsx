@@ -46,7 +46,7 @@ export function MobileNav({ user, credits, onSignOut }: MobileNavProps) {
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture
 
   const loggedInNavItems = [
-    { href: '/', icon: Home, label: 'Lag Sang' },
+    { href: '/', icon: Home, label: 'Hjem' },
     { href: '/songs', icon: Music, label: 'Mine Sanger' },
     { href: '/settings', icon: Settings, label: 'Innstillinger' },
   ]
@@ -87,7 +87,7 @@ export function MobileNav({ user, credits, onSignOut }: MobileNavProps) {
                     {user.user_metadata?.full_name || user.email}
                   </span>
                   <span className="text-sm font-semibold text-primary">
-                    {credits} kr kreditter
+                    {credits} kreditter
                   </span>
                 </div>
               </div>

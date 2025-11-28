@@ -86,6 +86,12 @@ export function Header() {
             {user && (
               <>
                 <Link
+                  href="/"
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Hjem
+                </Link>
+                <Link
                   href="/songs"
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
@@ -124,7 +130,7 @@ export function Header() {
                 {/* Mobile: Credit balance + hamburger */}
                 <div className="flex md:hidden items-center gap-2">
                   <span className="text-sm font-semibold text-primary">
-                    {balance} kr
+                    {balance} kreditter
                   </span>
                   <MobileNav
                     user={user}

@@ -36,9 +36,9 @@ export function UserMenu({ user, credits, onSignOut }: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2 px-2 hover:bg-accent">
+        <Button variant="ghost" className="flex items-center gap-2 px-2 hover:bg-transparent">
           <span className="text-sm font-semibold text-primary">
-            {credits} kr
+            {credits} kreditter
           </span>
           <Avatar className="h-8 w-8">
             <AvatarImage src={avatarUrl} alt={user.user_metadata?.full_name || 'Bruker'} />
