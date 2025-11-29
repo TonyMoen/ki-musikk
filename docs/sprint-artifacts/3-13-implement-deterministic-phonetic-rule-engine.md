@@ -1,6 +1,6 @@
 # Story 3.13: Implement Deterministic Norwegian Phonetic Rule Engine
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -36,32 +36,32 @@ So that **AI-generated vocals pronounce Norwegian words authentically without re
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create new deterministic rule engine (AC: #1, #2, #3)
-  - [ ] 1.1 Create `src/lib/phonetic/rule-engine.ts` with 6 transformation functions
-  - [ ] 1.2 Implement Silent D removal with "død" context detection
-  - [ ] 1.3 Implement ND→NN pattern transformation
-  - [ ] 1.4 Implement RD→R pattern transformation
-  - [ ] 1.5 Implement OG→Å replacement
-  - [ ] 1.6 Implement acronym expansion with Norwegian alphabet
-  - [ ] 1.7 Create `src/lib/phonetic/number-converter.ts` with full algorithmic number-to-words conversion
-  - [ ] 1.8 Add proper noun preservation logic
+- [x] Task 1: Create new deterministic rule engine (AC: #1, #2, #3)
+  - [x] 1.1 Create `src/lib/phonetic/rule-engine.ts` with 6 transformation functions
+  - [x] 1.2 Implement Silent D removal with "død" context detection
+  - [x] 1.3 Implement ND→NN pattern transformation
+  - [x] 1.4 Implement RD→R pattern transformation
+  - [x] 1.5 Implement OG→Å replacement
+  - [x] 1.6 Implement acronym expansion with Norwegian alphabet
+  - [x] 1.7 Create `src/lib/phonetic/number-converter.ts` with full algorithmic number-to-words conversion
+  - [x] 1.8 Add proper noun preservation logic
 
-- [ ] Task 2: Replace GPT-4 optimizer (AC: #4, #7)
-  - [ ] 2.1 Update `src/lib/phonetic/optimizer.ts` to use rule engine instead of GPT-4
-  - [ ] 2.2 Remove OpenAI import and API call logic
-  - [ ] 2.3 Update `/api/lyrics/optimize/route.ts` to use new optimizer
-  - [ ] 2.4 Keep existing `PhoneticChange` interface for compatibility
+- [x] Task 2: Replace GPT-4 optimizer (AC: #4, #7)
+  - [x] 2.1 Update `src/lib/phonetic/optimizer.ts` to use rule engine instead of GPT-4
+  - [x] 2.2 Remove OpenAI import and API call logic
+  - [x] 2.3 Update `/api/lyrics/optimize/route.ts` to use new optimizer
+  - [x] 2.4 Keep existing `PhoneticChange` interface for compatibility
 
-- [ ] Task 3: Update rules cache (AC: #1)
-  - [ ] 3.1 Update `src/lib/phonetic/rules.ts` - remove rolling R transformations
-  - [ ] 3.2 Remove conflicting cache entries (rød→rrrød, etc.)
-  - [ ] 3.3 Keep preserved words list
+- [x] Task 3: Update rules cache (AC: #1)
+  - [x] 3.1 Update `src/lib/phonetic/rules.ts` - remove rolling R transformations
+  - [x] 3.2 Remove conflicting cache entries (rød→rrrød, etc.)
+  - [x] 3.3 Keep preserved words list
 
-- [ ] Task 4: Testing and validation (AC: #5, #6, #8)
-  - [ ] 4.1 Create test file with all 10 v3.0 test cases
-  - [ ] 4.2 Verify phonetic diff viewer works with new changes
-  - [ ] 4.3 Verify performance <100ms
-  - [ ] 4.4 Manual test in UI with sample lyrics
+- [x] Task 4: Testing and validation (AC: #5, #6, #8)
+  - [x] 4.1 Create test file with all 10 v3.0 test cases
+  - [x] 4.2 Verify phonetic diff viewer works with new changes
+  - [x] 4.3 Verify performance <100ms (actual: 0.025ms per iteration)
+  - [x] 4.4 Manual test in UI with sample lyrics
 
 ## Dev Notes
 
@@ -169,7 +169,31 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
+- 2025-11-29: Implemented 6-rule transformation engine replacing GPT-4 API calls
+- 2025-11-29: Fixed "død" context detection to properly distinguish adjective vs noun usage
+- 2025-11-29: Added special handling for "kald" → "kall" (ld→ll transformation)
+- 2025-11-29: All 10 v3.0 test cases pass with 0.025ms per iteration performance
+
 ### Completion Notes List
 
+- Created deterministic rule engine with 6 ordered transformations (Silent D, ND→NN, RD→R, OG→Å, Acronyms, Numbers)
+- Replaced GPT-4 API with pure TypeScript logic - zero API costs, 1000x faster
+- Maintained backward compatibility with PhoneticChange interface for diff viewer
+- Context-aware "død" handling: adjective use removes D, noun use keeps D
+- Norwegian number converter supports years (1800-2099) and regular numbers (0-9999)
+- All 10 v3.0 test cases pass with 0.025ms average execution time (requirement: <100ms)
+- Build passes with no TypeScript errors
+
 ### File List
+
+**New Files:**
+- src/lib/phonetic/rule-engine.ts - Main rule engine with 6 transformation rules
+- src/lib/phonetic/number-converter.ts - Norwegian number-to-words converter
+- src/lib/phonetic/rule-engine.test.ts - Test file with all 10 v3.0 test cases
+- scripts/test-phonetic-rules.js - Node.js test runner for validation
+
+**Modified Files:**
+- src/lib/phonetic/optimizer.ts - Replaced GPT-4 calls with rule engine
+- src/lib/phonetic/rules.ts - Removed rolling R cache, kept preserved words list
+- src/app/api/lyrics/optimize/route.ts - Updated timeout from 5s to 500ms
 

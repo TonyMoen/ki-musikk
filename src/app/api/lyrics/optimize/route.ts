@@ -58,11 +58,11 @@ export async function POST(
       )
     }
 
-    // Set timeout for optimization (<5 seconds requirement)
+    // Set timeout for optimization (100ms requirement for rule engine)
     const timeoutPromise = new Promise<never>((_, reject) => {
       setTimeout(() => {
         reject(new Error('OPTIMIZATION_TIMEOUT'))
-      }, 5000) // 5 second timeout
+      }, 500) // 500ms timeout (rule engine should complete in <100ms)
     })
 
     // Perform optimization with timeout
@@ -110,19 +110,6 @@ export async function POST(
       )
     }
 
-    // Check for OpenAI API errors
-    if (error instanceof Error && error.message.includes('API key')) {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'API_KEY_ERROR',
-            message:
-              'Kunne ikke koble til AI-tjenesten. Vennligst prøv igjen senere.'
-          }
-        },
-        { status: 500 }
-      )
-    }
 
     // Generic error
     return NextResponse.json(

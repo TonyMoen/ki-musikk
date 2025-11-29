@@ -89,7 +89,9 @@
       "SlashCommand(/bmad:core:workflows:party-mode)",
       "Bash(copy \"C:\\Users\\tony-\\SG-Tony\\docs\\norwegian-phonetic-rules.md.backup\" \"C:\\Users\\tony-\\SG-Tony\\docs\\norwegian-phonetic-rules.md\")",
       "Bash(cmd /c copy:*)",
-      "SlashCommand(/bmad:bmm:workflows:story-context)"
+      "SlashCommand(/bmad:bmm:workflows:story-context)",
+      "Bash(npx ts-node:*)",
+      "Bash(node scripts/test-phonetic-rules.js:*)"
     ],
     "deny": [],
     "ask": []

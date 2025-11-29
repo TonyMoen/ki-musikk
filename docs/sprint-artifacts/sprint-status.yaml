@@ -82,7 +82,7 @@ development_status:
   3-10-add-genre-prompt-templates-to-database: review
   3-11-implement-early-audio-playback-with-first-success: review  # Implementation complete, awaiting review
   3-12-add-voice-gender-selection-and-upgrade-to-v5: review  # Voice selector UI + V5 model upgrade
-  3-13-implement-deterministic-phonetic-rule-engine: ready-for-dev  # Replace GPT-4 with rule-based engine (v3.0 rules)
+  3-13-implement-deterministic-phonetic-rule-engine: review  # Replace GPT-4 with rule-based engine (v3.0 rules)
   3-14-implement-song-writer-agent-structure-rules: ready-for-dev  # Song structure, Suno tags, vibe detection, humor
   epic-3-retrospective: optional
 
