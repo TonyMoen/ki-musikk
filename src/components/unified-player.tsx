@@ -64,8 +64,6 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
   const [isMobile, setIsMobile] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
-  const [touchStart, setTouchStart] = useState<number | null>(null)
-  const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
   // Refs
   const soundRef = useRef<Howl | null>(null)
@@ -292,34 +290,6 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
     }
   }, [currentSong, isDownloading, showError])
 
-  // Swipe handling for mobile
-  const minSwipeDistance = 50
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null)
-    setTouchStart(e.targetTouches[0].clientY)
-  }
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientY)
-  }
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return
-    const distance = touchStart - touchEnd
-    const isSwipe = Math.abs(distance) > minSwipeDistance
-
-    if (isSwipe) {
-      if (distance > 0) {
-        // Swipe up - next song
-        goToNext()
-      } else {
-        // Swipe down - previous song
-        goToPrevious()
-      }
-    }
-  }
-
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -365,51 +335,18 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
   return (
     <div
       ref={containerRef}
-      className={`
-        fixed inset-0 z-50
-        ${isMobile ? 'flex flex-col bg-black/90' : 'flex items-center justify-center bg-black/80'}
-      `}
-      onTouchStart={isMobile ? onTouchStart : undefined}
-      onTouchMove={isMobile ? onTouchMove : undefined}
-      onTouchEnd={isMobile ? onTouchEnd : undefined}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+      onClick={(e) => {
+        // Close when clicking backdrop
+        if (e.target === containerRef.current) {
+          onClose()
+        }
+      }}
     >
-      {/* Mobile: Previous song peek (top) - clickable */}
-      {isMobile && currentIndex > 0 && (
-        <div
-          className="absolute top-0 left-0 right-0 h-10 flex items-center justify-center cursor-pointer z-10 bg-black/60"
-          onClick={goToPrevious}
-        >
-          <ChevronUp className="h-4 w-4 text-white/60" />
-        </div>
-      )}
-
-      {/* Mobile: Next song peek (bottom) - clickable */}
-      {isMobile && currentIndex < songs.length - 1 && (
-        <div
-          className="absolute bottom-0 left-0 right-0 h-10 flex items-center justify-center cursor-pointer z-10 bg-gradient-to-t from-amber-500/70 to-amber-400/40"
-          onClick={goToNext}
-        >
-          <ChevronDown className="h-4 w-4 text-white/80" />
-        </div>
-      )}
-
       {/* Player container */}
       <div
-        className={`
-          relative flex flex-col overflow-hidden
-          ${isMobile
-            ? 'mx-4 my-2 rounded-2xl shadow-2xl'
-            : 'w-full max-w-lg h-[85vh] max-h-[700px] rounded-2xl shadow-2xl'
-          }
-        `}
-        style={{
-          ...backgroundStyle,
-          ...(isMobile ? {
-            height: `calc(100dvh - ${currentIndex > 0 ? '48px' : '8px'} - ${currentIndex < songs.length - 1 ? '48px' : '8px'})`,
-            marginTop: currentIndex > 0 ? '44px' : '4px',
-            marginBottom: currentIndex < songs.length - 1 ? '44px' : '4px',
-          } : {})
-        }}
+        className="relative flex flex-col overflow-hidden w-[calc(100%-2rem)] max-w-lg max-h-[80vh] rounded-2xl shadow-2xl"
+        style={backgroundStyle}
       >
         {/* Background image */}
         {currentSong.image_url && !imageError && (
@@ -451,7 +388,7 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
             className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full"
             aria-label="Lukk avspiller"
           >
-            {isMobile ? <ChevronDown className="h-6 w-6" /> : <X className="h-6 w-6" />}
+            <X className="h-6 w-6" />
           </Button>
         </div>
 
