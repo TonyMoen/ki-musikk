@@ -33,18 +33,27 @@ function isGradientColors(value: unknown): value is GradientColors {
 interface GenreSelectionProps {
   onGenreSelect?: (genreId: string, genreName: string) => void
   defaultSelectedId?: string
+  selectedGenreId?: string | null  // Controlled mode - sync with parent
   className?: string
 }
 
 export function GenreSelection({
   onGenreSelect,
   defaultSelectedId,
+  selectedGenreId,
   className = ''
 }: GenreSelectionProps) {
   const [genres, setGenres] = useState<Genre[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(defaultSelectedId || null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // Sync with parent's selectedGenreId (controlled mode)
+  useEffect(() => {
+    if (selectedGenreId !== undefined) {
+      setSelectedId(selectedGenreId)
+    }
+  }, [selectedGenreId])
 
   // Fetch genres from database
   useEffect(() => {

@@ -52,6 +52,7 @@ export default function Home() {
         if (data.concept) setConcept(data.concept)
         if (data.lyrics) setLyrics(data.lyrics)
         if (data.isCustomTextMode !== undefined) setIsCustomTextMode(data.isCustomTextMode)
+        if (data.vocalGender !== undefined) setVocalGender(data.vocalGender)
         // Clear after restoring
         localStorage.removeItem(PENDING_SONG_KEY)
       }
@@ -379,7 +380,7 @@ export default function Home() {
           <h2 className="text-2xl font-semibold mb-4 text-center md:text-left">
             Velg sjanger
           </h2>
-          <GenreSelection onGenreSelect={handleGenreSelect} />
+          <GenreSelection onGenreSelect={handleGenreSelect} selectedGenreId={selectedGenre?.id} />
         </div>
 
         {/* Voice Gender Selection Section */}
@@ -465,7 +466,8 @@ export default function Home() {
           genre: selectedGenre,
           concept,
           lyrics,
-          isCustomTextMode
+          isCustomTextMode,
+          vocalGender
         }}
       />
     </main>

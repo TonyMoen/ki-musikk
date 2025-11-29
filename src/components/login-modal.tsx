@@ -24,6 +24,7 @@ interface PendingSongData {
   concept: string
   lyrics: string
   isCustomTextMode: boolean
+  vocalGender: 'm' | 'f' | null
 }
 
 interface LoginModalProps {
