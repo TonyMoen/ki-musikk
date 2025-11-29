@@ -59,9 +59,13 @@ Epic: UX Refinements (11 points)
 │   Dependencies: None (can be done in parallel with 1.1)
 │   Delivers: Manual-first lyrics input with optional AI
 │
-└── Story 1.4: Enhanced Lyrics Input with Dual-Mode UX (3 points) ← NEW
-    Dependencies: Story 1.3 (existing lyrics section)
-    Delivers: AI-first lyrics with custom text toggle + phonetic optimization link
+├── Story 1.4: Enhanced Lyrics Input with Dual-Mode UX (3 points)
+│   Dependencies: Story 1.3 (existing lyrics section)
+│   Delivers: AI-first lyrics with custom text toggle + phonetic optimization link
+│
+└── Story 1.5: Unified Music Player with Lyrics Display (8 points) ← NEW
+    Dependencies: None (replaces song-player-card.tsx)
+    Delivers: TikTok-style player with image bg, scrollable lyrics, swipe nav
 ```
 
 ---
@@ -167,14 +171,66 @@ So that **I can quickly describe what I want or paste my own lyrics with Norwegi
 
 ---
 
+### Story 1.5: Unified Music Player with Lyrics Display
+
+As a **user**,
+I want **a full-screen music player that shows lyrics over the song's artwork with swipe navigation**,
+So that **I can enjoy my songs in an immersive, modern interface like TikTok/Spotify on any device**.
+
+**Acceptance Criteria:**
+
+**Layout & Responsive Design:**
+- AC #1: Mobile displays full-screen vertical player (100vh), desktop displays large modal/panel
+- AC #2: Suno-generated image fills background with semi-transparent overlay for text readability
+- AC #3: Song title and metadata displayed at top-left
+- AC #4: Lyrics displayed in scrollable area over background
+- AC #5: Bottom player bar with controls (back, play/pause, progress, loop)
+
+**Image Handling:**
+- AC #6: Database schema updated to store `image_url` from Suno API
+- AC #7: Webhook handler saves Suno `imageUrl` when song completes
+- AC #8: Player displays image if available, gradient fallback if not
+
+**Navigation:**
+- AC #9: Mobile: swipe up/down navigates to previous/next song
+- AC #10: Desktop: click arrows or keyboard ←/→ navigates songs
+- AC #11: Chevron down (mobile) or X (desktop) closes player
+
+**Actions:**
+- AC #12: Download button (circular icon, right side) downloads song
+- AC #13: Download reuses existing `downloadSong()` utility
+
+**Audio Controls:**
+- AC #14: Play/pause button (center bottom)
+- AC #15: Progress bar with time display (current/total)
+- AC #16: Back button (seek to start or previous song)
+- AC #17: Loop toggle button
+- AC #18: Desktop: volume slider in bottom bar
+
+**Prerequisites:** None (replaces existing player)
+
+**Technical Notes:**
+- Replace `song-player-card.tsx` with new `unified-player.tsx` component
+- Add `image_url` column to `song` table via migration
+- Update Suno webhook to extract and store `imageUrl` from response
+- Use Howler.js for audio (already in project)
+- Use `framer-motion` or native touch events for swipe gestures
+- Responsive breakpoints: mobile (<768px), desktop (≥768px)
+- Consider lazy loading images with blur placeholder
+
+**Estimated Effort:** 8 points
+
+---
+
 ## Implementation Timeline - Epic 1
 
-**Total Story Points:** 11
+**Total Story Points:** 19
 
 **Implementation Sequence:**
 1. Story 1.1 + Story 1.3 (can be parallel) ✓ DONE
 2. Story 1.2 (depends on 1.1) ✓ DONE
-3. Story 1.4 (depends on 1.3) ← NEXT
+3. Story 1.4 (depends on 1.3)
+4. Story 1.5 (independent - can start anytime) ← NEXT
 
 ---
 

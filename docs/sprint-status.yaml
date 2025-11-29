@@ -12,10 +12,12 @@
 
 development_status:
   # Epic 1: UX Refinements
-  epic-1: backlog
-  1-1-homepage-song-section: backlog
-  1-2-inline-generation-status: backlog
-  1-3-redesigned-lyrics-section: backlog
+  epic-1: in-progress
+  1-1-homepage-song-section: done
+  1-2-inline-generation-status: done
+  1-3-redesigned-lyrics-section: done
+  1-4-enhanced-lyrics-input: backlog
+  1-5-unified-music-player: review
   epic-1-retrospective: backlog
 
   # Epic 2: UI Polish & Bug Fixes

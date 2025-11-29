@@ -41,6 +41,7 @@ export interface Song {
   suno_song_id?: string
   audio_url?: string
   stream_audio_url?: string  // Early playback URL from Suno at FIRST_SUCCESS
+  image_url?: string  // Suno-generated cover image URL
   duration_seconds?: number
   status: 'generating' | 'partial' | 'completed' | 'failed' | 'cancelled'
   error_message?: string

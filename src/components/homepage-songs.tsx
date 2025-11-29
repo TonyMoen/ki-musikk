@@ -2,9 +2,8 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { SongCard } from '@/components/song-card'
-import { SongPlayerCard } from '@/components/song-player-card'
+import { UnifiedPlayer } from '@/components/unified-player'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { useToast } from '@/hooks/use-toast'
@@ -21,8 +20,8 @@ export function HomepageSongs() {
   const [hasMore, setHasMore] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isChangingPage, setIsChangingPage] = useState(false)
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedSongIndex, setSelectedSongIndex] = useState<number | null>(null)
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false)
   const { showError } = useErrorToast()
   const { toast } = useToast()
   const hasFetchedRef = useRef(false)
@@ -215,21 +214,16 @@ export function HomepageSongs() {
     }
   }, [generatingSong, pollSongStatus])
 
-  // Handle song card click
-  const handleSongClick = (song: Song) => {
-    setSelectedSong(song)
-    setIsModalOpen(true)
+  // Handle song card click - open unified player at clicked song index
+  const handleSongClick = (song: Song, index: number) => {
+    setSelectedSongIndex(index)
+    setIsPlayerOpen(true)
   }
 
-  // Handle modal close
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setTimeout(() => setSelectedSong(null), 200)
-  }
-
-  // Handle song deletion - refresh current page
-  const handleSongDelete = () => {
-    fetchSongs()
+  // Handle player close
+  const handleClosePlayer = () => {
+    setIsPlayerOpen(false)
+    setSelectedSongIndex(null)
   }
 
   // Navigation handlers
@@ -334,34 +328,19 @@ export function HomepageSongs() {
               created_at: generatingSong.startedAt.toISOString(),
             }}
             onClick={() => {
-              // Allow click only if partial (has audio ready)
-              if (generatingSong.isPartial && generatingSong.streamAudioUrl) {
-                setSelectedSong({
-                  id: generatingSong.id,
-                  user_id: '',
-                  title: generatingSong.title,
-                  genre: generatingSong.genre,
-                  status: 'partial',
-                  stream_audio_url: generatingSong.streamAudioUrl,
-                  duration_seconds: generatingSong.duration,
-                  phonetic_enabled: false,
-                  shared_count: 0,
-                  created_at: generatingSong.startedAt.toISOString(),
-                  updated_at: new Date().toISOString(),
-                })
-                setIsModalOpen(true)
-              }
+              // Generating songs can't be opened in player yet
+              // They need to complete first
             }}
             isGenerating={!generatingSong.isPartial}
             isPartial={generatingSong.isPartial}
           />
         )}
         {/* Regular songs */}
-        {songs.map((song) => (
+        {songs.map((song, index) => (
           <SongCard
             key={song.id}
             song={song}
-            onClick={() => handleSongClick(song)}
+            onClick={() => handleSongClick(song, index)}
           />
         ))}
       </div>
@@ -404,36 +383,14 @@ export function HomepageSongs() {
         </div>
       )}
 
-      {/* Song Player Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-4xl p-6">
-          <DialogTitle className="sr-only">
-            {selectedSong?.title || 'Sangavspiller'}
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            Spill av og administrer sangen din
-          </DialogDescription>
-          {selectedSong && (selectedSong.audio_url || selectedSong.stream_audio_url) && (
-            <SongPlayerCard
-              songId={selectedSong.id}
-              title={selectedSong.title}
-              genre={selectedSong.genre}
-              audioUrl={selectedSong.audio_url || selectedSong.stream_audio_url || ''}
-              duration={selectedSong.duration_seconds}
-              createdAt={selectedSong.created_at}
-              isPreview={selectedSong.is_preview}
-              isPartial={selectedSong.status === 'partial'}
-              onDelete={handleSongDelete}
-              onClose={handleCloseModal}
-            />
-          )}
-          {selectedSong && !selectedSong.audio_url && !selectedSong.stream_audio_url && (
-            <div className="text-center py-8 text-gray-600">
-              Sangen er ikke klar ennå. Prøv igjen om litt.
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Unified Player */}
+      {isPlayerOpen && selectedSongIndex !== null && songs.length > 0 && (
+        <UnifiedPlayer
+          songs={songs}
+          initialIndex={selectedSongIndex}
+          onClose={handleClosePlayer}
+        />
+      )}
     </>
   )
 }

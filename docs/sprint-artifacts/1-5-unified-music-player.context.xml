@@ -1,0 +1,257 @@
+<story-context id="1-5-unified-music-player" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>5</storyId>
+    <title>Unified Music Player with Lyrics Display</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-29</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-5-unified-music-player.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>a full-screen music player that shows lyrics over the song's artwork with swipe navigation</iWant>
+    <soThat>I can enjoy my songs in an immersive, modern interface like TikTok/Spotify on any device</soThat>
+    <tasks>
+      <task id="1" name="Database Migration for Image URL" ac="6">
+        <subtask>Create migration file add_image_url_to_songs.sql</subtask>
+        <subtask>Add image_url TEXT column to song table</subtask>
+        <subtask>Update src/types/song.ts with image_url field</subtask>
+      </task>
+      <task id="2" name="Update Suno Webhook to Store Image URL" ac="7">
+        <subtask>Update SunoWebhookPayload interface to include imageUrl</subtask>
+        <subtask>Extract imageUrl from sunoData[0].imageUrl in webhook handler</subtask>
+        <subtask>Update song record with image_url field on SUCCESS</subtask>
+      </task>
+      <task id="3" name="Create Unified Player Component - Layout" ac="1,2,3,4,5">
+        <subtask>Create src/components/unified-player.tsx</subtask>
+        <subtask>Implement full-screen mobile layout (100vh, fixed)</subtask>
+        <subtask>Implement modal layout for desktop</subtask>
+        <subtask>Add responsive breakpoint detection</subtask>
+        <subtask>Implement background image with overlay</subtask>
+        <subtask>Create scrollable lyrics container</subtask>
+        <subtask>Create fixed bottom player bar</subtask>
+      </task>
+      <task id="4" name="Implement Audio Playback" ac="14,15,16,17,18">
+        <subtask>Initialize Howler.js with audio URL</subtask>
+        <subtask>Implement play/pause, progress bar, seek</subtask>
+        <subtask>Add back button, loop toggle</subtask>
+        <subtask>Add volume slider for desktop</subtask>
+      </task>
+      <task id="5" name="Implement Navigation" ac="9,10,11">
+        <subtask>Implement swipe gesture detection for mobile</subtask>
+        <subtask>Add navigation arrows for desktop</subtask>
+        <subtask>Implement keyboard navigation</subtask>
+        <subtask>Add close button (ChevronDown/X)</subtask>
+      </task>
+      <task id="6" name="Implement Download Action" ac="12,13">
+        <subtask>Add circular Download button</subtask>
+        <subtask>Wire up to existing downloadSong() utility</subtask>
+      </task>
+      <task id="7" name="Handle Missing Images" ac="8">
+        <subtask>Display gradient fallback when no image_url</subtask>
+        <subtask>Use genre gradient colors</subtask>
+      </task>
+      <task id="8" name="Integration and Replacement">
+        <subtask>Update HomepageSongs to use UnifiedPlayer</subtask>
+        <subtask>Update song library page</subtask>
+        <subtask>Deprecate song-player-card.tsx</subtask>
+      </task>
+      <task id="9" name="Testing">
+        <subtask>Test mobile swipe navigation</subtask>
+        <subtask>Test desktop keyboard navigation</subtask>
+        <subtask>Test download and audio playback</subtask>
+        <subtask>Test responsive behavior</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <category name="Layout and Responsive Design">
+      <ac id="1">Mobile displays full-screen vertical player (100vh), desktop displays large modal/panel</ac>
+      <ac id="2">Suno-generated image fills background with semi-transparent overlay for text readability</ac>
+      <ac id="3">Song title and metadata displayed at top-left</ac>
+      <ac id="4">Lyrics displayed in scrollable area over background</ac>
+      <ac id="5">Bottom player bar with controls (back, play/pause, progress, loop)</ac>
+    </category>
+    <category name="Image Handling">
+      <ac id="6">Database schema updated to store image_url from Suno API</ac>
+      <ac id="7">Webhook handler saves Suno imageUrl when song completes</ac>
+      <ac id="8">Player displays image if available, gradient fallback if not</ac>
+    </category>
+    <category name="Navigation">
+      <ac id="9">Mobile: swipe up/down navigates to previous/next song</ac>
+      <ac id="10">Desktop: click arrows or keyboard left/right navigates songs</ac>
+      <ac id="11">Chevron down (mobile) or X (desktop) closes player</ac>
+    </category>
+    <category name="Actions">
+      <ac id="12">Download button (circular icon, right side) downloads song</ac>
+      <ac id="13">Download reuses existing downloadSong() utility</ac>
+    </category>
+    <category name="Audio Controls">
+      <ac id="14">Play/pause button (center bottom)</ac>
+      <ac id="15">Progress bar with time display (current/total)</ac>
+      <ac id="16">Back button (seek to start or previous song)</ac>
+      <ac id="17">Loop toggle button</ac>
+      <ac id="18">Desktop: volume slider in bottom bar</ac>
+    </category>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Audio Player">
+        Howler.js for audio playback, wavesurfer.js for waveform visualization. Mobile-first responsive design with touch-friendly 48px+ tap targets.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Project Structure">
+        Components in src/components/, UI library in src/components/ui/. Single component with responsive behavior pattern.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Naming Conventions">
+        Files: kebab-case.tsx. Components: PascalCase. Props: ComponentNameProps interface.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Language">
+        Norwegian UI text (buttons, labels), English code (variables, functions, comments).
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 1.5">
+        Story definition with 18 acceptance criteria, 8 story points. Part of Epic 1: UX Refinements.
+      </doc>
+    </docs>
+
+    <code>
+      <file path="src/components/song-player-card.tsx" kind="component" reason="Current player implementation - reference for Howler.js patterns, audio state management, controls">
+        <symbol>SongPlayerCard</symbol>
+        <symbol>SongPlayerCardProps</symbol>
+        <patterns>
+          - Howler.js initialization (lines 96-142)
+          - Play/pause toggle (lines 217-225)
+          - Seek handling (lines 228-240)
+          - Volume control (lines 243-258)
+          - Download handling (lines 274-291)
+          - Keyboard controls (lines 333-372)
+        </patterns>
+      </file>
+      <file path="src/lib/utils/download.ts" kind="utility" reason="Download utility to reuse for AC#13">
+        <symbol>downloadSong(songId: string, songTitle: string): Promise&lt;boolean&gt;</symbol>
+        <symbol>sanitizeFilename(title: string): string</symbol>
+      </file>
+      <file path="src/app/api/webhooks/suno/route.ts" kind="api-route" reason="Webhook handler - needs update to store imageUrl (AC#7)">
+        <symbol>SunoWebhookPayload</symbol>
+        <notes>
+          - Current interface (line 23-37) does NOT include imageUrl
+          - Suno API returns imageUrl in sunoData array (see lib/api/suno.ts:315)
+          - Update needed: add imageUrl to interface, extract and save to song.image_url
+        </notes>
+      </file>
+      <file path="src/lib/api/suno.ts" kind="api-wrapper" reason="Suno API response type includes imageUrl">
+        <symbol>SunoTaskStatusResponse</symbol>
+        <lines>303-328</lines>
+        <notes>
+          Response includes sunoData[].imageUrl at line 315. This is what webhook should capture.
+        </notes>
+      </file>
+      <file path="src/types/song.ts" kind="type-definition" reason="Song type - needs image_url field (AC#6)">
+        <symbol>Song</symbol>
+        <lines>32-53</lines>
+        <notes>
+          Add: image_url?: string
+        </notes>
+      </file>
+      <file path="src/components/homepage-songs.tsx" kind="component" reason="Integration point - currently uses SongPlayerCard in Dialog modal">
+        <symbol>HomepageSongs</symbol>
+        <lines>407-436</lines>
+        <notes>
+          - Uses Dialog + SongPlayerCard for song playback
+          - Need to replace with UnifiedPlayer
+          - Pass songs array and clicked index instead of single song
+        </notes>
+      </file>
+      <file path="src/components/ui/slider.tsx" kind="ui-component" reason="Progress bar slider component - shadcn/ui" />
+      <file path="src/components/ui/button.tsx" kind="ui-component" reason="Button component for controls - shadcn/ui" />
+      <file path="src/components/ui/dialog.tsx" kind="ui-component" reason="Dialog component for desktop modal view" />
+      <file path="src/hooks/use-toast.ts" kind="hook" reason="Toast notifications for download success/failure" />
+      <file path="src/hooks/use-error-toast.ts" kind="hook" reason="Error handling toast" />
+    </code>
+
+    <dependencies>
+      <node>
+        <package name="howler" version="^2.2.4">Audio playback library - use for player</package>
+        <package name="wavesurfer.js" version="^7.11.1">Waveform visualization - NOT needed for new player</package>
+        <package name="lucide-react" version="^0.554.0">Icons: Play, Pause, Download, ChevronDown, ChevronLeft, ChevronRight, X, Volume2, Repeat</package>
+        <package name="zustand" version="^5.0.8">State management - consider for player state if needed across components</package>
+        <package name="@radix-ui/react-slider" version="^1.3.6">Progress bar slider</package>
+        <package name="@radix-ui/react-dialog" version="^1.1.15">Desktop modal</package>
+        <package name="tailwind-merge" version="^3.4.0">Class merging utility</package>
+        <package name="class-variance-authority" version="^0.7.1">Component variants</package>
+      </node>
+      <note>Consider adding framer-motion for swipe gestures, or use native touch events</note>
+    </dependencies>
+  </artifacts>
+
+  <interfaces>
+    <interface name="UnifiedPlayerProps" kind="component-props" path="src/components/unified-player.tsx">
+      <signature>
+interface UnifiedPlayerProps {
+  songs: Song[]              // Array of songs to navigate through
+  initialIndex: number       // Starting song index
+  onClose: () => void        // Callback when player is closed
+}
+      </signature>
+    </interface>
+    <interface name="downloadSong" kind="function" path="src/lib/utils/download.ts">
+      <signature>downloadSong(songId: string, songTitle: string): Promise&lt;boolean&gt;</signature>
+    </interface>
+    <interface name="Song" kind="type" path="src/types/song.ts">
+      <signature>
+interface Song {
+  id: string
+  user_id: string
+  title: string
+  genre: string
+  original_lyrics?: string
+  optimized_lyrics?: string
+  audio_url?: string
+  stream_audio_url?: string
+  image_url?: string  // NEW - add this field
+  duration_seconds?: number
+  status: 'generating' | 'partial' | 'completed' | 'failed' | 'cancelled'
+  // ... other fields
+}
+      </signature>
+    </interface>
+  </interfaces>
+
+  <constraints>
+    <constraint source="architecture">Mobile-first responsive design - design for mobile (full-screen) first, adapt for desktop</constraint>
+    <constraint source="architecture">Norwegian UI text - all user-facing strings must be in Norwegian</constraint>
+    <constraint source="architecture">English code - all variables, functions, comments in English</constraint>
+    <constraint source="architecture">shadcn/ui components - use existing Button, Slider, Dialog components</constraint>
+    <constraint source="architecture">Tailwind CSS - use utility classes, no custom CSS files</constraint>
+    <constraint source="story">Single component - UnifiedPlayer must handle both mobile and desktop layouts</constraint>
+    <constraint source="story">Replaces existing player - deprecate song-player-card.tsx after integration</constraint>
+    <constraint source="db">Migration required - add image_url column to song table before webhook update</constraint>
+  </constraints>
+
+  <tests>
+    <standards>
+      No formal test framework configured. Manual testing required for:
+      - Mobile: Chrome DevTools device emulation + real device testing
+      - Desktop: Chrome, Firefox, Safari
+      - Audio: playback controls, seek, volume
+      - Gestures: touch events, swipe navigation
+    </standards>
+    <locations>
+      - Manual testing via npm run dev
+      - Supabase dashboard for database verification
+    </locations>
+    <ideas>
+      <idea ac="1">Test full-screen layout on mobile viewport (375px, 414px widths)</idea>
+      <idea ac="2">Test background image loading and overlay opacity</idea>
+      <idea ac="6,7">Verify image_url saved in database after song generation</idea>
+      <idea ac="8">Test gradient fallback with songs that have no image</idea>
+      <idea ac="9">Test swipe up/down on touch device or emulator</idea>
+      <idea ac="10">Test keyboard arrows and click arrows on desktop</idea>
+      <idea ac="12,13">Test download button triggers download and shows toast</idea>
+      <idea ac="14-18">Test all audio controls: play, pause, seek, back, loop, volume</idea>
+    </ideas>
+  </tests>
+</story-context>
