@@ -1,17 +1,19 @@
 /**
- * @deprecated INACTIVE - This rule engine has been superseded by GPT-4-based optimization.
- * Kept for potential future hybrid approach or improvement.
+ * Norwegian Bokmål Phonetic Transformation Rule Engine (v3.0)
+ * Deterministic rule-based pronunciation optimizer
  *
- * Superseded: 2025-11-29
- * Reason: User testing showed GPT-4 produces better pronunciation results
- *         than the 6-rule deterministic approach. The complexity of Norwegian
- *         pronunciation requires AI intelligence to handle contextual nuances.
- * See: Story 3.3 for active implementation (src/lib/phonetic/optimizer.ts)
+ * STATUS: ACTIVE - Used as first pass in hybrid approach
+ * Updated: 2025-11-29 - Now combined with GPT-4 for best results
+ *
+ * Handles these transformations:
+ * - Silent D removal (god→go, ved→ve, etc.)
+ * - ND→NN (land→lann, strand→strann)
+ * - RD→R (fjord→fjor, bord→bor)
+ * - OG→Å (og→å)
+ * - Acronym expansion (FRP→Eff-Err-Pe)
+ * - Number conversion (2025→tjue-tjue-fem)
+ * - Context-aware "død" (adjective vs noun)
  */
-
-// Norwegian Bokmål Phonetic Transformation Rule Engine
-// Deterministic rule-based pronunciation optimizer (v3.0)
-// STATUS: INACTIVE - Superseded by GPT-4 approach per ADR-006
 
 import { convertNumberToNorwegian } from './number-converter'
 import { preservedWords } from './rules'

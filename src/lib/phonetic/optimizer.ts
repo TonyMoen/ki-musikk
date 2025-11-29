@@ -1,9 +1,10 @@
-// Norwegian pronunciation optimizer using GPT-4 AI
-// Restored from Story 3.3 approach (supersedes rule engine per 2025-11-29 decision)
-// ADR-006: GPT-4 provides superior pronunciation optimization through language understanding
+// Norwegian pronunciation optimizer - Hybrid approach
+// Combines deterministic rule-engine (fast, consistent) with GPT-4 (edge cases)
+// Updated 2025-11-29: Hybrid approach for best of both worlds
 
 import OpenAI from 'openai'
 import { preservedWords } from './rules'
+import { applyAllRules, TransformationResult } from './rule-engine'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -24,88 +25,29 @@ export interface OptimizationResult {
 }
 
 /**
- * In-memory cache for common Norwegian phonetic optimizations
- * Reduces GPT-4 API calls by ~40% for typical lyrics
+ * Convert rule-engine TransformationResult to PhoneticChange format
  */
-const phoneticCache: Map<string, { optimized: string; reason: string }> =
-  new Map([
-    // Common words with silent letters
-    ['og', { optimized: 'å', reason: 'og uttales som å' }],
-    ['jeg', { optimized: 'jæi', reason: 'jeg uttales med åpen æ-lyd' }],
-    ['deg', { optimized: 'dæi', reason: 'deg uttales med åpen æ-lyd' }],
-    ['meg', { optimized: 'mæi', reason: 'meg uttales med åpen æ-lyd' }],
-    ['seg', { optimized: 'sæi', reason: 'seg uttales med åpen æ-lyd' }],
-    ['det', { optimized: 'de', reason: 'stum t i det' }],
-    ['med', { optimized: 'me', reason: 'stum d i med' }],
-    ['ved', { optimized: 've', reason: 'stum d i ved' }],
-    ['god', { optimized: 'go', reason: 'stum d i god' }],
-    ['rød', { optimized: 'rø', reason: 'stum d i rød' }],
-    ['glad', { optimized: 'gla', reason: 'stum d i glad' }],
-    // Norwegian vowel sounds
-    ['på', { optimized: 'påå', reason: 'lang å-lyd' }],
-    ['nå', { optimized: 'nåå', reason: 'lang å-lyd' }],
-    ['få', { optimized: 'fåå', reason: 'lang å-lyd' }],
-    ['gå', { optimized: 'gåå', reason: 'lang å-lyd' }],
-    ['stå', { optimized: 'ståå', reason: 'lang å-lyd' }],
-    // Rolled R sounds
-    ['kjærlighet', { optimized: 'kjærrrlighet', reason: 'rullende r for følelse' }],
-    ['norsk', { optimized: 'norrsk', reason: 'tydelig norsk r' }],
-    ['mor', { optimized: 'morr', reason: 'rullende r i slutten' }],
-    ['far', { optimized: 'farr', reason: 'rullende r i slutten' }],
-    // Common phrases
-    ['har', { optimized: 'harr', reason: 'tydelig norsk r' }],
-    ['er', { optimized: 'ærr', reason: 'åpen e og rullende r' }],
-    ['var', { optimized: 'varr', reason: 'tydelig norsk r' }],
-    ['blir', { optimized: 'blirr', reason: 'tydelig norsk r' }]
-  ])
+function convertRuleEngineChanges(changes: TransformationResult[]): PhoneticChange[] {
+  return changes.map(change => ({
+    original: change.original,
+    optimized: change.transformed,
+    reason: change.rule,
+    lineNumber: change.lineNumber
+  }))
+}
 
 /**
- * Apply cached phonetic rules before calling GPT-4
- * Returns optimizations found in cache
+ * Apply deterministic rule-engine transformations
+ * Handles: Silent D, ND→NN, RD→R, OG→Å, Acronyms, Numbers
  */
-function applyCachedOptimizations(
+function applyRuleEngineOptimizations(
   lyrics: string
-): { text: string; changes: PhoneticChange[]; hitCount: number } {
-  const changes: PhoneticChange[] = []
-  let optimizedText = lyrics
-  let hitCount = 0
-  const lines = lyrics.split('\n')
-
-  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-    const lineNumber = lineIdx + 1
-    const words = lines[lineIdx].split(/\s+/)
-
-    for (const word of words) {
-      const cleanWord = word.toLowerCase().replace(/[.,!?;:"'\-()]/g, '')
-
-      // Skip preserved words (proper nouns, place names)
-      if (preservedWords.includes(cleanWord)) continue
-
-      // Check cache
-      const cached = phoneticCache.get(cleanWord)
-      if (cached) {
-        hitCount++
-        // Apply optimization preserving case
-        const regex = new RegExp(`\\b${escapeRegex(cleanWord)}\\b`, 'gi')
-        optimizedText = optimizedText.replace(regex, match => {
-          // Preserve capitalization
-          if (match[0] === match[0].toUpperCase()) {
-            return cached.optimized.charAt(0).toUpperCase() + cached.optimized.slice(1)
-          }
-          return cached.optimized
-        })
-
-        changes.push({
-          original: cleanWord,
-          optimized: cached.optimized,
-          reason: cached.reason,
-          lineNumber
-        })
-      }
-    }
+): { text: string; changes: PhoneticChange[] } {
+  const { transformedLyrics, changes } = applyAllRules(lyrics)
+  return {
+    text: transformedLyrics,
+    changes: convertRuleEngineChanges(changes)
   }
-
-  return { text: optimizedText, changes, hitCount }
 }
 
 /**
@@ -117,12 +59,12 @@ function escapeRegex(str: string): string {
 
 /**
  * Optimize Norwegian lyrics for authentic pronunciation in AI-generated songs
- * Uses GPT-4 for intelligent phonetic analysis (per ADR-006)
+ * HYBRID APPROACH: Rule-engine (deterministic) + GPT-4 (edge cases)
  *
  * Process:
- * 1. Apply cached rules for common words (~40% hit rate)
- * 2. Call GPT-4 for remaining complex optimizations
- * 3. Validate and merge results
+ * 1. Apply rule-engine for deterministic patterns (ND→NN, RD→R, Silent D, OG→Å, Acronyms, Numbers)
+ * 2. Call GPT-4 for remaining edge cases (vowel sounds, kj/skj/gj clusters, etc.)
+ * 3. Merge and deduplicate results
  */
 export async function optimizeLyrics(
   lyrics: string
@@ -136,42 +78,47 @@ export async function optimizeLyrics(
     }
   }
 
-  // Step 1: Apply cached optimizations first
+  // Step 1: Apply rule-engine (deterministic transformations)
   const {
-    text: partiallyOptimized,
-    changes: cachedChanges,
-    hitCount
-  } = applyCachedOptimizations(lyrics)
+    text: ruleEngineOptimized,
+    changes: ruleEngineChanges
+  } = applyRuleEngineOptimizations(lyrics)
 
-  // Calculate total words for cache hit rate
+  // Calculate rule-engine coverage
   const totalWords = lyrics.split(/\s+/).filter(w => w.length > 0).length
-  const cacheHitRate = totalWords > 0 ? Math.round((hitCount / totalWords) * 100) : 0
+  const ruleEngineHitRate = totalWords > 0
+    ? Math.round((ruleEngineChanges.length / totalWords) * 100)
+    : 0
 
-  // Step 2: Call GPT-4 for remaining optimizations
+  // Step 2: Call GPT-4 for edge cases (vowels, consonant clusters, etc.)
   try {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4',
-      temperature: 0.3, // Lower temperature for consistency
+      temperature: 0.3,
       messages: [
         {
           role: 'system',
           content: `Du er en norsk fonetikkekspert som optimaliserer sangtekster for AI-generert musikk (Suno).
 
-Analyser teksten og foreslå fonetiske stavemåter som gir autentisk norsk uttale.
+Teksten har allerede fått følgende transformasjoner:
+- Stum D fjernet (god→go, ved→ve, etc.)
+- ND→NN (land→lann)
+- RD→R (fjord→fjor)
+- OG→Å (og→å)
+- Akronymer utvidet (FRP→Eff-Err-Pe)
+- Tall konvertert (2025→tjue-tjue-fem)
 
-Fokuser på:
-- Stumme bokstaver (d i ord som "god", "ved", "med")
-- Rullende R-lyder (forsterkes med "rr" eller "rrr")
-- Norske vokallyder (æ, ø, å - tydeliggjøres)
-- Konsonantklynger (kj, skj, gj)
-- Tonefall og trykk
+Fokuser NÅ på disse GJENVÆRENDE optimaliseringene:
+- Norske vokallyder (æ, ø, å - tydeliggjøres der det hjelper uttalen)
+- Konsonantklynger (kj, skj, gj - fonetisk skriving)
+- Andre uttalenyanser som ikke dekkes av reglene over
 
 VIKTIG:
+- IKKE endre ord som allerede er transformert
 - Behold egennavn og stedsnavn UENDRET (Oslo, Bergen, Lars, etc.)
-- Ikke endre ord som allerede er fonetisk optimalisert
-- Forklar kort hvorfor hver endring forbedrer uttalen
+- Kun foreslå endringer som VIRKELIG forbedrer uttalen
 
-Returner ALLTID gyldig JSON i dette formatet:
+Returner ALLTID gyldig JSON:
 {
   "changes": [
     {"original": "ord", "optimized": "ord", "reason": "kort forklaring", "lineNumber": 1}
@@ -182,7 +129,7 @@ Hvis ingen endringer trengs, returner: {"changes": []}`
         },
         {
           role: 'user',
-          content: `Optimaliser denne norske sangteksten for autentisk uttale:\n\n${partiallyOptimized}`
+          content: `Optimaliser denne teksten for autentisk norsk uttale:\n\n${ruleEngineOptimized}`
         }
       ],
       response_format: { type: 'json_object' }
@@ -192,11 +139,11 @@ Hvis ingen endringer trengs, returner: {"changes": []}`
     const gptResult = JSON.parse(responseContent)
     const gptChanges: PhoneticChange[] = gptResult.changes || []
 
-    // Apply GPT-4 optimizations to the text
-    let finalOptimized = partiallyOptimized
+    // Apply GPT-4 optimizations to the rule-engine output
+    let finalOptimized = ruleEngineOptimized
     for (const change of gptChanges) {
-      // Skip if already optimized by cache
-      if (cachedChanges.some(c => c.original.toLowerCase() === change.original.toLowerCase())) {
+      // Skip if already transformed by rule-engine
+      if (ruleEngineChanges.some(c => c.original.toLowerCase() === change.original.toLowerCase())) {
         continue
       }
 
@@ -215,9 +162,9 @@ Hvis ingen endringer trengs, returner: {"changes": []}`
       })
     }
 
-    // Merge changes (cache + GPT-4)
-    const allChanges = [...cachedChanges, ...gptChanges.filter(
-      gc => !cachedChanges.some(cc => cc.original.toLowerCase() === gc.original.toLowerCase())
+    // Merge changes (rule-engine + GPT-4)
+    const allChanges = [...ruleEngineChanges, ...gptChanges.filter(
+      gc => !ruleEngineChanges.some(rc => rc.original.toLowerCase() === gc.original.toLowerCase())
     )]
 
     // Deduplicate changes
@@ -235,17 +182,17 @@ Hvis ingen endringer trengs, returner: {"changes": []}`
       originalLyrics: lyrics,
       optimizedLyrics: finalOptimized,
       changes: uniqueChanges,
-      cacheHitRate
+      cacheHitRate: ruleEngineHitRate
     }
   } catch (error) {
     console.error('GPT-4 phonetic optimization failed:', error)
 
-    // Graceful degradation: Return cached optimizations only
+    // Graceful degradation: Return rule-engine optimizations only
     return {
       originalLyrics: lyrics,
-      optimizedLyrics: partiallyOptimized,
-      changes: cachedChanges,
-      cacheHitRate
+      optimizedLyrics: ruleEngineOptimized,
+      changes: ruleEngineChanges,
+      cacheHitRate: ruleEngineHitRate
     }
   }
 }
