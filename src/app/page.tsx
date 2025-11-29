@@ -243,11 +243,17 @@ export default function Home() {
     setIsGeneratingSong(true)
 
     // Mode-aware logic:
-    // - Custom mode: use lyrics directly, generate title from first line
+    // - Custom mode: use lyrics directly, derive title and concept from lyrics
     // - AI mode: use concept for title, originalLyrics for base text
+    const firstLine = lyrics.split('\n')[0]?.trim() || ''
     const songTitle = isCustomTextMode
-      ? lyrics.split('\n')[0]?.substring(0, 50) || 'Min egen sang'
+      ? firstLine.substring(0, 50) || 'Min egen sang'
       : concept || 'Min sang'
+
+    // API requires concept - in custom mode, use first 2 non-empty lines as concept
+    const songConcept = isCustomTextMode
+      ? lyrics.split('\n').filter(line => line.trim()).slice(0, 2).join(' ').substring(0, 200) || 'Egendefinert sangtekst'
+      : concept
 
     const baseLyrics = isCustomTextMode
       ? lyrics
@@ -262,7 +268,7 @@ export default function Home() {
         body: JSON.stringify({
           title: songTitle,
           genre: selectedGenre.name,
-          concept: isCustomTextMode ? '' : concept,
+          concept: songConcept,
           lyrics: baseLyrics,
           optimizedLyrics: optimizedLyrics || null,
           phoneticEnabled: !!optimizedLyrics, // Only if user optimized
