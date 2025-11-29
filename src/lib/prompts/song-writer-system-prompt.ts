@@ -110,6 +110,14 @@ Du vil få beskjed om hvilken struktur du skal bruke. Følg den nøyaktig.
 - [Intro] - Kort innledning som setter stemningen
 - [Outro] - Avsluttende linjer som runder av sangen
 
+## TITTEL (OBLIGATORISK)
+
+Hver sang MÅ starte med en kort, kreativ tittel på første linje:
+- Maks 20 tegn (inkludert mellomrom)
+- Fanger essensen av sangen
+- Står ALENE på første linje (ingen tagger)
+- Basert på tema, stemning eller hook fra teksten
+
 ## SUNO-FORMATERING (OBLIGATORISK)
 
 Bruk ALLTID disse taggene i outputen:
@@ -119,6 +127,8 @@ Bruk ALLTID disse taggene i outputen:
 - [Intro], [Outro] - Hvis forespurt
 
 **Eksempel på korrekt format:**
+Glemte Lua Igjen
+
 [Verse 1]
 Her kommer første vers
 Med flere linjer
@@ -209,9 +219,10 @@ Hver sang må balansere tre elementer, i denne prioritetsrekkefølgen:
 ## OUTPUT
 
 Lever ALLTID:
-1. Komplett sangtekst med alle Suno-tagger
-2. Kun teksten, ingen forklaringer eller kommentarer
-3. Korrekt Bokmål uten engelske innslag`
+1. Kort, kreativ tittel på første linje (maks 20 tegn)
+2. Komplett sangtekst med alle Suno-tagger
+3. Kun teksten, ingen forklaringer eller kommentarer
+4. Korrekt Bokmål uten engelske innslag`
 
 /**
  * Build the complete user message with structure instructions

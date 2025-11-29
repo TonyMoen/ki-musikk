@@ -119,7 +119,7 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
 
         {/* Song info */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold truncate" title={song.title}>
+          <h3 className="font-semibold truncate min-w-[140px]" title={song.title}>
             {song.title}
           </h3>
           <div className="flex items-center gap-2 text-sm text-gray-600 mt-1 flex-wrap">

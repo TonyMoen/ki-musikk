@@ -91,9 +91,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
       max_tokens: 1000
     })
 
-    const lyrics = completion.choices[0]?.message?.content?.trim() || ''
+    const rawOutput = completion.choices[0]?.message?.content?.trim() || ''
 
-    if (!lyrics) {
+    if (!rawOutput) {
       return NextResponse.json(
         {
           error: {
@@ -105,8 +105,37 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
       )
     }
 
+    // Parse title from first line (before any [Tag])
+    const lines = rawOutput.split('\n')
+    let title = 'Uten tittel'
+    let lyricsStartIndex = 0
+
+    // Find title (first non-empty line that doesn't start with '[')
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (line && !line.startsWith('[')) {
+        title = line
+        lyricsStartIndex = i + 1
+        break
+      } else if (line.startsWith('[')) {
+        // No title found, lyrics start immediately
+        lyricsStartIndex = i
+        break
+      }
+    }
+
+    // Skip any empty lines between title and first tag
+    while (lyricsStartIndex < lines.length && !lines[lyricsStartIndex].trim()) {
+      lyricsStartIndex++
+    }
+
+    const lyrics = lines.slice(lyricsStartIndex).join('\n').trim()
+
+    // Truncate title to max 20 characters
+    const truncatedTitle = title.length > 20 ? title.substring(0, 20).trim() : title
+
     return NextResponse.json({
-      data: { lyrics }
+      data: { lyrics, title: truncatedTitle }
     })
   } catch (error) {
     console.error('Lyric generation failed:', error)

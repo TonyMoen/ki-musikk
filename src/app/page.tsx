@@ -36,6 +36,7 @@ export default function Home() {
   const [vocalGender, setVocalGender] = useState<VocalGender>(null)
   const [isCustomTextMode, setIsCustomTextMode] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [generatedTitle, setGeneratedTitle] = useState('')
   const { toast } = useToast()
   const { showError } = useErrorToast()
   const { showOnboarding, completeOnboarding, isLoading: isOnboardingLoading } = useOnboarding()
@@ -164,8 +165,10 @@ export default function Home() {
       }
 
       const generatedLyrics = data.data.lyrics
+      const aiTitle = data.data.title
       setLyrics(generatedLyrics)
       setOriginalLyrics(generatedLyrics)
+      setGeneratedTitle(aiTitle || '')
 
       toast({
         title: 'Tekst generert! ✨',
@@ -276,11 +279,11 @@ export default function Home() {
 
     // Mode-aware logic:
     // - Custom mode: use lyrics directly, derive title and concept from lyrics
-    // - AI mode: use concept for title, originalLyrics for base text
+    // - AI mode: use AI-generated title, fallback to concept
     const firstLine = lyrics.split('\n')[0]?.trim() || ''
     const songTitle = isCustomTextMode
       ? firstLine.substring(0, 50) || 'Min egen sang'
-      : concept || 'Min sang'
+      : generatedTitle || concept || 'Min sang'
 
     // API requires concept - in custom mode, use first 2 non-empty lines as concept
     const songConcept = isCustomTextMode
@@ -376,8 +379,10 @@ export default function Home() {
         }
 
         const generatedLyrics = lyricsData.data.lyrics
+        const aiTitle = lyricsData.data.title
         setLyrics(generatedLyrics)
         setOriginalLyrics(generatedLyrics)
+        setGeneratedTitle(aiTitle || '')
 
         toast({
           title: 'Tekst generert! ✨',

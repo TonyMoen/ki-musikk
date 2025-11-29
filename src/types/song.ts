@@ -8,6 +8,7 @@ export interface LyricGenerationRequest {
 export interface LyricGenerationResponse {
   data?: {
     lyrics: string
+    title: string
   }
   error?: {
     code: string
