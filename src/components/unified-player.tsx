@@ -8,8 +8,7 @@ import {
   Pause,
   Download,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
+  ChevronUp,
   X,
   Repeat,
   SkipBack,
@@ -64,6 +63,7 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
   const [isDownloading, setIsDownloading] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
@@ -116,6 +116,7 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
     setIsLoading(true)
     setCurrentTime(0)
     setImageLoaded(false)
+    setImageError(false)
 
     const sound = new Howl({
       src: [audioUrl],
@@ -352,12 +353,13 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
   // Get volume icon
   const VolumeIcon = isMuted || volume === 0 ? VolumeX : volume < 50 ? Volume1 : Volume2
 
-  // Background style
-  const backgroundStyle = currentSong?.image_url
-    ? {}
-    : {
+  // Background style - use gradient if no image or image failed to load
+  const showGradient = !currentSong?.image_url || imageError
+  const backgroundStyle = showGradient
+    ? {
         background: `linear-gradient(135deg, ${genreGradient.from} 0%, ${genreGradient.to} 100%)`
       }
+    : {}
 
   if (!currentSong) {
     return null
@@ -379,14 +381,14 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
         className={`
           relative flex flex-col overflow-hidden
           ${isMobile
-            ? 'w-full h-full'
-            : 'w-full max-w-lg h-[90vh] max-h-[800px] rounded-2xl shadow-2xl'
+            ? 'w-[calc(100%-16px)] h-[calc(100%-48px)] mx-2 my-6 rounded-2xl'
+            : 'w-full max-w-lg h-[85vh] max-h-[700px] rounded-2xl shadow-2xl'
           }
         `}
         style={backgroundStyle}
       >
         {/* Background image */}
-        {currentSong.image_url && (
+        {currentSong.image_url && !imageError && (
           <div className="absolute inset-0">
             <Image
               src={currentSong.image_url}
@@ -394,7 +396,9 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
               fill
               className={`object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
               onLoad={() => setImageLoaded(true)}
+              onError={() => setImageError(true)}
               priority
+              unoptimized
             />
             {/* Overlay for readability */}
             <div className="absolute inset-0 bg-black/40" />
@@ -440,37 +444,19 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
           )}
         </div>
 
-        {/* Right side action buttons */}
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-20">
-          {/* Download button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
-            aria-label="Last ned"
-          >
-            {isDownloading ? (
-              <Loader2 className="h-6 w-6 animate-spin" />
-            ) : (
-              <Download className="h-6 w-6" />
-            )}
-          </Button>
-        </div>
 
-        {/* Desktop navigation arrows */}
-        {!isMobile && (
+        {/* Desktop navigation arrows - vertical style */}
+        {!isMobile && songs.length > 1 && (
           <>
             {currentIndex > 0 && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={goToPrevious}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 z-20"
+                className="absolute left-1/2 -translate-x-1/2 top-16 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm text-white/70 hover:bg-white/20 hover:text-white transition-all z-20"
                 aria-label="Forrige sang"
               >
-                <ChevronLeft className="h-6 w-6" />
+                <ChevronUp className="h-5 w-5" />
               </Button>
             )}
             {currentIndex < songs.length - 1 && (
@@ -478,10 +464,10 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
                 variant="ghost"
                 size="icon"
                 onClick={goToNext}
-                className="absolute right-20 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 z-20"
+                className="absolute left-1/2 -translate-x-1/2 bottom-36 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm text-white/70 hover:bg-white/20 hover:text-white transition-all z-20"
                 aria-label="Neste sang"
               >
-                <ChevronRight className="h-6 w-6" />
+                <ChevronDown className="h-5 w-5" />
               </Button>
             )}
           </>
@@ -505,71 +491,93 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
           </div>
 
           {/* Controls */}
-          <div className="flex items-center justify-center gap-4">
-            {/* Back button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleBack}
-              disabled={isLoading}
-              className="w-10 h-10 text-white hover:bg-white/20 rounded-full"
-              aria-label="Tilbake"
-            >
-              <SkipBack className="h-5 w-5" />
-            </Button>
+          <div className="flex items-center justify-between">
+            {/* Left spacer for balance */}
+            <div className="w-10" />
 
-            {/* Play/Pause button */}
+            {/* Center controls */}
+            <div className="flex items-center justify-center gap-4">
+              {/* Back button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleBack}
+                disabled={isLoading}
+                className="w-10 h-10 text-white hover:bg-white/20 rounded-full"
+                aria-label="Tilbake"
+              >
+                <SkipBack className="h-5 w-5" />
+              </Button>
+
+              {/* Play/Pause button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={togglePlay}
+                disabled={isLoading}
+                className="w-14 h-14 rounded-full bg-white text-black hover:bg-white/90"
+                aria-label={isPlaying ? 'Pause' : 'Spill av'}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-7 w-7 animate-spin" />
+                ) : isPlaying ? (
+                  <Pause className="h-7 w-7" />
+                ) : (
+                  <Play className="h-7 w-7 ml-1" />
+                )}
+              </Button>
+
+              {/* Loop button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleLoop}
+                disabled={isLoading}
+                className={`w-10 h-10 rounded-full ${isLooping ? 'bg-white/30 text-white' : 'text-white hover:bg-white/20'}`}
+                aria-label={isLooping ? 'Repeter av' : 'Repeter på'}
+              >
+                <Repeat className="h-5 w-5" />
+              </Button>
+
+              {/* Volume (desktop only) */}
+              {!isMobile && (
+                <div className="flex items-center gap-2 ml-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleMute}
+                    className="w-8 h-8 text-white hover:bg-white/20 rounded-full"
+                    aria-label={isMuted ? 'Slå på lyd' : 'Demp'}
+                  >
+                    <VolumeIcon className="h-4 w-4" />
+                  </Button>
+                  <Slider
+                    value={[isMuted ? 0 : volume]}
+                    max={100}
+                    step={1}
+                    onValueChange={handleVolumeChange}
+                    className="w-20 [&_[role=slider]]:bg-white [&_[role=slider]]:border-0"
+                    aria-label="Volum"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Download button - bottom right */}
             <Button
               variant="ghost"
               size="icon"
-              onClick={togglePlay}
-              disabled={isLoading}
-              className="w-14 h-14 rounded-full bg-white text-black hover:bg-white/90"
-              aria-label={isPlaying ? 'Pause' : 'Spill av'}
+              onClick={handleDownload}
+              disabled={isDownloading}
+              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
+              aria-label="Last ned"
             >
-              {isLoading ? (
-                <Loader2 className="h-7 w-7 animate-spin" />
-              ) : isPlaying ? (
-                <Pause className="h-7 w-7" />
+              {isDownloading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                <Play className="h-7 w-7 ml-1" />
+                <Download className="h-5 w-5" />
               )}
             </Button>
-
-            {/* Loop button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleLoop}
-              disabled={isLoading}
-              className={`w-10 h-10 rounded-full ${isLooping ? 'bg-white/30 text-white' : 'text-white hover:bg-white/20'}`}
-              aria-label={isLooping ? 'Repeter av' : 'Repeter på'}
-            >
-              <Repeat className="h-5 w-5" />
-            </Button>
-
-            {/* Volume (desktop only) */}
-            {!isMobile && (
-              <div className="flex items-center gap-2 ml-4">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleMute}
-                  className="w-8 h-8 text-white hover:bg-white/20 rounded-full"
-                  aria-label={isMuted ? 'Slå på lyd' : 'Demp'}
-                >
-                  <VolumeIcon className="h-4 w-4" />
-                </Button>
-                <Slider
-                  value={[isMuted ? 0 : volume]}
-                  max={100}
-                  step={1}
-                  onValueChange={handleVolumeChange}
-                  className="w-20 [&_[role=slider]]:bg-white [&_[role=slider]]:border-0"
-                  aria-label="Volum"
-                />
-              </div>
-            )}
           </div>
 
           {/* Mobile swipe hint */}

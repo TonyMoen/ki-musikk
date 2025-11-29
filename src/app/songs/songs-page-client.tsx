@@ -3,9 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { SongCard } from '@/components/song-card'
 import { EmptySongLibrary } from '@/components/empty-song-library'
-import { SongPlayerCard } from '@/components/song-player-card'
+import { UnifiedPlayer } from '@/components/unified-player'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import type { Song } from '@/types/song'
@@ -22,8 +21,8 @@ export function SongsPageClient({
   const [songs, setSongs] = useState<Song[]>(initialSongs)
   const [isLoading, setIsLoading] = useState(false)
   const [hasMore, setHasMore] = useState(initialSongs.length === 20)
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedSongIndex, setSelectedSongIndex] = useState<number | null>(null)
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const { showError } = useErrorToast()
 
@@ -83,22 +82,16 @@ export function SongsPageClient({
     return () => observer.disconnect()
   }, [loadMoreSongs, hasMore, isLoading])
 
-  // Handle song card click
-  const handleSongClick = (song: Song) => {
-    setSelectedSong(song)
-    setIsModalOpen(true)
+  // Handle song card click - open unified player at clicked song index
+  const handleSongClick = (index: number) => {
+    setSelectedSongIndex(index)
+    setIsPlayerOpen(true)
   }
 
-  // Handle modal close
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    // Small delay before clearing selected song to allow animation
-    setTimeout(() => setSelectedSong(null), 200)
-  }
-
-  // Handle song deletion - remove from list (optimistic update)
-  const handleSongDelete = (deletedId: string) => {
-    setSongs(currentSongs => currentSongs.filter(s => s.id !== deletedId))
+  // Handle player close
+  const handleClosePlayer = () => {
+    setIsPlayerOpen(false)
+    setSelectedSongIndex(null)
   }
 
   // Empty state
@@ -121,11 +114,11 @@ export function SongsPageClient({
 
           {/* Songs grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            {songs.map((song) => (
+            {songs.map((song, index) => (
               <SongCard
                 key={song.id}
                 song={song}
-                onClick={() => handleSongClick(song)}
+                onClick={() => handleSongClick(index)}
               />
             ))}
           </div>
@@ -159,29 +152,14 @@ export function SongsPageClient({
         </div>
       </main>
 
-      {/* Song Player Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-4xl p-6">
-          {selectedSong && selectedSong.audio_url && (
-            <SongPlayerCard
-              songId={selectedSong.id}
-              title={selectedSong.title}
-              genre={selectedSong.genre}
-              audioUrl={selectedSong.audio_url}
-              duration={selectedSong.duration_seconds}
-              createdAt={selectedSong.created_at}
-              isPreview={selectedSong.is_preview}
-              onDelete={handleSongDelete}
-              onClose={handleCloseModal}
-            />
-          )}
-          {selectedSong && !selectedSong.audio_url && (
-            <div className="text-center py-8 text-gray-600">
-              Sangen er ikke klar ennå. Prøv igjen om litt.
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Unified Player */}
+      {isPlayerOpen && selectedSongIndex !== null && songs.length > 0 && (
+        <UnifiedPlayer
+          songs={songs}
+          initialIndex={selectedSongIndex}
+          onClose={handleClosePlayer}
+        />
+      )}
     </>
   )
 }
