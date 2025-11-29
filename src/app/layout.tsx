@@ -3,10 +3,8 @@ import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
-import { LowCreditWarningWrapper } from "@/components/low-credit-warning-wrapper";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
-import { createClient } from "@/lib/supabase/server";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -31,20 +29,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
   return (
     <html lang="nb">
       <body className="min-h-screen flex flex-col">
         <TooltipProvider delayDuration={400}>
           <Header />
-          <LowCreditWarningWrapper userId={user?.id} />
           <main className="flex-1 pt-16 pb-16 md:pb-0">
             {children}
           </main>

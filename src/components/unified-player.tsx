@@ -61,7 +61,6 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
   const [isMuted, setIsMuted] = useState(false)
   const [isLooping, setIsLooping] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
 
@@ -80,16 +79,6 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
 
   // Genre gradient for fallback
   const genreGradient = GENRE_GRADIENTS[currentSong?.genre] || DEFAULT_GRADIENT
-
-  // Check if mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
 
   // Format time as mm:ss
   const formatTime = (seconds: number): string => {
@@ -343,9 +332,9 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
         }
       }}
     >
-      {/* Player container */}
+      {/* Player container - fixed height on mobile for consistent sizing */}
       <div
-        className="relative flex flex-col overflow-hidden w-[calc(100%-2rem)] max-w-lg max-h-[80vh] rounded-2xl shadow-2xl"
+        className="relative flex flex-col overflow-hidden w-[calc(100%-2rem)] max-w-lg h-[70vh] md:h-auto md:max-h-[80vh] rounded-2xl shadow-2xl"
         style={backgroundStyle}
       >
         {/* Background image */}
@@ -392,8 +381,8 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
           </Button>
         </div>
 
-        {/* Lyrics area - scrollable with hidden scrollbar */}
-        <div className="relative z-10 flex-1 overflow-y-auto px-4 pb-4 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        {/* Lyrics area - scrollable with hidden scrollbar, fixed to fill remaining space */}
+        <div className="relative z-10 flex-1 min-h-0 overflow-y-auto px-4 pb-4 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {lyrics ? (
             <div className="text-white text-lg leading-relaxed drop-shadow-lg whitespace-pre-line">
               {lyrics}
@@ -406,15 +395,15 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
         </div>
 
 
-        {/* Desktop navigation arrows - vertical style */}
-        {!isMobile && songs.length > 1 && (
+        {/* Desktop navigation arrows - vertical style (hidden on mobile via CSS) */}
+        {songs.length > 1 && (
           <>
             {currentIndex > 0 && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={goToPrevious}
-                className="absolute left-1/2 -translate-x-1/2 top-16 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm text-white/70 hover:bg-white/20 hover:text-white transition-all z-20"
+                className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-16 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm text-white/70 hover:bg-white/20 hover:text-white transition-all z-20"
                 aria-label="Forrige sang"
               >
                 <ChevronUp className="h-5 w-5" />
@@ -425,7 +414,7 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
                 variant="ghost"
                 size="icon"
                 onClick={goToNext}
-                className="absolute left-1/2 -translate-x-1/2 bottom-36 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm text-white/70 hover:bg-white/20 hover:text-white transition-all z-20"
+                className="hidden md:flex absolute left-1/2 -translate-x-1/2 bottom-36 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm text-white/70 hover:bg-white/20 hover:text-white transition-all z-20"
                 aria-label="Neste sang"
               >
                 <ChevronDown className="h-5 w-5" />
@@ -500,28 +489,26 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
                 <Repeat className="h-5 w-5" />
               </Button>
 
-              {/* Volume (desktop only) */}
-              {!isMobile && (
-                <div className="flex items-center gap-2 ml-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggleMute}
-                    className="w-8 h-8 text-white hover:bg-white/20 rounded-full"
-                    aria-label={isMuted ? 'Slå på lyd' : 'Demp'}
-                  >
-                    <VolumeIcon className="h-4 w-4" />
-                  </Button>
-                  <Slider
-                    value={[isMuted ? 0 : volume]}
-                    max={100}
-                    step={1}
-                    onValueChange={handleVolumeChange}
-                    className="w-20 [&_[role=slider]]:bg-white [&_[role=slider]]:border-0"
-                    aria-label="Volum"
-                  />
-                </div>
-              )}
+              {/* Volume (desktop only via CSS) */}
+              <div className="hidden md:flex items-center gap-2 ml-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleMute}
+                  className="w-8 h-8 text-white hover:bg-white/20 rounded-full"
+                  aria-label={isMuted ? 'Slå på lyd' : 'Demp'}
+                >
+                  <VolumeIcon className="h-4 w-4" />
+                </Button>
+                <Slider
+                  value={[isMuted ? 0 : volume]}
+                  max={100}
+                  step={1}
+                  onValueChange={handleVolumeChange}
+                  className="w-20 [&_[role=slider]]:bg-white [&_[role=slider]]:border-0"
+                  aria-label="Volum"
+                />
+              </div>
             </div>
 
             {/* Download button - bottom right */}
