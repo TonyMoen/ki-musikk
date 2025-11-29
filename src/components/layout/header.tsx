@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { UserMenu } from './user-menu'
 import { MobileNav } from './mobile-nav'
+import { LoginModal } from '@/components/login-modal'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCreditsStore } from '@/stores/credits-store'
@@ -15,6 +16,7 @@ import { Music } from 'lucide-react'
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [showLoginModal, setShowLoginModal] = useState(false)
   const { balance } = useCreditsStore()
   const router = useRouter()
 
@@ -81,30 +83,35 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - always visible */}
           <nav className="hidden md:flex items-center gap-6">
-            {user && (
-              <>
-                <Link
-                  href="/"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Hjem
-                </Link>
-                <Link
-                  href="/songs"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Mine Sanger
-                </Link>
-                <Link
-                  href="/settings?openPurchaseModal=true"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Priser
-                </Link>
-              </>
+            <Link
+              href="/"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Hjem
+            </Link>
+            {user ? (
+              <Link
+                href="/songs"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Mine Sanger
+              </Link>
+            ) : (
+              <button
+                onClick={() => setShowLoginModal(true)}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Mine Sanger
+              </button>
             )}
+            <Link
+              href="/settings?openPurchaseModal=true"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Priser
+            </Link>
           </nav>
 
           {/* User Area */}
@@ -136,6 +143,7 @@ export function Header() {
                     user={user}
                     credits={balance}
                     onSignOut={handleSignOut}
+                    onShowLoginModal={() => setShowLoginModal(true)}
                   />
                 </div>
               </>
@@ -155,6 +163,7 @@ export function Header() {
                     user={null}
                     credits={0}
                     onSignOut={handleSignOut}
+                    onShowLoginModal={() => setShowLoginModal(true)}
                   />
                 </div>
               </>
@@ -162,6 +171,13 @@ export function Header() {
           </div>
         </div>
       </div>
+
+      {/* Login Modal for protected nav items */}
+      <LoginModal
+        open={showLoginModal}
+        onOpenChange={setShowLoginModal}
+        message="Du må logge inn for å se sangene dine"
+      />
     </header>
   )
 }

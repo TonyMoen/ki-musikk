@@ -28,6 +28,7 @@ interface MobileNavProps {
   user: User | null
   credits: number
   onSignOut: () => void
+  onShowLoginModal?: () => void
 }
 
 function getInitials(user: User): string {
@@ -41,19 +42,27 @@ function getInitials(user: User): string {
   return name.substring(0, 2).toUpperCase()
 }
 
-export function MobileNav({ user, credits, onSignOut }: MobileNavProps) {
+export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: MobileNavProps) {
   const pathname = usePathname()
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture
 
-  const loggedInNavItems = [
+  // Nav items shown for all users
+  const commonNavItems = [
     { href: '/', icon: Home, label: 'Hjem' },
-    { href: '/songs', icon: Music, label: 'Mine Sanger' },
-    { href: '/settings', icon: Settings, label: 'Innstillinger' },
   ]
 
-  const loggedOutNavItems: { href: string; icon: typeof Home; label: string }[] = []
+  // Items that require auth
+  const authRequiredItems = [
+    { href: '/songs', icon: Music, label: 'Mine Sanger', requiresAuth: true },
+  ]
 
-  const navItems = user ? loggedInNavItems : loggedOutNavItems
+  // Items that don't require auth
+  const publicItems = [
+    { href: '/settings?openPurchaseModal=true', icon: Sparkles, label: 'Priser' },
+  ]
+
+  // Settings only for logged in users
+  const settingsItem = { href: '/settings', icon: Settings, label: 'Innstillinger' }
 
   return (
     <Sheet>
@@ -97,10 +106,10 @@ export function MobileNav({ user, credits, onSignOut }: MobileNavProps) {
           {/* Navigation Items */}
           <nav className="flex-1 px-3 py-4">
             <ul className="space-y-1">
-              {navItems.map((item) => {
+              {/* Common nav items */}
+              {commonNavItems.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
-
                 return (
                   <li key={item.href}>
                     <SheetClose asChild>
@@ -120,16 +129,73 @@ export function MobileNav({ user, credits, onSignOut }: MobileNavProps) {
                 )
               })}
 
-              {/* Buy Credits (for logged in users) */}
+              {/* Auth required items - show login modal if not logged in */}
+              {authRequiredItems.map((item) => {
+                const Icon = item.icon
+                const isActive = pathname === item.href
+                return (
+                  <li key={item.href}>
+                    {user ? (
+                      <SheetClose asChild>
+                        <Link
+                          href={item.href}
+                          className={`flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
+                            isActive
+                              ? 'bg-primary text-primary-foreground'
+                              : 'text-foreground hover:bg-accent'
+                          }`}
+                        >
+                          <Icon className="h-5 w-5" />
+                          {item.label}
+                        </Link>
+                      </SheetClose>
+                    ) : (
+                      <SheetClose asChild>
+                        <button
+                          onClick={onShowLoginModal}
+                          className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground hover:bg-accent transition-colors w-full text-left"
+                        >
+                          <Icon className="h-5 w-5" />
+                          {item.label}
+                        </button>
+                      </SheetClose>
+                    )}
+                  </li>
+                )
+              })}
+
+              {/* Public items - always accessible */}
+              {publicItems.map((item) => {
+                const Icon = item.icon
+                return (
+                  <li key={item.href}>
+                    <SheetClose asChild>
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground hover:bg-accent transition-colors"
+                      >
+                        <Icon className="h-5 w-5" />
+                        {item.label}
+                      </Link>
+                    </SheetClose>
+                  </li>
+                )
+              })}
+
+              {/* Settings - only for logged in users */}
               {user && (
                 <li>
                   <SheetClose asChild>
                     <Link
-                      href="/settings?openPurchaseModal=true"
-                      className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground hover:bg-accent transition-colors"
+                      href={settingsItem.href}
+                      className={`flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
+                        pathname === settingsItem.href
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-foreground hover:bg-accent'
+                      }`}
                     >
-                      <Sparkles className="h-5 w-5 text-accent" />
-                      Kjøp kreditter
+                      <settingsItem.icon className="h-5 w-5" />
+                      {settingsItem.label}
                     </Link>
                   </SheetClose>
                 </li>
