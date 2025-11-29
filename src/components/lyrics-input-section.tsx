@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -17,6 +16,8 @@ interface LyricsInputSectionProps {
   isGenerating: boolean
   isOptimizing: boolean
   selectedGenre: { id: string; name: string } | null
+  isCustomTextMode: boolean
+  onCustomTextModeChange: (enabled: boolean) => void
 }
 
 export function LyricsInputSection({
@@ -28,34 +29,53 @@ export function LyricsInputSection({
   onOptimizeLyrics,
   isGenerating,
   isOptimizing,
-  selectedGenre
+  selectedGenre,
+  isCustomTextMode,
+  onCustomTextModeChange
 }: LyricsInputSectionProps) {
-  // Dual-mode state: false = AI generation mode (default), true = custom text mode
-  const [isCustomTextMode, setIsCustomTextMode] = useState(false)
+  // Track if we've generated lyrics in AI mode (to show lyrics instead of concept)
+  const hasGeneratedLyrics = lyrics.trim().length > 0
 
-  // In AI mode, we use 'concept' for the description. In custom mode, we use 'lyrics' for the actual text
-  // The textarea content changes based on mode:
-  // - AI mode: shows concept/description, generates lyrics from it
-  // - Custom mode: shows actual lyrics/custom text
+  // In AI mode:
+  //   - Before generation: shows concept/description, "Lag tekst" button visible
+  //   - After generation: shows generated lyrics in same textarea, "Lag tekst" hidden
+  // In Custom mode: shows user's custom lyrics directly
 
   const isConceptValid = concept.length >= 10 && concept.length <= 500
   const canGenerate = selectedGenre && isConceptValid && !isGenerating && !isOptimizing
 
-  // Dynamic labels and placeholders based on mode
+  // Determine what to show in AI mode: concept (pre-generation) or lyrics (post-generation)
+  const showGeneratedLyricsInAIMode = !isCustomTextMode && hasGeneratedLyrics
+
+  // Dynamic labels and placeholders based on mode and state
   const textareaLabel = isCustomTextMode
     ? 'Skriv sangteksten din'
-    : 'Beskriv sangen'
+    : showGeneratedLyricsInAIMode
+      ? 'Generert sangtekst'
+      : 'Beskriv sangen'
 
   const textareaPlaceholder = isCustomTextMode
     ? 'Skriv eller lim inn sangteksten din her...'
     : 'F.eks: Bursdagssang til Per som alltid kommer for sent og snakker om båten sin...'
 
-  // In AI mode, textarea shows concept (description). In custom mode, it shows lyrics (actual text)
-  const textareaValue = isCustomTextMode ? lyrics : concept
+  // Textarea value logic:
+  // - Custom mode: always show lyrics
+  // - AI mode with generated lyrics: show lyrics
+  // - AI mode without lyrics: show concept (description)
+  const textareaValue = isCustomTextMode
+    ? lyrics
+    : showGeneratedLyricsInAIMode
+      ? lyrics
+      : concept
+
   const handleTextareaChange = (value: string) => {
     if (isCustomTextMode) {
       onLyricsChange(value)
+    } else if (showGeneratedLyricsInAIMode) {
+      // Editing generated lyrics in AI mode
+      onLyricsChange(value)
     } else {
+      // Editing concept/description before generation
       onConceptChange(value)
     }
   }
@@ -84,7 +104,7 @@ export function LyricsInputSection({
           <Switch
             id="custom-text-toggle"
             checked={isCustomTextMode}
-            onCheckedChange={setIsCustomTextMode}
+            onCheckedChange={onCustomTextModeChange}
             disabled={isGenerating || isOptimizing}
             className="data-[state=checked]:bg-[#06D6A0]"
           />
@@ -140,9 +160,10 @@ export function LyricsInputSection({
         </p>
       )}
 
-      {/* "✨ Lag tekst" button - only visible in AI mode (not custom text mode) */}
-      {!isCustomTextMode && (
-        <div className="flex items-center justify-end pt-2">
+      {/* "✨ Lag tekst" button area - fixed height to prevent layout shift */}
+      {/* Hidden in custom mode OR after lyrics generated in AI mode */}
+      <div className="h-12 flex items-center justify-end pt-2">
+        {!isCustomTextMode && !showGeneratedLyricsInAIMode && (
           <Button
             onClick={handleGenerateLyrics}
             disabled={!canGenerate}
@@ -161,8 +182,19 @@ export function LyricsInputSection({
               </>
             )}
           </Button>
-        </div>
-      )}
+        )}
+        {/* Show "Ny beskrivelse" button when lyrics exist in AI mode, to allow re-generation */}
+        {!isCustomTextMode && showGeneratedLyricsInAIMode && (
+          <Button
+            onClick={() => onLyricsChange('')}
+            variant="outline"
+            size="sm"
+            className="text-gray-600 hover:text-gray-800"
+          >
+            Ny beskrivelse
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

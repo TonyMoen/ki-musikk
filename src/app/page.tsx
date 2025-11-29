@@ -32,6 +32,7 @@ export default function Home() {
   const [isGeneratingSong, setIsGeneratingSong] = useState(false)
   const [showGenreSpotlight, setShowGenreSpotlight] = useState(false)
   const [vocalGender, setVocalGender] = useState<VocalGender>(null)
+  const [isCustomTextMode, setIsCustomTextMode] = useState(false)
   const { toast } = useToast()
   const { showError } = useErrorToast()
   const { showOnboarding, completeOnboarding, isLoading: isOnboardingLoading } = useOnboarding()
@@ -145,13 +146,8 @@ export default function Home() {
 
       toast({
         title: 'Tekst generert! ✨',
-        description: 'AI har laget norsk sangtekst basert på konseptet ditt'
+        description: 'Klikk "Optimaliser tekst" for å forbedre uttalen'
       })
-
-      // Automatically optimize pronunciation if enabled
-      if (pronunciationEnabled) {
-        await handleOptimizePronunciation(generatedLyrics)
-      }
     } catch (error) {
       showError(error, {
         context: 'lyric-generation',
@@ -237,12 +233,25 @@ export default function Home() {
       toast({
         variant: 'destructive',
         title: 'Ingen tekst',
-        description: 'Vennligst generer eller skriv sangtekst først'
+        description: isCustomTextMode
+          ? 'Vennligst skriv eller lim inn sangtekst'
+          : 'Vennligst generer sangtekst først'
       })
       return
     }
 
     setIsGeneratingSong(true)
+
+    // Mode-aware logic:
+    // - Custom mode: use lyrics directly, generate title from first line
+    // - AI mode: use concept for title, originalLyrics for base text
+    const songTitle = isCustomTextMode
+      ? lyrics.split('\n')[0]?.substring(0, 50) || 'Min egen sang'
+      : concept || 'Min sang'
+
+    const baseLyrics = isCustomTextMode
+      ? lyrics
+      : originalLyrics || lyrics
 
     try {
       const response = await fetch('/api/songs/generate', {
@@ -251,13 +260,13 @@ export default function Home() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          title: concept || 'Min sang',
-          genre: selectedGenre.name, // API expects genre name, not ID
-          concept: concept,
-          lyrics: originalLyrics || lyrics, // Send as 'lyrics' not 'originalLyrics'
-          optimizedLyrics: pronunciationEnabled && optimizedLyrics ? optimizedLyrics : null,
-          phoneticEnabled: pronunciationEnabled,
-          vocalGender: vocalGender // Pass voice gender selection (null = let Suno decide)
+          title: songTitle,
+          genre: selectedGenre.name,
+          concept: isCustomTextMode ? '' : concept,
+          lyrics: baseLyrics,
+          optimizedLyrics: optimizedLyrics || null,
+          phoneticEnabled: !!optimizedLyrics, // Only if user optimized
+          vocalGender: vocalGender
         })
       })
 
@@ -270,7 +279,7 @@ export default function Home() {
       // Add song to generating store - it will appear in the songs list with generating state
       setGeneratingSong({
         id: data.data.songId,
-        title: concept || 'Min sang',
+        title: songTitle,
         genre: selectedGenre.name,
         startedAt: new Date()
       })
@@ -356,6 +365,8 @@ export default function Home() {
             isGenerating={isGenerating}
             isOptimizing={isOptimizing}
             selectedGenre={selectedGenre}
+            isCustomTextMode={isCustomTextMode}
+            onCustomTextModeChange={setIsCustomTextMode}
           />
         </div>
 
