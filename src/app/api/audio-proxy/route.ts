@@ -13,15 +13,12 @@ import { createClient } from '@/lib/supabase/server'
 export const dynamic = 'force-dynamic'
 
 // Allowed domain patterns for security (prevent open proxy abuse)
-// Suno uses various subdomains like musicfile.api.suno.ai, cdn1.suno.ai, etc.
+// Suno uses various subdomains and CDNs
 const ALLOWED_DOMAIN_PATTERNS = [
-  /\.suno\.ai$/,      // Any subdomain of suno.ai
-  /^suno\.ai$/,       // suno.ai itself
-  /\.suno\.com$/,     // Any subdomain of suno.com
-  /^suno\.com$/,      // suno.com itself
-  /\.sunoapi\.org$/,  // sunoapi.org domains
-  /\.amazonaws\.com$/,// AWS S3
-  /\.cloudfront\.net$/,// CloudFront CDN
+  /suno/i,              // Any domain containing "suno" (case insensitive)
+  /\.amazonaws\.com$/,  // AWS S3
+  /\.cloudfront\.net$/, // CloudFront CDN
+  /^musicfile\./,       // musicfile.* domains (Suno's file hosting)
 ]
 
 /**
@@ -31,8 +28,14 @@ function isAllowedUrl(url: string): boolean {
   try {
     const parsed = new URL(url)
     const hostname = parsed.hostname
-    return ALLOWED_DOMAIN_PATTERNS.some(pattern => pattern.test(hostname))
-  } catch {
+    const isAllowed = ALLOWED_DOMAIN_PATTERNS.some(pattern => pattern.test(hostname))
+
+    // Log for debugging
+    console.log('[AudioProxy] Domain check:', { hostname, isAllowed })
+
+    return isAllowed
+  } catch (e) {
+    console.log('[AudioProxy] URL parse error:', e)
     return false
   }
 }
