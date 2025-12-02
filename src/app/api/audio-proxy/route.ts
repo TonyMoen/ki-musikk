@@ -19,6 +19,13 @@ const ALLOWED_DOMAINS = [
   'cdn.suno.ai',
   'audiopipe.suno.ai',
   'suno.ai',
+  // Additional CDN domains Suno might use
+  'suno.com',
+  'cdn.suno.com',
+  'audio.suno.ai',
+  'stream.suno.ai',
+  's3.amazonaws.com', // Suno might use AWS S3
+  'cloudfront.net',   // Suno might use CloudFront
 ]
 
 /**
@@ -41,12 +48,15 @@ function isAllowedUrl(url: string): boolean {
  * Proxy audio from external URL to bypass CORS
  */
 export async function GET(request: NextRequest) {
+  console.log('[AudioProxy] Request received')
+
   try {
     // Validate authentication
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      console.log('[AudioProxy] Unauthorized - no user')
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
@@ -57,7 +67,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const audioUrl = searchParams.get('url')
 
+    console.log('[AudioProxy] URL param:', audioUrl?.substring(0, 100))
+
     if (!audioUrl) {
+      console.log('[AudioProxy] Missing URL parameter')
       return NextResponse.json(
         { error: { code: 'MISSING_URL', message: 'URL parameter required' } },
         { status: 400 }
@@ -66,13 +79,25 @@ export async function GET(request: NextRequest) {
 
     // Decode and validate URL
     const decodedUrl = decodeURIComponent(audioUrl)
+    console.log('[AudioProxy] Decoded URL:', decodedUrl.substring(0, 100))
+
+    // Extract hostname for logging
+    try {
+      const parsedUrl = new URL(decodedUrl)
+      console.log('[AudioProxy] Hostname:', parsedUrl.hostname)
+    } catch (e) {
+      console.log('[AudioProxy] Failed to parse URL')
+    }
 
     if (!isAllowedUrl(decodedUrl)) {
+      console.log('[AudioProxy] URL domain not allowed')
       return NextResponse.json(
         { error: { code: 'INVALID_URL', message: 'URL domain not allowed' } },
         { status: 403 }
       )
     }
+
+    console.log('[AudioProxy] Fetching audio from Suno...')
 
     // Fetch audio from external URL
     const audioResponse = await fetch(decodedUrl, {
@@ -82,7 +107,10 @@ export async function GET(request: NextRequest) {
       signal: AbortSignal.timeout(30000), // 30 second timeout
     })
 
+    console.log('[AudioProxy] Suno response status:', audioResponse.status)
+
     if (!audioResponse.ok) {
+      console.log('[AudioProxy] Fetch failed:', audioResponse.status, audioResponse.statusText)
       return NextResponse.json(
         { error: { code: 'FETCH_FAILED', message: 'Failed to fetch audio' } },
         { status: 502 }

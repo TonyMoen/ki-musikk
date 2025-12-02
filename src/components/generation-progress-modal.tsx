@@ -157,10 +157,18 @@ export function GenerationProgressModal({
         }, 3000)
       } else if (song.status === 'partial') {
         // Early preview available - show play button but keep polling
+        console.log('[Preview] Song status is PARTIAL', {
+          streamAudioUrl: song.streamAudioUrl,
+          status: song.status,
+          progress: song.progress
+        })
         setProgress(85)
         setStatus('partial')
         if (song.streamAudioUrl) {
+          console.log('[Preview] Setting stream audio URL:', song.streamAudioUrl)
           setStreamAudioUrl(song.streamAudioUrl)
+        } else {
+          console.warn('[Preview] No streamAudioUrl in response!')
         }
         // Keep polling for final audio (don't cleanup)
       } else if (song.status === 'failed') {
@@ -313,13 +321,19 @@ export function GenerationProgressModal({
               <p className="text-gray-600">Lytt til sangen mens vi ferdigstiller den</p>
             </div>
 
-            {streamAudioUrl && (
+            {streamAudioUrl ? (
               <audio
                 controls
                 autoPlay
                 src={streamAudioUrl}
                 className="w-full max-w-md"
+                onLoadStart={() => console.log('[Audio] Load started:', streamAudioUrl)}
+                onCanPlay={() => console.log('[Audio] Can play')}
+                onPlay={() => console.log('[Audio] Playing')}
+                onError={(e) => console.error('[Audio] Error:', e.currentTarget.error)}
               />
+            ) : (
+              <p className="text-amber-600 text-sm">Venter på lydstrøm...</p>
             )}
 
             <div className="w-full">

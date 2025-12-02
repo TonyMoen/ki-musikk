@@ -189,8 +189,12 @@ export async function GET(
             if (sunoStatus.data.status === 'FIRST_SUCCESS' && firstSong?.streamAudioUrl) {
               const adminClient = getAdminClient()
 
+              // Log the original Suno URL for debugging
+              console.log('[FIRST_SUCCESS] Original Suno stream URL:', firstSong.streamAudioUrl)
+
               // Create proxy URL for the stream audio
               const proxyUrl = `/api/audio-proxy?url=${encodeURIComponent(firstSong.streamAudioUrl)}`
+              console.log('[FIRST_SUCCESS] Proxy URL:', proxyUrl)
 
               // Update database with partial status (store original Suno URL for reference)
               await adminClient
@@ -334,8 +338,13 @@ export async function GET(
       case 'partial':
         // Song has early playback available (FIRST_SUCCESS)
         // Use proxy URL for immediate playback while waiting for final audio
+        console.log('[Partial] Song stream_audio_url from DB:', song.stream_audio_url)
         if (song.stream_audio_url) {
-          response.streamAudioUrl = `/api/audio-proxy?url=${encodeURIComponent(song.stream_audio_url)}`
+          const proxyUrl = `/api/audio-proxy?url=${encodeURIComponent(song.stream_audio_url)}`
+          console.log('[Partial] Returning proxy URL:', proxyUrl)
+          response.streamAudioUrl = proxyUrl
+        } else {
+          console.log('[Partial] No stream_audio_url in database!')
         }
         response.duration = song.duration_seconds
         response.progress = 85 // Show good progress but not complete
@@ -476,6 +485,13 @@ export async function GET(
       default:
         response.status = 'unknown'
     }
+
+    // Log the response being sent
+    console.log('[SongStatus] Returning response:', {
+      status: response.status,
+      hasStreamAudioUrl: !!response.streamAudioUrl,
+      streamAudioUrl: response.streamAudioUrl?.substring(0, 80)
+    })
 
     // Return 200 OK with song data
     return NextResponse.json(
