@@ -184,68 +184,32 @@ export async function GET(
             })
 
             // Handle FIRST_SUCCESS - early playback available
+            // Use Suno URL directly for faster preview (skip re-upload, saves ~15-20 seconds)
             const firstSong = sunoStatus.data.response?.sunoData?.[0]
             if (sunoStatus.data.status === 'FIRST_SUCCESS' && firstSong?.streamAudioUrl) {
               const adminClient = getAdminClient()
 
-              // Download stream audio to Supabase Storage (browser can't play Suno's stream format directly)
-              let earlyAudioUrl = firstSong.streamAudioUrl
-              try {
-                const audioResponse = await fetch(firstSong.streamAudioUrl, {
-                  signal: AbortSignal.timeout(30000)
-                })
-                if (audioResponse.ok) {
-                  const audioBuffer = await audioResponse.arrayBuffer()
-                  const filePath = `${user.id}/${songId}-stream.mp3`
-
-                  const { error: uploadError } = await adminClient.storage
-                    .from('songs')
-                    .upload(filePath, audioBuffer, {
-                      contentType: 'audio/mpeg',
-                      upsert: true
-                    })
-
-                  if (!uploadError) {
-                    const { data: signedUrlData } = await adminClient.storage
-                      .from('songs')
-                      .createSignedUrl(filePath, 86400)
-
-                    if (signedUrlData?.signedUrl) {
-                      earlyAudioUrl = signedUrlData.signedUrl
-                      logInfo('Stream audio uploaded to storage (FIRST_SUCCESS)', {
-                        songId,
-                        filePath
-                      })
-                    }
-                  } else {
-                    logError('Stream audio upload failed', uploadError as unknown as Error, { songId })
-                  }
-                }
-              } catch (downloadError) {
-                logError('Stream audio download failed, using Suno URL', downloadError as Error, { songId })
-              }
-
-              // Update database with partial status and our storage URL
+              // Update database with partial status using Suno's stream URL directly
               await adminClient
                 .from('song')
                 .update({
                   status: 'partial',
-                  stream_audio_url: earlyAudioUrl,
+                  stream_audio_url: firstSong.streamAudioUrl,
                   duration_seconds: firstSong.duration ? Math.round(firstSong.duration) : null,
                   updated_at: new Date().toISOString()
                 })
                 .eq('id', songId)
 
-              // Return partial status with playable URL
+              // Return partial status with Suno's playable URL
               response.status = 'partial'
               response.progress = 75
-              response.streamAudioUrl = earlyAudioUrl
+              response.streamAudioUrl = firstSong.streamAudioUrl
               response.duration = firstSong.duration
 
-              logInfo('Song partially ready (FIRST_SUCCESS via polling)', {
+              logInfo('Song partially ready (FIRST_SUCCESS via polling, using Suno URL directly)', {
                 userId: user.id,
                 songId,
-                audioUrl: earlyAudioUrl
+                audioUrl: firstSong.streamAudioUrl
               })
               break
             }

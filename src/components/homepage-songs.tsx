@@ -11,8 +11,8 @@ import { useGeneratingSongStore, type GeneratingSong } from '@/stores/generating
 import type { Song } from '@/types/song'
 
 const SONGS_PER_PAGE = 10
-const POLLING_INTERVAL = 5000 // 5 seconds
-const MAX_POLLING_ATTEMPTS = 60 // 5 minutes max
+const POLLING_INTERVAL = 3000 // 3 seconds - faster detection
+const MAX_POLLING_ATTEMPTS = 100 // 100 × 3s = 5 minutes max
 
 export function HomepageSongs() {
   const [songs, setSongs] = useState<Song[]>([])

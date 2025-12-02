@@ -382,55 +382,19 @@ export async function POST(request: Request) {
     }
 
     // 8. Handle FIRST_SUCCESS - early playback available
+    // Use Suno URL directly for faster preview (skip re-upload, saves ~15-20 seconds)
     if (status === 'FIRST_SUCCESS') {
       const songData = sunoData?.[0]
       // Support both snake_case and camelCase field names
       const streamAudioUrl = songData?.stream_audio_url || songData?.streamAudioUrl
 
       if (streamAudioUrl) {
-        // Download stream audio to Supabase Storage (browser can't play Suno's stream format directly)
-        let earlyAudioUrl = streamAudioUrl
-        try {
-          const audioResponse = await fetch(streamAudioUrl, {
-            signal: AbortSignal.timeout(30000)
-          })
-          if (audioResponse.ok) {
-            const audioBuffer = await audioResponse.arrayBuffer()
-            const filePath = `songs/${song.user_id}/${song.id}-stream.mp3`
-
-            const { error: uploadError } = await supabase.storage
-              .from('songs')
-              .upload(filePath, audioBuffer, {
-                contentType: 'audio/mpeg',
-                upsert: true
-              })
-
-            if (!uploadError) {
-              const { data: signedUrlData } = await supabase.storage
-                .from('songs')
-                .createSignedUrl(filePath, 86400)
-
-              if (signedUrlData?.signedUrl) {
-                earlyAudioUrl = signedUrlData.signedUrl
-                logInfo('Stream audio uploaded to storage (FIRST_SUCCESS webhook)', {
-                  songId: song.id,
-                  filePath
-                })
-              }
-            } else {
-              logError('Stream audio upload failed (webhook)', uploadError as unknown as Error, { songId: song.id })
-            }
-          }
-        } catch (downloadError) {
-          logError('Stream audio download failed (webhook), using Suno URL', downloadError as Error, { songId: song.id })
-        }
-
-        // Update song with partial status and our storage URL
+        // Update song with partial status using Suno's stream URL directly
         await supabase
           .from('song')
           .update({
             status: 'partial',
-            stream_audio_url: earlyAudioUrl,
+            stream_audio_url: streamAudioUrl,
             duration_seconds: songData?.duration ? Math.round(songData.duration) : null,
             updated_at: new Date().toISOString(),
           })
@@ -438,10 +402,10 @@ export async function POST(request: Request) {
 
         const totalTime = Date.now() - startTime
 
-        logInfo('FIRST_SUCCESS webhook processed - partial status set', {
+        logInfo('FIRST_SUCCESS webhook processed - using Suno URL directly', {
           songId: song.id,
           taskId,
-          audioUrl: earlyAudioUrl,
+          audioUrl: streamAudioUrl,
           totalTimeMs: totalTime,
         })
 

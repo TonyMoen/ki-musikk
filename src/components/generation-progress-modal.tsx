@@ -58,8 +58,8 @@ const GENERATION_STAGES = [
   { min: 50, max: 100, emoji: '🎸', text: 'Genererer musikk med Suno...' },
 ]
 
-const MAX_POLLING_ATTEMPTS = 60 // 60 × 5s = 5 minutes max
-const POLLING_INTERVAL = 5000 // 5 seconds
+const MAX_POLLING_ATTEMPTS = 100 // 100 × 3s = 5 minutes max
+const POLLING_INTERVAL = 3000 // 3 seconds - faster detection
 
 export function GenerationProgressModal({
   open,
