@@ -309,6 +309,9 @@ export async function POST(request: NextRequest) {
         vocalGender: vocalGender || undefined // Only pass if user made a selection
       })
 
+      // 🐛 DEBUG: Log the actual webhook URL being sent
+console.log('🔔 Webhook URL sent to Suno:', `${(process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/$/, '')}/api/webhooks/suno`)
+
       sunoTaskId = sunoResult.data.taskId
 
       logInfo('Suno API call successful', {
