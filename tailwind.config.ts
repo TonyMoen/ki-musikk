@@ -12,7 +12,8 @@ const config: Config = {
   		colors: {
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
+  				foreground: 'hsl(var(--primary-foreground))',
+  				hover: 'hsl(var(--primary-hover))'
   			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
@@ -22,14 +23,23 @@ const config: Config = {
   				DEFAULT: 'hsl(var(--accent))',
   				foreground: 'hsl(var(--accent-foreground))'
   			},
-  			success: '#06D6A0',
+  			success: 'hsl(var(--success))',
+  			warning: 'hsl(var(--warning))',
   			error: '#EF476F',
   			info: '#3B82F6',
   			background: 'hsl(var(--background))',
-  			surface: '#FFFFFF',
-  			'text-primary': '#1F2937',
-  			'text-secondary': '#6B7280',
-  			border: 'hsl(var(--border))',
+  			surface: {
+  				DEFAULT: 'hsl(var(--surface))',
+  				hover: 'hsl(var(--surface-hover))'
+  			},
+  			elevated: 'hsl(var(--elevated))',
+  			'text-primary': 'hsl(var(--text-primary))',
+  			'text-secondary': 'hsl(var(--text-secondary))',
+  			'text-tertiary': 'hsl(var(--text-tertiary))',
+  			border: {
+  				DEFAULT: 'hsl(var(--border))',
+  				focus: 'hsl(var(--border-focus))'
+  			},
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
