@@ -1,0 +1,185 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>11</epicId>
+    <storyId>11-3</storyId>
+    <title>Implement AI Prompt Assistant Modal</title>
+    <status>drafted</status>
+    <generatedAt>2026-01-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/stories/11-3-implement-ai-prompt-assistant-modal.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user who wants to create a custom music genre</asA>
+    <iWant>a conversational AI assistant that guides me through defining the genre</iWant>
+    <soThat>I can create effective Suno prompts without technical knowledge</soThat>
+    <tasks>
+### Task 1: Create AI Assistant Modal Components
+- [ ] 1.1: Create `src/components/ai-assistant/modal.tsx` with overlay and header
+- [ ] 1.2: Create `src/components/ai-assistant/chat-container.tsx` for message history
+- [ ] 1.3: Create `src/components/ai-assistant/message.tsx` for individual messages
+- [ ] 1.4: Create `src/components/ai-assistant/quick-answers.tsx` for button grid
+- [ ] 1.5: Create `src/components/ai-assistant/input-container.tsx` for text input
+
+### Task 2: Implement Conversation Flow Logic
+- [ ] 2.1: Create `src/hooks/use-ai-assistant.ts` with state machine
+- [ ] 2.2: Define conversation steps in `src/lib/constants.ts`
+- [ ] 2.3: Implement step progression logic
+- [ ] 2.4: Add user response handling
+- [ ] 2.5: Implement prompt generation from responses
+
+### Task 3: Integrate with Genre Selection
+- [ ] 3.1: Update `src/components/genre-selection.tsx` to open modal
+- [ ] 3.2: Handle genre save callback
+- [ ] 3.3: Add saved genre to active list
+- [ ] 3.4: Ensure proper state updates
+
+### Task 4: Style and Polish
+- [ ] 4.1: Style AI messages (left-aligned, dark background)
+- [ ] 4.2: Style user messages (right-aligned, orange background)
+- [ ] 4.3: Add typing animation for messages
+- [ ] 4.4: Implement auto-scroll to bottom
+- [ ] 4.5: Add modal close handlers (Cancel, ESC)
+
+### Task 5: Testing and Validation
+- [ ] 5.1: Test full conversation flow (all 5 steps)
+- [ ] 5.2: Test quick answers vs free-form input
+- [ ] 5.3: Test prompt generation with various inputs
+- [ ] 5.4: Test genre save and display in main grid
+- [ ] 5.5: Test mobile responsiveness
+- [ ] 5.6: Verify no console errors
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+### Modal & UI (5 criteria)
+1. Full-screen overlay appears with centered modal (max-width: 460px)
+2. Modal has AI assistant icon (gradient orange/purple square, 48px)
+3. Modal has "AI Sjanger-assistent" header
+4. Chat container shows message history (scrollable)
+5. Input field at bottom with "Send" button
+
+### Conversation Flow (7 criteria)
+6. Step 1: "Hva er hovedstilen eller sjangeren?" with 4 quick answers
+7. Step 2: "Hvilke instrumenter skal dominere lyden?" with 5 quick answers
+8. Step 3: "Hvilken stemning eller energinivå?" with 5 quick answers
+9. Step 4: "Noen spesifikke produksjonsdetaljer?" with 5 quick answers + "Hopp over"
+10. Step 5: "Vil du legge til noe mer spesifikt?" with 5 quick answers + "Nei, ferdig"
+11. User can type free-form answers instead of clicking quick answers
+12. Quick answer buttons fill input and auto-submit
+
+### Prompt Generation (5 criteria)
+13. After step 5, AI shows generated Suno prompt in bold
+14. Prompt is comma-separated (e.g., "70s rock, electric guitar, upbeat energetic")
+15. AI asks: "Gi denne sjangeren et enkelt navn (f.eks. '70s Rock'):"
+16. "Lagre sjanger" button appears (disabled until name provided)
+17. Saved genre appears in main grid with user-provided name
+
+### UX & Interaction (5 criteria)
+18. Messages appear with typing animation (staggered)
+19. User messages aligned right (orange background)
+20. AI messages aligned left (dark background)
+21. "Avbryt" button closes modal without saving
+22. Pressing ESC closes modal
+
+### Data & Persistence (3 criteria)
+23. Saved genre includes: name, sunoPrompt, id, createdAt
+24. Genre persists in session (until page refresh)
+25. No console errors or warnings
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <artifact path="docs/tech-spec-ui-modernization.md" title="Tech-Spec: UI Modernization" section="Epic Goal & Stories">
+        Covers UI modernization including Story 3 which adds the "+ Legg til sjanger" button that triggers this AI assistant modal. Context on orange/purple color scheme, Lucide icons, and design patterns.
+      </artifact>
+      <artifact path="docs/architecture.md" title="Musikkfabrikken Architecture" section="Component Structure & Tech Stack">
+        Next.js 14+ App Router with TypeScript, Radix UI + shadcn/ui components, Tailwind CSS styling. Modal components use Dialog primitives. Client components with 'use client' directive.
+      </artifact>
+      <artifact path="docs/ux-design-specification.md" title="UX Design Specification" section="Modal & Interaction Patterns">
+        Design patterns for conversational UI, modal dialogs, button interactions. Orange primary (#FF6B35), purple secondary (#7C3AED) color scheme for AI features.
+      </artifact>
+    </docs>
+    <code>
+      <artifact path="src/components/genre-selection.tsx" kind="component" symbol="GenreSelection" lines="1-300" reason="Current genre selection component that needs integration with AI assistant modal. Contains "+ Legg til sjanger" button (line 279-287) and genre state management.">
+      </artifact>
+      <artifact path="src/components/ui/dialog.tsx" kind="ui-component" symbol="Dialog, DialogContent, DialogHeader" lines="1-50" reason="Radix UI Dialog primitives used for modal implementation. Provides overlay, content container, and close handlers.">
+      </artifact>
+      <artifact path="src/components/ui/button.tsx" kind="ui-component" symbol="Button" reason="shadcn/ui Button component for quick answers and submit buttons. Supports variants (default, outline) and sizes.">
+      </artifact>
+      <artifact path="src/components/ui/input.tsx" kind="ui-component" symbol="Input" reason="shadcn/ui Input component for text input field in conversation.">
+      </artifact>
+      <artifact path="src/hooks/use-snackbar.ts" kind="hook" symbol="useSnackbar" reason="Existing snackbar hook pattern. Reference for creating use-ai-assistant hook with similar state management approach.">
+      </artifact>
+      <artifact path="src/lib/constants.ts" kind="utility" symbol="CREDIT_PACKAGES, FEATURES" lines="1-75" reason="Constants file where CONVERSATION_FLOW configuration will be added. Shows pattern for exporting const arrays and feature flags.">
+      </artifact>
+      <artifact path="src/lib/utils.ts" kind="utility" symbol="cn" reason="Class name utility (clsx + tailwind-merge) used throughout for conditional styling.">
+      </artifact>
+    </code>
+    <dependencies>
+      <frontend>
+        <package name="react" version="18.2.0" usage="useState, useCallback hooks for conversation state" />
+        <package name="next" version="14.2.3" usage="'use client' directive for client components" />
+        <package name="@radix-ui/react-dialog" usage="Dialog, DialogContent, DialogHeader, DialogTitle primitives" />
+        <package name="lucide-react" version="0.554.0" usage="Sparkles icon for AI assistant, X icon for close button" />
+        <package name="tailwind-css" version="3.4.1" usage="Utility classes for styling, gradients, responsive design" />
+        <package name="class-variance-authority" version="0.7.1" usage="Component variants if needed" />
+        <package name="clsx" usage="Conditional class names via cn() utility" />
+      </frontend>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - All components must use 'use client' directive (client-side state required for conversation)
+    - Follow existing component patterns: use shadcn/ui primitives, Radix UI for accessibility
+    - Use Tailwind CSS for styling (no CSS modules or styled-components)
+    - Modal max-width: 460px (per AC), max-height: 90vh for mobile
+    - Color scheme: Orange primary (#FF6B35), purple secondary (#7C3AED) for AI features, gradient for icon
+    - Use Lucide React icons only (no emojis per UI modernization epic)
+    - Messages must auto-scroll to bottom on new message (UX requirement)
+    - ESC key and Avbryt button must close modal without saving
+    - Genre data structure must match existing Genre interface in genre-selection.tsx (id, name, display_name, sunoPrompt)
+    - Conversation flow: 5 steps, comma-separated prompt output
+    - Session persistence only (no localStorage or database in this story)
+    - TypeScript strict mode enabled - no 'any' types allowed
+  </constraints>
+  <interfaces>
+    <interface name="Genre" kind="TypeScript interface" signature="interface Genre { id: string; name: string; display_name: string; emoji: string | null; sort_order: number; gradient_colors: GradientColors | null }" path="src/components/genre-selection.tsx:19-26">
+      Existing Genre interface - custom genres created by AI assistant should follow this structure. For custom genres: emoji can be null, sort_order can default to 999, gradient_colors can be null.
+    </interface>
+    <interface name="Button" kind="React component" signature="<Button variant='default' | 'outline' size='sm' | 'default' onClick={fn} />" path="src/components/ui/button.tsx">
+      shadcn/ui Button component - used for quick answers and submit button. Supports className prop for custom styling.
+    </interface>
+    <interface name="Dialog" kind="React component" signature="<Dialog open={bool} onOpenChange={fn}><DialogContent><DialogHeader><DialogTitle>...</DialogTitle></DialogHeader>...</DialogContent></Dialog>" path="src/components/ui/dialog.tsx">
+      Radix UI Dialog wrapper - handles overlay, ESC key, and close button automatically. Use onOpenChange for close handler.
+    </interface>
+    <interface name="onGenreSelect callback" kind="Function signature" signature="(genreId: string, genreName: string) => void" path="src/components/genre-selection.tsx:41">
+      Callback prop for GenreSelection component - will need similar callback for AI assistant to notify parent of new genre.
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+      Manual testing required (no automated test framework configured). Test on multiple screen sizes (mobile 375px, tablet 768px, desktop 1440px). Verify TypeScript compilation with no errors. Check browser console for warnings or errors. Test keyboard navigation (Tab, Enter, ESC). Verify accessibility (aria-labels, focus management).
+    </standards>
+    <locations>
+      No dedicated test directory - manual testing via local development server. Test in Chrome, Safari, Firefox. Use Chrome DevTools device emulation for mobile testing.
+    </locations>
+    <ideas>
+      <test id="AC-1-5" description="Modal opens with correct structure, icon, and header">
+        Click "+ Legg til sjanger" → verify modal appears centered, overlay visible, AI icon (Sparkles) with gradient, header "AI Sjanger-assistent", input field and Send button present.
+      </test>
+      <test id="AC-6-12" description="Conversation flow through all 5 steps">
+        Step 1: Answer "70s rock" (quick or typed) → verify user message (right, orange), AI asks step 2. Step 2-5: Continue with mix of quick answers and typed text. Verify all steps complete, prompt generated correctly.
+      </test>
+      <test id="AC-13-17" description="Prompt generation and genre save">
+        After step 5: Verify AI shows comma-separated prompt in bold. Type genre name "My Custom Rock" → verify "Lagre sjanger" button enabled → click → modal closes → verify genre appears in main grid.
+      </test>
+      <test id="AC-18-22" description="UX interactions and close handlers">
+        Test message animations (AI messages left-dark, user messages right-orange). Click "Avbryt" → modal closes without save. Press ESC → modal closes without save. No genre added if cancelled.
+      </test>
+      <test id="AC-23-25" description="Data persistence and error handling">
+        Save genre → verify object has id, name, display_name, sunoPrompt, createdAt. Refresh page → verify genre NOT persisted (session only). Check console for errors/warnings throughout flow.
+      </test>
+    </ideas>
+  </tests>
+</story-context>

@@ -4,9 +4,18 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { X } from 'lucide-react'
+import { X, Pencil, Sparkles } from 'lucide-react'
 import { useSnackbar } from '@/hooks/use-snackbar'
 import { Snackbar } from '@/components/snackbar'
+import { AIAssistantModal } from '@/components/ai-assistant/modal'
+import { EditPromptModal } from '@/components/ai-assistant/edit-prompt-modal'
+import {
+  getCustomGenres,
+  saveCustomGenre,
+  updateCustomGenre,
+  isCustomGenre,
+  type CustomGenreData
+} from '@/lib/custom-genres-storage'
 
 // Default genres to display in 2x2 grid (reduces decision paralysis)
 const DEFAULT_GENRES = ['Country', 'Norsk pop', 'Rap/Hip-Hop', 'Dans/Elektronisk']
@@ -57,6 +66,9 @@ export function GenreSelection({
   const [showAllGenres, setShowAllGenres] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [removedGenre, setRemovedGenre] = useState<Genre | null>(null)
+  const [showAIAssistant, setShowAIAssistant] = useState(false)
+  const [editingGenreId, setEditingGenreId] = useState<string | null>(null)
+  const [showEditPrompt, setShowEditPrompt] = useState(false)
 
   const snackbar = useSnackbar()
 
@@ -95,11 +107,26 @@ export function GenreSelection({
           gradient_colors: isGradientColors(row.gradient_colors) ? row.gradient_colors : null
         }))
 
-        setGenres(convertedGenres)
+        // Load custom genres from localStorage and merge with database genres
+        const customGenres = getCustomGenres()
+        const customGenreObjects: Genre[] = customGenres.map(cg => ({
+          id: cg.id,
+          name: cg.name,
+          display_name: cg.display_name,
+          emoji: null,
+          sort_order: 999,
+          gradient_colors: {
+            from: '#FF6B35',
+            to: '#7C3AED'
+          }
+        }))
+
+        const allGenres = [...convertedGenres, ...customGenreObjects]
+        setGenres(allGenres)
         setIsLoading(false)
 
         // Auto-select first DEFAULT genre if none selected
-        const defaultGenresList = convertedGenres.filter(g => DEFAULT_GENRES.includes(g.name)).slice(0, 4)
+        const defaultGenresList = allGenres.filter(g => DEFAULT_GENRES.includes(g.name)).slice(0, 4)
         if (!selectedId && defaultGenresList.length > 0) {
           setSelectedId(defaultGenresList[0].id)
           onGenreSelect?.(defaultGenresList[0].id, defaultGenresList[0].name)
@@ -164,6 +191,101 @@ export function GenreSelection({
     setGenres([...genres, genre])
     setRemovedGenre(null)
     console.log(`Genre ${genre.id} restored`)
+  }
+
+  const handleSaveCustomGenre = (customGenre: {
+    id: string
+    name: string
+    display_name: string
+    sunoPrompt: string
+    createdAt: Date
+    isCustom: true
+  }) => {
+    // Check if this is an update or new genre
+    const isUpdate = editingGenreId !== null
+
+    if (isUpdate) {
+      // Update existing genre
+      const genreData: CustomGenreData = {
+        id: customGenre.id,
+        name: customGenre.name,
+        display_name: customGenre.display_name,
+        sunoPrompt: customGenre.sunoPrompt,
+        createdAt: customGenre.createdAt.toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+
+      updateCustomGenre(editingGenreId, genreData)
+
+      // Update in UI
+      setGenres(genres.map(g =>
+        g.id === editingGenreId
+          ? { ...g, name: customGenre.name, display_name: customGenre.display_name }
+          : g
+      ))
+
+      snackbar.show(`${customGenre.display_name} oppdatert!`, () => {})
+      setEditingGenreId(null)
+    } else {
+      // Save new custom genre to localStorage
+      const genreData: CustomGenreData = {
+        id: customGenre.id,
+        name: customGenre.name,
+        display_name: customGenre.display_name,
+        sunoPrompt: customGenre.sunoPrompt,
+        createdAt: customGenre.createdAt.toISOString()
+      }
+
+      saveCustomGenre(genreData)
+
+      // Convert custom genre to Genre interface format for UI
+      const newGenre: Genre = {
+        id: customGenre.id,
+        name: customGenre.name,
+        display_name: customGenre.display_name,
+        emoji: null,
+        sort_order: 999,
+        gradient_colors: {
+          from: '#FF6B35',
+          to: '#7C3AED'
+        }
+      }
+
+      // Add to genres list
+      setGenres([...genres, newGenre])
+
+      // Auto-select the new genre
+      setSelectedId(newGenre.id)
+      onGenreSelect?.(newGenre.id, newGenre.name)
+
+      snackbar.show(`${newGenre.display_name} opprettet!`, () => {})
+    }
+  }
+
+  const handleEditCustomGenre = (genreId: string) => {
+    setEditingGenreId(genreId)
+    setShowEditPrompt(true)
+  }
+
+  const handleUpdateGenrePrompt = (genreName: string, sunoPrompt: string) => {
+    if (!editingGenreId) return
+
+    // Update in localStorage
+    updateCustomGenre(editingGenreId, {
+      display_name: genreName,
+      name: genreName,
+      sunoPrompt: sunoPrompt
+    })
+
+    // Update in UI
+    setGenres(genres.map(g =>
+      g.id === editingGenreId
+        ? { ...g, name: genreName, display_name: genreName }
+        : g
+    ))
+
+    snackbar.show(`${genreName} oppdatert!`, () => {})
+    setEditingGenreId(null)
   }
 
   if (isLoading) {
@@ -253,6 +375,29 @@ export function GenreSelection({
               >
                 <span className="truncate">{genre.display_name}</span>
 
+                {/* Custom genre indicator */}
+                {isCustomGenre(genre.id) && !editMode && (
+                  <Sparkles className="absolute top-2 right-2 w-4 h-4 text-primary" />
+                )}
+
+                {/* Edit Button (Pencil) - Only for custom genres, only in edit mode */}
+                {editMode && isCustomGenre(genre.id) && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleEditCustomGenre(genre.id)
+                    }}
+                    className={cn(
+                      "absolute top-2 right-10 w-6 h-6 rounded-full",
+                      "bg-blue-600 hover:bg-blue-700 flex items-center justify-center",
+                      "transition-all hover:scale-110"
+                    )}
+                    aria-label={`Rediger ${genre.display_name}`}
+                  >
+                    <Pencil className="w-3 h-3 text-white" />
+                  </button>
+                )}
+
                 {/* Remove Button (X) - Only shown in edit mode */}
                 {editMode && (
                   <button
@@ -279,7 +424,7 @@ export function GenreSelection({
         {!showAllGenres && (
           <Button
             variant="outline"
-            onClick={() => setShowAllGenres(true)}
+            onClick={() => setShowAIAssistant(true)}
             className="w-full h-[52px] border-2 border-dashed border-border-focus hover:bg-surface hover:border-primary/50 transition-all"
           >
             + Legg til sjanger
@@ -294,6 +439,26 @@ export function GenreSelection({
         onUndo={snackbar.handleUndo}
         onDismiss={snackbar.hide}
       />
+
+      {/* AI Assistant Modal - For creating new genres */}
+      <AIAssistantModal
+        open={showAIAssistant}
+        onClose={() => setShowAIAssistant(false)}
+        onSaveGenre={handleSaveCustomGenre}
+      />
+
+      {/* Edit Prompt Modal - For editing existing custom genres */}
+      {editingGenreId && (
+        <EditPromptModal
+          open={showEditPrompt}
+          onClose={() => {
+            setShowEditPrompt(false)
+            setEditingGenreId(null)
+          }}
+          genreId={editingGenreId}
+          onSave={handleUpdateGenrePrompt}
+        />
+      )}
     </div>
   )
 }

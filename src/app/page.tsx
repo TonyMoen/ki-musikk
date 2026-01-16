@@ -17,6 +17,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Loader2, Music } from 'lucide-react'
 import type { OptimizationResult, PhoneticChange } from '@/types/song'
 import { FEATURES } from '@/lib/constants'
+import { getGenreSunoPrompt, isCustomGenre } from '@/lib/custom-genres-storage'
 
 export default function Home() {
   const [selectedGenre, setSelectedGenre] = useState<{
@@ -333,6 +334,11 @@ export default function Home() {
       : originalLyrics || lyrics
 
     try {
+      // Check if this is a custom genre and get its Suno prompt
+      const customPrompt = isCustomGenre(selectedGenre.id)
+        ? getGenreSunoPrompt(selectedGenre.id)
+        : null
+
       const response = await fetch('/api/songs/generate', {
         method: 'POST',
         headers: {
@@ -340,12 +346,13 @@ export default function Home() {
         },
         body: JSON.stringify({
           title: songTitle,
-          genre: selectedGenre.name,
+          genre: isCustomGenre(selectedGenre.id) ? selectedGenre.id : selectedGenre.name,
           concept: songConcept,
           lyrics: baseLyrics,
           optimizedLyrics: FEATURES.ENABLE_PHONETIC_OPTIMIZATION ? (optimizedLyrics || null) : null,
           phoneticEnabled: FEATURES.ENABLE_PHONETIC_OPTIMIZATION && !!optimizedLyrics, // Only if feature enabled and user optimized
-          vocalGender: vocalGender
+          vocalGender: vocalGender,
+          customGenrePrompt: customPrompt || undefined
         })
       })
 

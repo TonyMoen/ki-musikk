@@ -72,3 +72,56 @@ export const FEATURES = {
 } as const
 
 export type FeatureFlags = typeof FEATURES
+
+/**
+ * AI Assistant Conversation Flow
+ * Step-by-step configuration for creating custom genres via conversational AI
+ */
+export interface ConversationStep {
+  step: number
+  question: string
+  quickAnswers: string[]
+  placeholder: string
+  saveAs: 'mainGenre' | 'instruments' | 'mood' | 'production' | 'extras'
+  optional?: boolean
+}
+
+export const CONVERSATION_FLOW: ConversationStep[] = [
+  {
+    step: 0,
+    question: "Hva er hovedstilen eller sjangeren?",
+    quickAnswers: ['70s rock', '80s synth-pop', 'Modern trap', 'Country ballad'],
+    placeholder: "F.eks: 'Indie folk' eller 'Jazz fusion'",
+    saveAs: 'mainGenre'
+  },
+  {
+    step: 1,
+    question: "Hvilke instrumenter skal dominere lyden?",
+    quickAnswers: ['electric guitar', 'synthesizers', 'acoustic guitar', '808 bass', 'piano'],
+    placeholder: "F.eks: 'saxophone, trumpet'",
+    saveAs: 'instruments'
+  },
+  {
+    step: 2,
+    question: "Hvilken stemning eller energinivå?",
+    quickAnswers: ['upbeat energetic', 'melancholic slow', 'aggressive intense', 'chill relaxed', 'dramatic emotional'],
+    placeholder: "F.eks: 'nostalgic and warm'",
+    saveAs: 'mood'
+  },
+  {
+    step: 3,
+    question: "Noen spesifikke produksjonsdetaljer?",
+    quickAnswers: ['heavy reverb', 'distorted', 'clean production', 'vintage analog', 'Hopp over'],
+    placeholder: "F.eks: 'lo-fi crackle' eller klikk 'Hopp over'",
+    saveAs: 'production',
+    optional: true
+  },
+  {
+    step: 4,
+    question: "Vil du legge til noe mer spesifikt?",
+    quickAnswers: ['male vocals', 'female vocals', 'fast tempo 140 bpm', 'slow tempo 70 bpm', 'Nei, ferdig'],
+    placeholder: "F.eks: 'duet' eller klikk 'Nei, ferdig'",
+    saveAs: 'extras',
+    optional: true
+  }
+]

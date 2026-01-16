@@ -52,6 +52,7 @@ interface SongGenerationRequest {
   title?: string // optional custom title
   previewMode?: boolean // generate 30-second free preview (no credit cost)
   vocalGender?: 'm' | 'f' | null // voice gender selection ('m' = male, 'f' = female, null = let Suno decide)
+  customGenrePrompt?: string // Suno prompt for custom genres (required if genre starts with "custom-")
 }
 
 /**
@@ -224,24 +225,53 @@ export async function POST(request: NextRequest) {
       logInfo('Preview mode - skipping credit deduction', { userId: user.id })
     }
 
-    // Step 4: Load genre from database to get suno_prompt_template
-    const { data: genreData, error: genreError } = await supabase
-      .from('genre')
-      .select('id, name, display_name, suno_prompt_template')
-      .eq('name', genre)
-      .eq('is_active', true)
-      .single()
+    // Step 4: Load genre - check if custom genre first, then database
+    let genreData: {
+      id: string
+      name: string
+      display_name: string
+      suno_prompt_template: string
+    }
 
-    if (genreError || !genreData) {
-      logError('Genre not found in database', genreError as Error, {
-        userId: user.id,
-        genre
-      })
-      return errorResponse(
-        'GENRE_NOT_FOUND',
-        `Genre "${genre}" ble ikke funnet.`,
-        404
-      )
+    // Check if this is a custom genre (ID starts with "custom-")
+    const isCustomGenre = genre.startsWith('custom-')
+
+    if (isCustomGenre) {
+      // For custom genres, we need to get the prompt from the request
+      // The frontend should pass this as part of the genre parameter or separately
+      // For now, expect format: "custom-{id}|{prompt}" or pass as customGenrePrompt
+      logInfo('Custom genre detected', { userId: user.id, genre })
+
+      // Custom genres don't exist in database - create a synthetic genre data object
+      // The prompt should be passed separately (we'll need to update the request interface)
+      genreData = {
+        id: genre,
+        name: genre,
+        display_name: genre,
+        suno_prompt_template: body.customGenrePrompt || genre.split('|')[1] || 'pop'
+      }
+    } else {
+      // Standard database genre
+      const { data: dbGenre, error: genreError } = await supabase
+        .from('genre')
+        .select('id, name, display_name, suno_prompt_template')
+        .eq('name', genre)
+        .eq('is_active', true)
+        .single()
+
+      if (genreError || !dbGenre) {
+        logError('Genre not found in database', genreError as Error, {
+          userId: user.id,
+          genre
+        })
+        return errorResponse(
+          'GENRE_NOT_FOUND',
+          `Genre "${genre}" ble ikke funnet.`,
+          404
+        )
+      }
+
+      genreData = dbGenre
     }
 
     // Step 5: Select lyrics to use (optimized if phoneticEnabled, else original)
