@@ -149,3 +149,14 @@ development_status:
   epic-10: backlog
   10-1-enhanced-lyrics-input-dual-mode-ux: review  # Maps to epics.md Story 1.4
   epic-10-retrospective: optional
+
+  # Epic 11: Genre Management & AI Assistant (4 stories)
+  # Implements remaining change requests from UI modernization effort
+  # Enables users to customize genres, use AI prompt assistant, and manage genre library
+  # Change Requests: CR-003, CR-004, CR-005, CR-006
+  epic-11: backlog
+  11-1-add-genre-edit-mode-with-remove-functionality: drafted  # CR-003: Edit mode with X buttons
+  11-2-add-undo-snackbar-for-genre-deletions: backlog  # CR-006: 5-second undo with snackbar
+  11-3-implement-ai-prompt-assistant-modal: backlog  # CR-004: Conversational genre creator
+  11-4-add-genre-library-modal-with-tabs: backlog  # CR-005: Active/Archived/Standard tabs
+  epic-11-retrospective: optional
