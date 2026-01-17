@@ -1,0 +1,210 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>11</epicId>
+    <storyId>11-4</storyId>
+    <title>Add Genre Library Modal with Active/Archived/Standard Tabs</title>
+    <status>drafted</status>
+    <generatedAt>2026-01-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/stories/11-4-add-genre-library-modal-with-tabs.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user managing my genre collection</asA>
+    <iWant>a library modal where I can view active, archived, and standard genres</iWant>
+    <soThat>I can restore removed genres, explore templates, and manage my full genre catalog</soThat>
+    <tasks>
+### Task 1: Create Genre Library Components
+- [ ] 1.1: Create `src/components/genre-library/modal.tsx` with tabs
+- [ ] 1.2: Create `src/components/genre-library/genre-card.tsx` for individual genres
+- [ ] 1.3: Create `src/components/genre-library/tab-content.tsx` for tab rendering
+- [ ] 1.4: Add search bar to modal header
+
+### Task 2: Implement Genre Library State Management
+- [ ] 2.1: Create `src/hooks/use-genre-library.ts` with state logic
+- [ ] 2.2: Implement archive/restore/delete functions
+- [ ] 2.3: Add localStorage persistence (save on change)
+- [ ] 2.4: Add localStorage loading (on mount)
+- [ ] 2.5: Implement search filtering logic
+
+### Task 3: Create Standard Genre Templates
+- [ ] 3.1: Create `src/lib/standard-genres.ts` with 8 templates
+- [ ] 3.2: Define Genre interface/type
+- [ ] 3.3: Add templates: Classic Rock, Chill Lofi, Epic Orchestral, Indie Folk
+- [ ] 3.4: Add templates: Synthwave, Jazz Smooth, EDM Banger, Acoustic Ballad
+
+### Task 4: Integrate with Genre Selection
+- [ ] 4.1: Add library button to `src/components/genre-selection.tsx`
+- [ ] 4.2: Integrate useGenreLibrary hook
+- [ ] 4.3: Display activeGenres in main grid
+- [ ] 4.4: Handle modal open/close state
+
+### Task 5: Testing and Validation
+- [ ] 5.1: Test archive/restore/delete flows
+- [ ] 5.2: Test search filtering across all tabs
+- [ ] 5.3: Test localStorage persistence (add, refresh, verify)
+- [ ] 5.4: Test empty states for each tab
+- [ ] 5.5: Test mobile responsiveness
+- [ ] 5.6: Verify no console errors
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+### Modal & Navigation (5 criteria)
+1. Library button appears in header/genre section (icon or text)
+2. Clicking library button opens full-screen modal
+3. Modal has "Sjanger-bibliotek" header with search bar
+4. Three tabs visible: "Aktive", "Arkiverte", "Standard"
+5. Each tab has badge showing count (e.g., "Aktive (4)")
+
+### Active Tab (4 criteria)
+6. Shows all genres currently in main grid
+7. Each genre displays: name, Suno prompt preview
+8. "Arkiver" button on each genre
+9. Clicking "Arkiver" moves genre to Arkiverte tab
+
+### Archived Tab (5 criteria)
+10. Shows all removed genres with archive timestamp
+11. Each genre displays: name, prompt, "Arkivert {date}"
+12. "Gjenopprett" button restores genre to main grid
+13. "Slett permanent" button shows confirmation dialog
+14. Permanently deleted genres cannot be recovered
+
+### Standard Tab (4 criteria)
+15. Shows 8 pre-made genre templates (hardcoded)
+16. Each template displays: name, Suno prompt
+17. "Legg til" button adds template to active genres
+18. Templates include: Classic Rock, Chill Lofi, Epic Orchestral, Indie Folk, Synthwave, Jazz Smooth, EDM Banger, Acoustic Ballad
+
+### Search Functionality (3 criteria)
+19. Search bar filters genres by name or prompt text
+20. Search works across current visible tab only
+21. Empty state message when no results found
+
+### Data Persistence (4 criteria)
+22. Active genres persist to localStorage on change
+23. Archived genres persist to localStorage
+24. Genres reload from localStorage on page load
+25. No console errors or warnings
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <artifact path="docs/tech-spec-ui-modernization.md" title="Tech-Spec: UI Modernization" section="Epic Goal & Stories">
+        Covers UI modernization including genre management patterns. Context on 2x2 genre grid, "+ Legg til sjanger" button, and design patterns for genre interaction.
+      </artifact>
+      <artifact path="docs/architecture.md" title="Musikkfabrikken Architecture" section="Component Structure & Tech Stack">
+        Next.js 14+ App Router with TypeScript, Radix UI + shadcn/ui components, Tailwind CSS styling. Tab components use Radix Tabs primitives. localStorage for client-side persistence.
+      </artifact>
+      <artifact path="docs/sprint_artifacts/story-genre-management-1.md" title="Story 11-1: Genre Edit Mode" section="Implementation">
+        Provides context on edit mode implementation with remove (X) buttons. Archive pattern with removeGenre() and restoreGenre() functions.
+      </artifact>
+      <artifact path="docs/sprint_artifacts/story-genre-management-2.md" title="Story 11-2: Undo Snackbar" section="Implementation">
+        Undo snackbar pattern for genre deletions. 5-second timeout with restoreGenre callback.
+      </artifact>
+      <artifact path="docs/sprint_artifacts/story-genre-management-3.md" title="Story 11-3: AI Prompt Assistant" section="Custom Genres">
+        Custom genre creation flow. Genres include: id, name, display_name, sunoPrompt, createdAt, isCustom flag.
+      </artifact>
+    </docs>
+    <code>
+      <artifact path="src/components/genre-selection.tsx" kind="component" symbol="GenreSelection" lines="1-300" reason="Current genre selection component that will be extended with library button and useGenreLibrary hook integration. Contains genre state management, editMode, removeGenre, and restoreGenre functions.">
+      </artifact>
+      <artifact path="src/hooks/use-snackbar.ts" kind="hook" symbol="useSnackbar" reason="Reference pattern for creating use-genre-library hook with similar state management (show, hide, message, callback).">
+      </artifact>
+      <artifact path="src/components/ui/dialog.tsx" kind="ui-component" symbol="Dialog, DialogContent, DialogHeader" reason="Radix UI Dialog primitives for library modal. Same pattern as AI assistant modal.">
+      </artifact>
+      <artifact path="src/components/ui/tabs.tsx" kind="ui-component" symbol="Tabs, TabsList, TabsTrigger, TabsContent" reason="Radix UI Tabs component for Active/Archived/Standard tabs. Handles tab switching and content display.">
+      </artifact>
+      <artifact path="src/components/ui/input.tsx" kind="ui-component" symbol="Input" reason="shadcn/ui Input component for search bar in modal header.">
+      </artifact>
+      <artifact path="src/components/ui/button.tsx" kind="ui-component" symbol="Button" reason="shadcn/ui Button component for action buttons (Arkiver, Gjenopprett, Slett, Legg til).">
+      </artifact>
+      <artifact path="src/lib/constants.ts" kind="utility" symbol="CREDIT_PACKAGES, FEATURES" lines="1-75" reason="Constants file pattern. Will create src/lib/standard-genres.ts following similar export pattern.">
+      </artifact>
+      <artifact path="src/lib/utils.ts" kind="utility" symbol="cn" reason="Class name utility (clsx + tailwind-merge) for conditional styling.">
+      </artifact>
+    </code>
+    <dependencies>
+      <frontend>
+        <package name="react" version="18.2.0" usage="useState, useEffect, useCallback hooks for library state and localStorage" />
+        <package name="next" version="14.2.3" usage="'use client' directive for client components" />
+        <package name="@radix-ui/react-dialog" usage="Dialog, DialogContent, DialogHeader primitives for modal" />
+        <package name="@radix-ui/react-tabs" usage="Tabs, TabsList, TabsTrigger, TabsContent for tab interface" />
+        <package name="lucide-react" version="0.554.0" usage="Library, Search icons for button and search bar" />
+        <package name="date-fns" version="4.1.0" usage="formatDistanceToNow for archive timestamps (e.g., 'Arkivert 2 dager siden')" />
+        <package name="tailwind-css" version="3.4.1" usage="Utility classes for styling, grid layouts, responsive design" />
+        <package name="clsx" usage="Conditional class names via cn() utility" />
+      </frontend>
+      <browser>
+        <api name="localStorage" usage="Persisting active and archived genres. Keys: 'aimusikk_active_genres', 'aimusikk_archived_genres'" />
+        <api name="window.confirm" usage="Confirmation dialog for permanent delete action" />
+      </browser>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - All components must use 'use client' directive (localStorage and state required)
+    - Follow existing component patterns: shadcn/ui primitives, Radix UI for accessibility
+    - Use Tailwind CSS for styling (no CSS modules or styled-components)
+    - Modal max-width: 700px (larger than AI assistant for library view), max-height: 90vh
+    - Color scheme: Orange primary (#FF6B35), purple secondary (#7C3AED), consistent with app theme
+    - Use Lucide React icons (Library, Search, etc.) - no emojis
+    - localStorage keys: 'aimusikk_active_genres' and 'aimusikk_archived_genres'
+    - Genre data structure must match existing Genre interface in genre-selection.tsx
+    - Archive timestamp: Use date-fns formatDistanceToNow with Norwegian locale (nb)
+    - Confirmation dialog required for permanent delete (window.confirm acceptable for MVP)
+    - Search filters current visible tab only (not across all tabs)
+    - Empty states required for all three tabs (different messages)
+    - Standard genres: 8 hardcoded templates in src/lib/standard-genres.ts
+    - Badge counts update dynamically based on activeGenres.length and archivedGenres.length
+    - TypeScript strict mode enabled - no 'any' types allowed
+    - localStorage error handling: try/catch with console.error, don't crash app if storage fails
+  </constraints>
+
+  <interfaces>
+    <interface name="Genre" kind="TypeScript interface" signature="interface Genre { id: string; name: string; display_name: string; emoji: string | null; sort_order: number; gradient_colors: GradientColors | null; sunoPrompt?: string; isCustom?: boolean; isStandard?: boolean; createdAt?: Date; archivedAt?: Date }" path="src/components/genre-selection.tsx:19-26">
+      Existing Genre interface - will be extended in src/lib/standard-genres.ts to include sunoPrompt (required for templates), isStandard, isCustom, createdAt, archivedAt fields.
+    </interface>
+    <interface name="Tabs" kind="React component" signature="<Tabs value={activeTab} onValueChange={setActiveTab}><TabsList><TabsTrigger value='active'>Aktive</TabsTrigger>...</TabsList><TabsContent value='active'>...</TabsContent></Tabs>" path="src/components/ui/tabs.tsx">
+      Radix UI Tabs component - handles tab switching state. value prop controls active tab, onValueChange callback updates state.
+    </interface>
+    <interface name="Button variants" kind="React component props" signature="<Button variant='default' | 'outline' | 'destructive' size='sm' />" path="src/components/ui/button.tsx">
+      Button variants: 'destructive' for delete button (red), 'outline' for secondary actions, 'default' for primary actions.
+    </interface>
+    <interface name="localStorage API" kind="Browser API" signature="localStorage.setItem(key, JSON.stringify(data)); localStorage.getItem(key); JSON.parse()" path="Browser API">
+      Standard localStorage API for persisting genre arrays. Save on change (useEffect), load on mount (useEffect with empty deps).
+    </interface>
+    <interface name="date-fns formatDistanceToNow" kind="Function" signature="formatDistanceToNow(date, { addSuffix: true, locale: nb })" path="date-fns">
+      Formats archived date as relative time (e.g., "2 dager siden"). Import from 'date-fns' and 'date-fns/locale' (nb for Norwegian).
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Manual testing required (no automated test framework configured). Test on multiple screen sizes (mobile 375px, tablet 768px, desktop 1440px). Verify TypeScript compilation with no errors. Check browser console for warnings or errors. Test keyboard navigation (Tab, Enter). Verify localStorage persistence across page refreshes. Test localStorage quota handling (should not crash if quota exceeded).
+    </standards>
+    <locations>
+      No dedicated test directory - manual testing via local development server. Test in Chrome, Safari, Firefox. Use Chrome DevTools Application tab to inspect localStorage. Use device emulation for mobile testing.
+    </locations>
+    <ideas>
+      <test id="AC-1-5" description="Library button and modal opening">
+        Verify "Bibliotek" button visible in genre section header. Click button → modal opens centered, header shows "Sjanger-bibliotek", search bar visible at top, three tabs show with counts: "Aktive (X)", "Arkiverte (Y)", "Standard (8)".
+      </test>
+      <test id="AC-6-9" description="Active tab functionality">
+        Active tab shows current genres from main grid. Each genre card displays name + Suno prompt. "Arkiver" button on each. Click "Arkiver" → genre moves to Arkiverte tab, Active count decreases, modal stays open.
+      </test>
+      <test id="AC-10-14" description="Archived tab functionality">
+        Arkiverte tab shows removed genres. Each shows "Arkivert X dager siden" timestamp. "Gjenopprett" button restores to main grid. "Slett permanent" shows window.confirm dialog → delete removes forever. Verify genre cannot be recovered after permanent delete.
+      </test>
+      <test id="AC-15-18" description="Standard tab with 8 templates">
+        Standard tab shows 8 hardcoded templates: Classic Rock, Chill Lofi, Epic Orchestral, Indie Folk, Synthwave, Jazz Smooth, EDM Banger, Acoustic Ballad. Each shows Suno prompt. "Legg til" adds to Active. Button disabled if already added.
+      </test>
+      <test id="AC-19-21" description="Search filtering">
+        Type in search bar → filters genres by name OR Suno prompt text. Search applies to current visible tab only. Test empty state: search with no matches shows "Ingen X sjangere matchet søket". Clear search → all genres reappear.
+      </test>
+      <test id="AC-22-25" description="localStorage persistence">
+        Add custom genre → refresh page → verify persists. Archive genre → refresh → stays archived. Add standard template → refresh → persists. Open DevTools Application → check localStorage keys exist: 'aimusikk_active_genres', 'aimusikk_archived_genres'. Verify no console errors throughout.
+      </test>
+    </ideas>
+  </tests>
+</story-context>

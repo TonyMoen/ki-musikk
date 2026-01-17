@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { X, Pencil, Sparkles } from 'lucide-react'
+import { X, Pencil, Sparkles, Library } from 'lucide-react'
 import { useSnackbar } from '@/hooks/use-snackbar'
 import { Snackbar } from '@/components/snackbar'
 import { AIAssistantModal } from '@/components/ai-assistant/modal'
 import { EditPromptModal } from '@/components/ai-assistant/edit-prompt-modal'
+import { GenreLibraryModal } from '@/components/genre-library/modal'
+import type { LibraryGenre } from '@/lib/standard-genres'
 import {
   getCustomGenres,
   saveCustomGenre,
@@ -69,6 +71,7 @@ export function GenreSelection({
   const [showAIAssistant, setShowAIAssistant] = useState(false)
   const [editingGenreId, setEditingGenreId] = useState<string | null>(null)
   const [showEditPrompt, setShowEditPrompt] = useState(false)
+  const [showLibrary, setShowLibrary] = useState(false)
 
   const snackbar = useSnackbar()
 
@@ -288,6 +291,54 @@ export function GenreSelection({
     setEditingGenreId(null)
   }
 
+  // Library modal handlers
+  const handleLibraryGenreAdded = (libraryGenre: LibraryGenre) => {
+    // Convert LibraryGenre to Genre format for display
+    const newGenre: Genre = {
+      id: libraryGenre.id,
+      name: libraryGenre.name,
+      display_name: libraryGenre.display_name,
+      emoji: null,
+      sort_order: 999,
+      gradient_colors: {
+        from: '#FF6B35',
+        to: '#7C3AED'
+      }
+    }
+
+    // Check if already exists to avoid duplicates
+    if (!genres.some(g => g.id === newGenre.id)) {
+      setGenres([...genres, newGenre])
+      snackbar.show(`${newGenre.display_name} lagt til!`, () => {})
+    }
+  }
+
+  const handleLibraryGenreArchived = (libraryGenre: LibraryGenre) => {
+    // Remove from display
+    setGenres(genres.filter(g => g.id !== libraryGenre.id))
+    snackbar.show(`${libraryGenre.display_name} arkivert`, () => {})
+  }
+
+  const handleLibraryGenreRestored = (libraryGenre: LibraryGenre) => {
+    // Add back to display
+    const restoredGenre: Genre = {
+      id: libraryGenre.id,
+      name: libraryGenre.name,
+      display_name: libraryGenre.display_name,
+      emoji: null,
+      sort_order: 999,
+      gradient_colors: {
+        from: '#FF6B35',
+        to: '#7C3AED'
+      }
+    }
+
+    if (!genres.some(g => g.id === restoredGenre.id)) {
+      setGenres([...genres, restoredGenre])
+      snackbar.show(`${restoredGenre.display_name} gjenopprettet!`, () => {})
+    }
+  }
+
   if (isLoading) {
     return (
       <div className={`w-full ${className}`}>
@@ -320,23 +371,37 @@ export function GenreSelection({
   return (
     <div role="radiogroup" aria-label="Velg sjanger" className={`w-full ${className}`}>
       <div className="space-y-3">
-        {/* Header with Edit Button */}
+        {/* Header with Edit and Library Buttons */}
         <div className="flex items-center justify-between mb-3">
           <div className="text-sm font-bold text-text-secondary uppercase tracking-wide">
             Velg sjanger
           </div>
-          <button
-            onClick={toggleEditMode}
-            className={cn(
-              "px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all",
-              "border border-border hover:border-border-focus",
-              editMode
-                ? "bg-primary text-white border-primary"
-                : "bg-transparent text-text-secondary"
-            )}
-          >
-            {editMode ? 'Ferdig' : 'Rediger'}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowLibrary(true)}
+              className={cn(
+                "p-2 rounded-full transition-all",
+                "border border-border hover:border-primary hover:bg-primary/10",
+                "text-text-secondary hover:text-primary"
+              )}
+              aria-label="Apne sjanger-bibliotek"
+              title="Bibliotek"
+            >
+              <Library className="w-4 h-4" />
+            </button>
+            <button
+              onClick={toggleEditMode}
+              className={cn(
+                "px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all",
+                "border border-border hover:border-border-focus",
+                editMode
+                  ? "bg-primary text-white border-primary"
+                  : "bg-transparent text-text-secondary"
+              )}
+            >
+              {editMode ? 'Ferdig' : 'Rediger'}
+            </button>
+          </div>
         </div>
 
         {/* Genre Grid - Fixed 2x2 */}
@@ -459,6 +524,15 @@ export function GenreSelection({
           onSave={handleUpdateGenrePrompt}
         />
       )}
+
+      {/* Genre Library Modal */}
+      <GenreLibraryModal
+        open={showLibrary}
+        onClose={() => setShowLibrary(false)}
+        onGenreAdded={handleLibraryGenreAdded}
+        onGenreArchived={handleLibraryGenreArchived}
+        onGenreRestored={handleLibraryGenreRestored}
+      />
     </div>
   )
 }
