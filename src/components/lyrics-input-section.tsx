@@ -108,7 +108,7 @@ export function LyricsInputSection({
             <>
               {/* Concept Input */}
               <div className="space-y-2">
-                <Label htmlFor="concept-input" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="concept-input" className="text-sm font-medium text-text-primary">
                   Beskriv hva sangen skal handle om
                 </Label>
                 <Textarea
@@ -133,65 +133,59 @@ export function LyricsInputSection({
 
               {/* Template Buttons */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">
+                <Label className="text-sm font-medium text-text-primary">
                   Eller velg en mal:
                 </Label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <Button
                     variant="outline"
-                    size="sm"
                     onClick={() => fillTemplate(LYRIC_TEMPLATES.birthday)}
                     disabled={isGenerating || isOptimizing}
-                    className="h-10 text-sm"
+                    className="h-[56px] text-[15px] font-bold rounded-lg border border-gray-300 text-gray-800 bg-white hover:border-primary/50 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   >
                     Bursdagssang
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
                     onClick={() => fillTemplate(LYRIC_TEMPLATES.love)}
                     disabled={isGenerating || isOptimizing}
-                    className="h-10 text-sm"
+                    className="h-[56px] text-[15px] font-bold rounded-lg border border-gray-300 text-gray-800 bg-white hover:border-primary/50 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   >
                     Kjærlighetssang
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
                     onClick={() => fillTemplate(LYRIC_TEMPLATES.party)}
                     disabled={isGenerating || isOptimizing}
-                    className="h-10 text-sm"
+                    className="h-[56px] text-[15px] font-bold rounded-lg border border-gray-300 text-gray-800 bg-white hover:border-primary/50 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   >
                     Festlåt
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
                     onClick={() => fillTemplate(LYRIC_TEMPLATES.motivation)}
                     disabled={isGenerating || isOptimizing}
-                    className="h-10 text-sm"
+                    className="h-[56px] text-[15px] font-bold rounded-lg border border-gray-300 text-gray-800 bg-white hover:border-primary/50 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   >
                     Motivasjonssang
                   </Button>
                 </div>
               </div>
 
-              {/* Info Box */}
-              <div className="flex items-start gap-2 p-3 bg-surface rounded-lg border border-border">
-                <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-text-secondary">
-                  AI lager både melodi og tekst basert på din beskrivelse.
-                  Jo mer detaljer, jo bedre resultat!
-                </p>
-              </div>
-
-              {/* Generate Button */}
-              <div className="flex justify-end pt-2">
+              {/* Info Box with Generate Button */}
+              <div className="flex items-center justify-between gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                <div className="flex items-start gap-2">
+                  <Info className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-purple-700">
+                    AI lager både melodi og tekst basert på din beskrivelse.
+                    Jo mer detaljer, jo bedre resultat!
+                  </p>
+                </div>
                 <Button
                   onClick={handleGenerateLyrics}
                   disabled={!canGenerate}
                   size="sm"
-                  className="bg-primary hover:bg-primary-hover text-white"
+                  className="bg-purple-600 hover:bg-purple-700 text-white flex-shrink-0"
                 >
                   {isGenerating ? (
                     <>
@@ -213,7 +207,7 @@ export function LyricsInputSection({
           {showGeneratedLyricsInAIMode && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="generated-lyrics" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="generated-lyrics" className="text-sm font-medium text-text-primary">
                   Generert sangtekst
                 </Label>
               </div>
@@ -256,7 +250,7 @@ export function LyricsInputSection({
                   onClick={() => onLyricsChange('')}
                   variant="outline"
                   size="sm"
-                  className="text-gray-600 hover:text-gray-800"
+                  className="text-text-primary hover:text-text-primary"
                 >
                   Ny beskrivelse
                 </Button>

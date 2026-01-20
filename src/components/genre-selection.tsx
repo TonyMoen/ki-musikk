@@ -243,14 +243,14 @@ export function GenreSelection({
 
         {/* Prompt Text Box */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-sm font-medium text-text-primary">
             Suno prompt (valgfritt)
           </label>
           <Textarea
             value={promptText}
             onChange={(e) => handlePromptChange(e.target.value)}
             placeholder="Beskriv stilen du onsker, f.eks: pop, akustisk gitar, rolig, norsk vokal..."
-            className="min-h-[80px] text-gray-900 placeholder:text-gray-400"
+            className="min-h-[80px] text-text-primary placeholder:text-text-secondary"
           />
           <p className="text-xs text-gray-500">
             Tips: Beskriv instrumenter, tempo, stemning og stil

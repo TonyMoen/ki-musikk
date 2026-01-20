@@ -29,7 +29,7 @@ export function VoiceGenderSelector({
 
   return (
     <div className={`w-full ${className}`}>
-      <h3 className="text-sm font-medium text-gray-700 mb-2 text-center">
+      <h3 className="text-sm font-medium text-text-primary mb-2 text-center">
         Stemme
       </h3>
       <div
