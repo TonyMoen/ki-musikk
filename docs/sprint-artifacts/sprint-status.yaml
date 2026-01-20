@@ -159,4 +159,5 @@ development_status:
   11-2-add-undo-snackbar-for-genre-deletions: review  # CR-006: 5-second undo with snackbar - Implementation complete
   11-3-implement-ai-prompt-assistant-modal: review  # CR-004: Conversational genre creator - Implementation complete
   11-4-add-genre-library-modal-with-tabs: review  # CR-005: Active/Archived/Standard tabs - Implementation complete
+  11-5-fix-genre-selection-ux-workflow: review  # Fix UX: expandable selected genre, choice modal, library sync, fast edit
   epic-11-retrospective: optional

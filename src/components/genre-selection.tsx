@@ -10,9 +10,12 @@ import { Snackbar } from '@/components/snackbar'
 import { AIAssistantModal } from '@/components/ai-assistant/modal'
 import { EditPromptModal } from '@/components/ai-assistant/edit-prompt-modal'
 import { GenreLibraryModal } from '@/components/genre-library/modal'
+import { ExpandedGenreCard } from '@/components/genre-selection/expanded-genre-card'
+import { AddGenreModal } from '@/components/genre-selection/add-genre-modal'
 import { STANDARD_GENRES, type LibraryGenre } from '@/lib/standard-genres'
 import {
   getCustomGenres,
+  getCustomGenre,
   saveCustomGenre,
   updateCustomGenre,
   isCustomGenre,
@@ -72,6 +75,7 @@ export function GenreSelection({
   const [editingGenreId, setEditingGenreId] = useState<string | null>(null)
   const [showEditPrompt, setShowEditPrompt] = useState(false)
   const [showLibrary, setShowLibrary] = useState(false)
+  const [showAddGenreModal, setShowAddGenreModal] = useState(false)
 
   const snackbar = useSnackbar()
 
@@ -291,8 +295,125 @@ export function GenreSelection({
     setEditingGenreId(null)
   }
 
+  // Create custom genre from add-genre-modal
+  const handleCreateCustomGenre = (name: string, prompt: string) => {
+    const genreId = `custom-${Date.now()}`
+    const genreData: CustomGenreData = {
+      id: genreId,
+      name: name,
+      display_name: name,
+      sunoPrompt: prompt,
+      createdAt: new Date().toISOString()
+    }
+
+    // Save to localStorage
+    saveCustomGenre(genreData)
+
+    // Add to UI
+    const newGenre: Genre = {
+      id: genreId,
+      name: name,
+      display_name: name,
+      emoji: null,
+      sort_order: 999,
+      gradient_colors: {
+        from: '#FF6B35',
+        to: '#7C3AED'
+      }
+    }
+
+    setGenres([...genres, newGenre])
+
+    // Auto-select the new genre
+    setSelectedId(genreId)
+    onGenreSelect?.(genreId, name)
+
+    snackbar.show(`${name} opprettet!`, () => {})
+  }
+
+  // Handle editing selected genre from expanded card
+  const handleEditSelectedGenre = (newName: string, newPrompt: string) => {
+    if (!selectedId) return
+
+    // Check if it's a custom genre
+    if (isCustomGenre(selectedId)) {
+      // Update existing custom genre
+      updateCustomGenre(selectedId, {
+        name: newName,
+        display_name: newName,
+        sunoPrompt: newPrompt
+      })
+    } else {
+      // Create a new custom genre based on the standard one
+      const newGenreId = `custom-${Date.now()}`
+      const genreData: CustomGenreData = {
+        id: newGenreId,
+        name: newName,
+        display_name: newName,
+        sunoPrompt: newPrompt,
+        createdAt: new Date().toISOString()
+      }
+      saveCustomGenre(genreData)
+
+      // Add the new genre to UI
+      const newGenre: Genre = {
+        id: newGenreId,
+        name: newName,
+        display_name: newName,
+        emoji: null,
+        sort_order: 999,
+        gradient_colors: {
+          from: '#FF6B35',
+          to: '#7C3AED'
+        }
+      }
+      setGenres([...genres, newGenre])
+      setSelectedId(newGenreId)
+      onGenreSelect?.(newGenreId, newName)
+      snackbar.show(`${newName} opprettet!`, () => {})
+      return
+    }
+
+    // Update in UI for custom genres
+    setGenres(genres.map(g =>
+      g.id === selectedId
+        ? { ...g, name: newName, display_name: newName }
+        : g
+    ))
+
+    snackbar.show(`${newName} oppdatert!`, () => {})
+  }
+
+  // Get the prompt for the selected genre
+  const getSelectedGenrePrompt = (): string | undefined => {
+    if (!selectedId) return undefined
+    const customGenre = getCustomGenre(selectedId)
+    return customGenre?.sunoPrompt
+  }
+
   // Library modal handlers
   const handleLibraryGenreAdded = (libraryGenre: LibraryGenre) => {
+    // Check if already exists to avoid duplicates
+    if (genres.some(g => g.id === libraryGenre.id || g.name === libraryGenre.name)) {
+      snackbar.show(`${libraryGenre.display_name} finnes allerede`, () => {})
+      return
+    }
+
+    // Save to localStorage for persistence
+    const genreData: CustomGenreData = {
+      id: libraryGenre.id,
+      name: libraryGenre.name,
+      display_name: libraryGenre.display_name,
+      sunoPrompt: libraryGenre.sunoPrompt,
+      createdAt: libraryGenre.createdAt || new Date().toISOString()
+    }
+
+    try {
+      saveCustomGenre(genreData)
+    } catch (error) {
+      console.error('Failed to save genre:', error)
+    }
+
     // Convert LibraryGenre to Genre format for display
     const newGenre: Genre = {
       id: libraryGenre.id,
@@ -306,11 +427,13 @@ export function GenreSelection({
       }
     }
 
-    // Check if already exists to avoid duplicates
-    if (!genres.some(g => g.id === newGenre.id)) {
-      setGenres([...genres, newGenre])
-      snackbar.show(`${newGenre.display_name} lagt til!`, () => {})
-    }
+    setGenres([...genres, newGenre])
+
+    // Auto-select the new genre
+    setSelectedId(newGenre.id)
+    onGenreSelect?.(newGenre.id, newGenre.name)
+
+    snackbar.show(`${newGenre.display_name} lagt til!`, () => {})
   }
 
   const handleLibraryGenreArchived = (libraryGenre: LibraryGenre) => {
@@ -516,11 +639,21 @@ export function GenreSelection({
           </div>
         )}
 
+        {/* Expanded Selected Genre Card */}
+        {selectedId && !editMode && (
+          <ExpandedGenreCard
+            genreId={selectedId}
+            genreName={genres.find(g => g.id === selectedId)?.display_name || ''}
+            sunoPrompt={getSelectedGenrePrompt()}
+            onEdit={handleEditSelectedGenre}
+          />
+        )}
+
         {/* Add Genre Button */}
         {!showAllGenres && (
           <Button
             variant="outline"
-            onClick={() => setShowAIAssistant(true)}
+            onClick={() => setShowAddGenreModal(true)}
             className="w-full h-[52px] border-2 border-dashed border-border-focus hover:bg-surface hover:border-primary/50 transition-all"
           >
             + Legg til sjanger
@@ -563,6 +696,15 @@ export function GenreSelection({
         onGenreAdded={handleLibraryGenreAdded}
         onGenreArchived={handleLibraryGenreArchived}
         onGenreRestored={handleLibraryGenreRestored}
+      />
+
+      {/* Add Genre Choice Modal */}
+      <AddGenreModal
+        open={showAddGenreModal}
+        onClose={() => setShowAddGenreModal(false)}
+        onSelectAIAssistant={() => setShowAIAssistant(true)}
+        onSelectLibrary={() => setShowLibrary(true)}
+        onCreateCustomGenre={handleCreateCustomGenre}
       />
     </div>
   )
