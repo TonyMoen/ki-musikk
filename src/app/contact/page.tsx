@@ -21,10 +21,10 @@ export default function ContactPage() {
             Send oss en e-post, så svarer vi så fort vi kan.
           </p>
           <a
-            href="mailto:hei@aimusikk.no"
+            href="mailto:hei@kimusikk.no"
             className="text-primary hover:underline font-medium"
           >
-            hei@aimusikk.no
+            hei@kimusikk.no
           </a>
         </div>
 

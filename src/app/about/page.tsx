@@ -3,11 +3,11 @@ import { Music, Sparkles, Heart, Globe } from 'lucide-react'
 export default function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
-      <h1 className="text-4xl font-bold mb-6">Om AIMusikk</h1>
+      <h1 className="text-4xl font-bold mb-6">Om KI MUSIKK</h1>
 
       <div className="prose prose-lg max-w-none">
         <p className="text-xl text-muted-foreground mb-8">
-          AIMusikk er Norges første AI-drevne plattform for å lage personlige sanger
+          KI MUSIKK er Norges første AI-drevne plattform for å lage personlige sanger
           med autentisk norsk uttale. Vi gjør det enkelt for alle å skape unike musikkopplevelser.
         </p>
 
@@ -51,7 +51,7 @@ export default function AboutPage() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Laget med kjærlighet</h3>
               <p className="text-muted-foreground">
-                AIMusikk er utviklet av norske musikk- og teknologientusiaster som
+                KI MUSIKK er utviklet av norske musikk- og teknologientusiaster som
                 ønsker å gjøre musikkskaping tilgjengelig for alle.
               </p>
             </div>

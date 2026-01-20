@@ -125,7 +125,7 @@ export function SongPlayerCard({
     soundRef.current = sound
 
     // Load volume from localStorage
-    const savedVolume = localStorage.getItem('aimusikk-volume')
+    const savedVolume = localStorage.getItem('kimusikk-volume')
     if (savedVolume) {
       const vol = parseInt(savedVolume)
       setVolume(vol)
@@ -249,7 +249,7 @@ export function SongPlayerCard({
     }
 
     // Save to localStorage
-    localStorage.setItem('aimusikk-volume', newVolume.toString())
+    localStorage.setItem('kimusikk-volume', newVolume.toString())
 
     // Unmute if muted
     if (isMuted && newVolume > 0) {

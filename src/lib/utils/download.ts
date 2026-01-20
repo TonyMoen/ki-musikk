@@ -1,5 +1,5 @@
 /**
- * Download Utilities for AIMusikk
+ * Download Utilities for KI MUSIKK
  *
  * Client-side utilities for downloading songs from the API.
  * Handles filename sanitization, download triggering, and error handling.
@@ -60,7 +60,7 @@ export async function downloadSong(songId: string, songTitle: string): Promise<b
       // Direct download via anchor tag - Supabase handles the download header
       const link = document.createElement('a')
       link.href = downloadUrl
-      link.download = filename || `${sanitizeFilename(songTitle)}-aimusikk.mp3`
+      link.download = filename || `${sanitizeFilename(songTitle)}-kimusikk.mp3`
       link.style.display = 'none'
       document.body.appendChild(link)
       link.click()
@@ -77,7 +77,7 @@ export async function downloadSong(songId: string, songTitle: string): Promise<b
 
       const link = document.createElement('a')
       link.href = blobUrl
-      link.download = filename || `${sanitizeFilename(songTitle)}-aimusikk.mp3`
+      link.download = filename || `${sanitizeFilename(songTitle)}-kimusikk.mp3`
       link.style.display = 'none'
       document.body.appendChild(link)
       link.click()

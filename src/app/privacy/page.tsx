@@ -11,7 +11,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">1. Introduksjon</h2>
           <p className="text-muted-foreground">
-            AIMusikk tar ditt personvern på alvor. Denne personvernerklæringen
+            KI MUSIKK tar ditt personvern på alvor. Denne personvernerklæringen
             forklarer hvordan vi samler inn, bruker, lagrer og beskytter dine personopplysninger
             når du bruker vår tjeneste.
           </p>
@@ -20,10 +20,10 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">2. Behandlingsansvarlig</h2>
           <p className="text-muted-foreground">
-            AIMusikk er behandlingsansvarlig for personopplysningene som samles inn
+            KI MUSIKK er behandlingsansvarlig for personopplysningene som samles inn
             gjennom tjenesten. For spørsmål om personvern, kontakt oss på{' '}
-            <a href="mailto:hei@aimusikk.no" className="text-primary hover:underline">
-              hei@aimusikk.no
+            <a href="mailto:hei@kimusikk.no" className="text-primary hover:underline">
+              hei@kimusikk.no
             </a>.
           </p>
         </section>
@@ -86,7 +86,7 @@ export default function PrivacyPage() {
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
             <li><strong>Supabase:</strong> Database og autentisering (USA, EU Standard Contractual Clauses)</li>
             <li><strong>Stripe:</strong> Betalingsbehandling (USA, PCI DSS-sertifisert)</li>
-            <li><strong>Suno AI:</strong> Musikkgenerering (USA)</li>
+            <li><strong>KI-tjenester:</strong> Musikkgenerering (USA)</li>
             <li><strong>Vercel:</strong> Hosting (USA, EU Standard Contractual Clauses)</li>
             <li><strong>OpenAI:</strong> Tekstgenerering og optimalisering (USA)</li>
           </ul>
@@ -123,8 +123,8 @@ export default function PrivacyPage() {
           </ul>
           <p className="text-muted-foreground mt-4">
             For å utøve dine rettigheter, kontakt oss på{' '}
-            <a href="mailto:hei@aimusikk.no" className="text-primary hover:underline">
-              hei@aimusikk.no
+            <a href="mailto:hei@kimusikk.no" className="text-primary hover:underline">
+              hei@kimusikk.no
             </a>.
           </p>
         </section>
@@ -157,7 +157,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">11. Barn</h2>
           <p className="text-muted-foreground">
-            AIMusikk er ikke rettet mot barn under 13 år. Vi samler ikke bevisst
+            KI MUSIKK er ikke rettet mot barn under 13 år. Vi samler ikke bevisst
             inn personopplysninger fra barn. Hvis du blir oppmerksom på at et barn har
             gitt oss personopplysninger, kontakt oss så vi kan slette informasjonen.
           </p>

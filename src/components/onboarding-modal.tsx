@@ -148,7 +148,7 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
       >
         <DialogHeader className="text-center">
           <DialogTitle className="text-2xl font-bold">
-            {currentStep === 1 && 'Velkommen til AIMusikk! 🎵'}
+            {currentStep === 1 && 'Velkommen til KI MUSIKK! 🎵'}
             {currentStep === 2 && 'Hva handler sangen din om?'}
             {currentStep === 3 && 'Lag din første sang!'}
           </DialogTitle>

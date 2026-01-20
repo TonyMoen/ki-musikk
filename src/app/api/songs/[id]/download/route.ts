@@ -161,7 +161,7 @@ export async function GET(
       const { data: signedUrlData, error: signedUrlError } = await supabase.storage
         .from('songs')
         .createSignedUrl(storagePath, 300, {
-          download: `${sanitizeFilename(song.title)}-aimusikk.mp3`
+          download: `${sanitizeFilename(song.title)}-kimusikk.mp3`
         })
 
       if (signedUrlError || !signedUrlData?.signedUrl) {
@@ -182,7 +182,7 @@ export async function GET(
     }
 
     // Step 7: Return download URL and filename
-    const filename = `${sanitizeFilename(song.title)}-aimusikk.mp3`
+    const filename = `${sanitizeFilename(song.title)}-kimusikk.mp3`
 
     logInfo('Download URL generated', {
       userId: user.id,

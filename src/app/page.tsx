@@ -44,7 +44,7 @@ export default function Home() {
   const { showOnboarding, completeOnboarding, isLoading: isOnboardingLoading } = useOnboarding()
   const { addGeneratingSong, generatingSongs, canAddMoreSongs } = useGeneratingSongStore()
 
-  const PENDING_SONG_KEY = 'aimusikk_pending_song'
+  const PENDING_SONG_KEY = 'kimusikk_pending_song'
 
   // Restore pending song data from localStorage after login
   useEffect(() => {
@@ -474,10 +474,10 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center p-8 md:p-24">
       <div className="z-10 w-full max-w-3xl">
         <h1 className="text-4xl font-bold mb-2 text-center md:text-left text-primary">
-          AIMusikk
+          KI MUSIKK
         </h1>
         <p className="text-lg mb-8 text-center md:text-left text-gray-600">
-          Lag morsomme norske sanger med AI - autentisk norsk uttale!
+          Lag morsomme norske sanger med KI - autentisk norsk uttale!
         </p>
 
         {/* Genre Selection Section */}

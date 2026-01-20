@@ -11,7 +11,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">1. Aksept av vilkår</h2>
           <p className="text-muted-foreground">
-            Ved å bruke AIMusikk aksepterer du disse vilkårene. Hvis du ikke godtar
+            Ved å bruke KI MUSIKK aksepterer du disse vilkårene. Hvis du ikke godtar
             vilkårene, ber vi deg om ikke å bruke tjenesten. Vi forbeholder oss retten til
             å oppdatere vilkårene, og fortsatt bruk etter endringer anses som aksept.
           </p>
@@ -20,8 +20,8 @@ export default function TermsPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">2. Tjenestebeskrivelse</h2>
           <p className="text-muted-foreground">
-            AIMusikk er en AI-drevet tjeneste som lar brukere generere sanger med
-            norsk tekst og uttale. Tjenesten bruker tredjepartsteknologi (Suno AI) for
+            KI MUSIKK er en KI-drevet tjeneste som lar brukere generere sanger med
+            norsk tekst og uttale. Tjenesten bruker avansert KI-teknologi for
             musikkgenerering.
           </p>
         </section>
@@ -50,13 +50,13 @@ export default function TermsPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">5. Opphavsrett og bruksrett</h2>
           <p className="text-muted-foreground mb-4">
-            Innhold generert gjennom AIMusikk:
+            Innhold generert gjennom KI MUSIKK:
           </p>
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
             <li>Du får en ikke-eksklusiv, verdensomspennende lisens til å bruke sangene du genererer</li>
             <li>Du kan dele, publisere og bruke sangene til personlige og kommersielle formål</li>
             <li>Du kan ikke hevde eksklusiv opphavsrett til AI-generert innhold</li>
-            <li>AIMusikk og våre teknologipartnere beholder visse rettigheter til det genererte innholdet</li>
+            <li>KI MUSIKK og våre teknologipartnere beholder visse rettigheter til det genererte innholdet</li>
           </ul>
         </section>
 
@@ -87,7 +87,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">8. Ansvarsbegrensning</h2>
           <p className="text-muted-foreground">
-            AIMusikk leveres &quot;som den er&quot; uten garantier. Vi er ikke ansvarlige for
+            KI MUSIKK leveres &quot;som den er&quot; uten garantier. Vi er ikke ansvarlige for
             indirekte tap, tapt fortjeneste, eller skader som oppstår fra bruk av tjenesten.
             Vårt totale ansvar er begrenset til beløpet du har betalt for kreditter de siste
             12 månedene.

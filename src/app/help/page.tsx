@@ -71,11 +71,11 @@ export default function HelpPage() {
                 kontakt med oss.
               </p>
               <a
-                href="mailto:hei@aimusikk.no"
+                href="mailto:hei@kimusikk.no"
                 className="inline-flex items-center gap-2 text-[#E94560] hover:text-[#E94560]/80 font-medium min-h-[48px] px-4"
               >
                 <Mail className="h-5 w-5" />
-                hei@aimusikk.no
+                hei@kimusikk.no
               </a>
             </div>
           </CardContent>

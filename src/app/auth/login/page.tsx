@@ -7,7 +7,7 @@
  * After successful authentication, users are redirected to the home page.
  *
  * UX:
- * - Centered card layout with AIMusikk branding
+ * - Centered card layout with KI MUSIKK branding
  * - Large "Sign in with Google" button (primary red color)
  * - Google logo icon for visual recognition
  * - Loading state during OAuth redirect
@@ -63,14 +63,14 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center space-y-3">
           <CardTitle className="text-3xl font-bold text-gray-900 dark:text-gray-50">
-            Velkommen til AIMusikk
+            Velkommen til KI MUSIKK
           </CardTitle>
           <div className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#E94560]/10 to-[#FFC93C]/10 border border-[#E94560]/20 rounded-full px-4 py-2">
             <span className="text-2xl">🎁</span>
             <span className="text-base font-semibold text-[#E94560]">2 gratis sanger ved registrering!</span>
           </div>
           <CardDescription className="text-base">
-            Lag norske sanger med AI – helt gratis å prøve
+            Lag norske sanger med KI – helt gratis å prøve
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

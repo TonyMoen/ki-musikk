@@ -26,7 +26,7 @@ export function Footer() {
             ))}
           </nav>
           <p className="text-sm text-muted-foreground text-center">
-            © {currentYear} AIMusikk. Alle rettigheter reservert.
+            © {currentYear} KI MUSIKK. Alle rettigheter reservert.
           </p>
         </div>
       </div>

@@ -150,7 +150,7 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
     sound.play()
 
     // Load volume from localStorage
-    const savedVolume = localStorage.getItem('aimusikk-volume')
+    const savedVolume = localStorage.getItem('kimusikk-volume')
     if (savedVolume) {
       const vol = parseInt(savedVolume)
       setVolume(vol)
@@ -221,7 +221,7 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
     if (soundRef.current) {
       soundRef.current.volume(newVolume / 100)
     }
-    localStorage.setItem('aimusikk-volume', newVolume.toString())
+    localStorage.setItem('kimusikk-volume', newVolume.toString())
     if (isMuted && newVolume > 0) {
       setIsMuted(false)
     }

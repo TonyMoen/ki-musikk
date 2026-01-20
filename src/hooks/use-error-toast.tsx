@@ -139,7 +139,7 @@ function getActionHandler(
     case 'contact-support':
       return options?.onContactSupport || (() => {
         // Default: open email client or help page
-        window.location.href = 'mailto:hei@aimusikk.no'
+        window.location.href = 'mailto:hei@kimusikk.no'
       })
 
     case 'go-home':

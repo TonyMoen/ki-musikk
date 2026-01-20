@@ -34,7 +34,7 @@ interface LoginModalProps {
   pendingSongData?: PendingSongData
 }
 
-const PENDING_SONG_KEY = 'aimusikk_pending_song'
+const PENDING_SONG_KEY = 'kimusikk_pending_song'
 
 export function LoginModal({
   open,

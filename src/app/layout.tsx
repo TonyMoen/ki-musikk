@@ -13,17 +13,17 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "AIMusikk - Lag norske sanger med AI",
-  description: "AI-drevet norsk sanggenerator. Lag morsomme og personlige norske sanger med autentisk norsk uttale. Perfekt til fester, bursdager og sosiale medier.",
-  keywords: "norsk musikk, AI sanggenerator, norske sanger, festsanger, personlige sanger, norsk uttale",
-  authors: [{ name: "AIMusikk" }],
+  title: "KI MUSIKK - Lag norske sanger med KI",
+  description: "KI-drevet norsk sanggenerator. Lag morsomme og personlige norske sanger med autentisk norsk uttale. Perfekt til fester, bursdager og sosiale medier.",
+  keywords: "norsk musikk, KI sanggenerator, norske sanger, festsanger, personlige sanger, norsk uttale",
+  authors: [{ name: "KI MUSIKK" }],
   icons: {
     icon: "/55-558640_free-png-ios-emoji-musical-note-png-images.png",
     apple: "/55-558640_free-png-ios-emoji-musical-note-png-images.png",
   },
   openGraph: {
-    title: "AIMusikk - Lag norske sanger med AI",
-    description: "Lag morsomme og personlige norske sanger med AI og autentisk norsk uttale",
+    title: "KI MUSIKK - Lag norske sanger med KI",
+    description: "Lag morsomme og personlige norske sanger med KI og autentisk norsk uttale",
     locale: "nb_NO",
     type: "website",
   },
