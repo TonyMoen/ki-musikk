@@ -274,12 +274,16 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
     if (isDownloading || !currentSong) return
 
     setIsDownloading(true)
-    const success = await downloadSong(currentSong.id, currentSong.title)
+    const result = await downloadSong(currentSong.id, currentSong.title)
     setIsDownloading(false)
 
-    if (success) {
+    if (result.success) {
       toast({
         title: 'Sangen ble lastet ned!'
+      })
+    } else if (result.errorCode === 'PURCHASE_REQUIRED') {
+      showError(ErrorCode.PURCHASE_REQUIRED, {
+        context: 'unified-player-download'
       })
     } else {
       showError(ErrorCode.SONG_DOWNLOAD_FAILED, {

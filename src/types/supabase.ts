@@ -127,7 +127,7 @@ export interface Database {
           user_id: string
           amount: number
           balance_after: number
-          transaction_type: 'purchase' | 'deduction' | 'refund'
+          transaction_type: 'purchase' | 'deduction' | 'refund' | 'signup_bonus'
           description: string
           stripe_session_id: string | null
           song_id: string | null
@@ -138,7 +138,7 @@ export interface Database {
           user_id: string
           amount: number
           balance_after: number
-          transaction_type: 'purchase' | 'deduction' | 'refund'
+          transaction_type: 'purchase' | 'deduction' | 'refund' | 'signup_bonus'
           description: string
           stripe_session_id?: string | null
           song_id?: string | null

@@ -21,6 +21,11 @@ export function sanitizeFilename(title: string): string {
     .substring(0, 50) || 'sang'
 }
 
+export interface DownloadResult {
+  success: boolean
+  errorCode?: string
+}
+
 /**
  * Download a song by ID
  *
@@ -28,9 +33,9 @@ export function sanitizeFilename(title: string): string {
  *
  * @param songId - The ID of the song to download
  * @param songTitle - The title of the song (used for fallback filename)
- * @returns Promise<boolean> - true if download initiated successfully
+ * @returns Promise<DownloadResult> - result with success status and optional error code
  */
-export async function downloadSong(songId: string, songTitle: string): Promise<boolean> {
+export async function downloadSong(songId: string, songTitle: string): Promise<DownloadResult> {
   try {
     // Fetch download URL from API
     const response = await fetch(`/api/songs/${songId}/download`, {
@@ -43,7 +48,7 @@ export async function downloadSong(songId: string, songTitle: string): Promise<b
     if (!response.ok) {
       const errorData = await response.json().catch(() => null)
       console.error('Download API error:', errorData?.error || response.statusText)
-      return false
+      return { success: false, errorCode: errorData?.error?.code }
     }
 
     const result = await response.json()
@@ -51,7 +56,7 @@ export async function downloadSong(songId: string, songTitle: string): Promise<b
 
     if (!downloadUrl) {
       console.error('No download URL returned from API')
-      return false
+      return { success: false }
     }
 
     // For Supabase signed URLs with download parameter, we can use direct navigation
@@ -87,9 +92,9 @@ export async function downloadSong(songId: string, songTitle: string): Promise<b
       setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
     }
 
-    return true
+    return { success: true }
   } catch (error) {
     console.error('Download error:', error)
-    return false
+    return { success: false }
   }
 }

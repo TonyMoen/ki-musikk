@@ -96,8 +96,8 @@ function SettingsContent() {
 
     if (payment === 'success') {
       toast({
-        title: '✓ Credits added to your account!',
-        description: 'Your credit balance has been updated.',
+        title: 'Kreditter lagt til!',
+        description: 'Kredittsaldoen din er oppdatert.',
       })
       // Refresh balance to show new credits
       refreshBalance()
@@ -105,9 +105,33 @@ function SettingsContent() {
       router.replace('/settings')
     } else if (payment === 'cancelled') {
       toast({
-        title: 'Credit purchase cancelled',
-        description: 'No charges were made to your account.',
+        title: 'Betaling avbrutt',
+        description: 'Ingen belastning ble gjort.',
         variant: 'default',
+      })
+      // Clear query param
+      router.replace('/settings')
+    } else if (payment === 'pending') {
+      toast({
+        title: 'Betaling venter',
+        description: 'Vi behandler betalingen din. Kredittene legges til snart.',
+        variant: 'default',
+      })
+      // Clear query param
+      router.replace('/settings')
+    } else if (payment === 'expired') {
+      toast({
+        title: 'Betaling utløpt',
+        description: 'Betalingsfristen gikk ut. Prøv igjen.',
+        variant: 'destructive',
+      })
+      // Clear query param
+      router.replace('/settings')
+    } else if (payment === 'error') {
+      toast({
+        title: 'Noe gikk galt',
+        description: 'Kunne ikke fullføre betalingen. Prøv igjen.',
+        variant: 'destructive',
       })
       // Clear query param
       router.replace('/settings')

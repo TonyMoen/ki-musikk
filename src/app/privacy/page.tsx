@@ -4,7 +4,7 @@ export default function PrivacyPage() {
       <h1 className="text-4xl font-bold mb-6">Personvernerklæring</h1>
 
       <p className="text-muted-foreground mb-8">
-        Sist oppdatert: November 2025
+        Sist oppdatert: Januar 2026
       </p>
 
       <div className="prose prose-lg max-w-none space-y-8">
@@ -19,13 +19,15 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="text-2xl font-bold mb-4">2. Behandlingsansvarlig</h2>
-          <p className="text-muted-foreground">
-            KI MUSIKK er behandlingsansvarlig for personopplysningene som samles inn
-            gjennom tjenesten. For spørsmål om personvern, kontakt oss på{' '}
-            <a href="mailto:hei@kimusikk.no" className="text-primary hover:underline">
-              hei@kimusikk.no
-            </a>.
+          <p className="text-muted-foreground mb-4">
+            Behandlingsansvarlig for personopplysningene som samles inn gjennom tjenesten er:
           </p>
+          <ul className="list-none space-y-1 text-muted-foreground mb-4">
+            <li>Moen Studio</li>
+            <li>Organisasjonsnummer: 931 659 685</li>
+            <li>Heddalsvegen 11, 3674 Notodden</li>
+            <li>E-post: <a href="mailto:groftefyllband@gmail.com" className="text-primary hover:underline">groftefyllband@gmail.com</a></li>
+          </ul>
         </section>
 
         <section>
@@ -33,9 +35,9 @@ export default function PrivacyPage() {
 
           <h3 className="text-xl font-semibold mt-6 mb-3">Kontoinformasjon</h3>
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-            <li>E-postadresse (via Google-innlogging)</li>
-            <li>Navn (hvis tilgjengelig fra Google-profil)</li>
-            <li>Profilbilde (hvis tilgjengelig fra Google-profil)</li>
+            <li>E-postadresse (via Vipps eller Google-innlogging)</li>
+            <li>Navn (hvis tilgjengelig fra Vipps eller Google-profil)</li>
+            <li>Telefonnummer (hvis du logger inn via Vipps)</li>
           </ul>
 
           <h3 className="text-xl font-semibold mt-6 mb-3">Bruksdata</h3>
@@ -85,7 +87,7 @@ export default function PrivacyPage() {
           </p>
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
             <li><strong>Supabase:</strong> Database og autentisering (USA, EU Standard Contractual Clauses)</li>
-            <li><strong>Stripe:</strong> Betalingsbehandling (USA, PCI DSS-sertifisert)</li>
+            <li><strong>Vipps:</strong> Betalingsbehandling og innlogging (Norge)</li>
             <li><strong>KI-tjenester:</strong> Musikkgenerering (USA)</li>
             <li><strong>Vercel:</strong> Hosting (USA, EU Standard Contractual Clauses)</li>
             <li><strong>OpenAI:</strong> Tekstgenerering og optimalisering (USA)</li>
@@ -123,8 +125,8 @@ export default function PrivacyPage() {
           </ul>
           <p className="text-muted-foreground mt-4">
             For å utøve dine rettigheter, kontakt oss på{' '}
-            <a href="mailto:hei@kimusikk.no" className="text-primary hover:underline">
-              hei@kimusikk.no
+            <a href="mailto:groftefyllband@gmail.com" className="text-primary hover:underline">
+              groftefyllband@gmail.com
             </a>.
           </p>
         </section>

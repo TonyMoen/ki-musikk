@@ -38,7 +38,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'how-to-login',
         question: 'Hvordan logger jeg inn?',
-        answer: 'Trykk på "Logg inn"-knappen og velg Google-kontoen din. Vi bruker Google-innlogging for sikker og enkel pålogging - ingen passord å huske!'
+        answer: 'Trykk på "Logg inn"-knappen og velg Vipps eller Google. Med Vipps logger du inn raskt og trygt med telefonnummeret ditt!'
       }
     ]
   },
@@ -75,22 +75,22 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'credit-packages',
         question: 'Hvordan fungerer kredittpakkene?',
-        answer: 'Vi tilbyr tre pakker: Starter (500 kreditter), Pro (1000 kreditter), og Premium (2500 kreditter). Større pakker gir bedre verdi per kreditt. Kredittene utløper aldri!'
+        answer: 'Vi tilbyr tre pakker: Starter (79 kr for 500 kreditter), Pro (149 kr for 1000 kreditter), og Refill (199 kr for 1000 kreditter). Kredittene utløper aldri!'
       },
       {
         id: 'payment-methods',
         question: 'Hvilke betalingsmetoder aksepterer dere?',
-        answer: 'Vi aksepterer alle vanlige betalingskort (Visa, Mastercard, American Express) gjennom Stripe, som er en sikker betalingsplattform brukt av millioner av bedrifter.'
+        answer: 'Vi aksepterer betaling via Vipps - enkelt og trygt. Du trenger bare Vipps-appen på telefonen din.'
       },
       {
         id: 'song-cost',
         question: 'Hva koster det å lage en sang?',
-        answer: 'En full sang koster 10 kreditter. Med vår mest populære Pro-pakke (kr 250 for 1000 kreditter) blir det ca. kr 25 per sang. Forhåndsvisning er alltid gratis!'
+        answer: 'En full sang koster 10 kreditter. Med vår mest populære Pro-pakke (149 kr for 1000 kreditter) blir det ca. 1,50 kr per sang. Forhåndsvisning er alltid gratis!'
       },
       {
         id: 'refunds',
         question: 'Får jeg pengene tilbake hvis noe går galt?',
-        answer: 'Hvis sanggenereringen feiler, vil kredittene automatisk bli refundert til kontoen din. Ved tekniske problemer, kontakt oss på hei@kimusikk.no så hjelper vi deg.'
+        answer: 'Hvis sanggenereringen feiler, vil kredittene automatisk bli refundert til kontoen din. Ved tekniske problemer, kontakt oss på groftefyllband@gmail.com så hjelper vi deg.'
       }
     ]
   },
@@ -142,7 +142,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'contact-support',
         question: 'Hvordan kontakter jeg support?',
-        answer: 'Send en e-post til hei@kimusikk.no. Beskriv problemet så detaljert som mulig, og inkluder gjerne skjermbilder. Vi svarer vanligvis innen 24 timer.'
+        answer: 'Send en e-post til groftefyllband@gmail.com. Beskriv problemet så detaljert som mulig, og inkluder gjerne skjermbilder. Vi svarer vanligvis innen 24 timer.'
       }
     ]
   }

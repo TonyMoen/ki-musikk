@@ -1,12 +1,13 @@
 /**
  * Credit Package and Cost Constants
- * Updated pricing - more generous model to encourage adoption
+ * Updated pricing - NOK currency for Norwegian market via Vipps
  */
 
 export interface CreditPackage {
   id: 'starter' | 'pro' | 'premium'
   name: string
-  price: number // Price in cents (USD)
+  priceNOK: number // Price in NOK (whole kroner)
+  priceOre: number // Price in øre for Vipps API (1 NOK = 100 øre)
   credits: number
   description: string
   badge?: string
@@ -16,24 +17,27 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
   {
     id: 'starter',
     name: 'Starter',
-    price: 1500, // $15
+    priceNOK: 79,
+    priceOre: 7900,
     credits: 500,
-    description: '~50 songs',
+    description: '~50 sanger',
   },
   {
     id: 'pro',
     name: 'Pro',
-    price: 2500, // $25
+    priceNOK: 149,
+    priceOre: 14900,
     credits: 1000,
-    description: '~100 songs',
-    badge: 'MOST POPULAR',
+    description: '~100 sanger',
+    badge: 'MEST POPULÆR',
   },
   {
     id: 'premium',
-    name: 'Premium',
-    price: 5000, // $50
-    credits: 2500,
-    description: '~250 songs',
+    name: 'Refill',
+    priceNOK: 199,
+    priceOre: 19900,
+    credits: 1000,
+    description: '~100 sanger',
   },
 ]
 

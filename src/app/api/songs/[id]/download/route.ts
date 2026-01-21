@@ -94,7 +94,30 @@ export async function GET(
       songId
     })
 
-    // Step 3: Fetch song from database
+    // Step 3: Check if user has made at least one purchase (required for downloads)
+    const { data: hasPurchase, error: purchaseCheckError } = await supabase
+      .from('credit_transaction')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('transaction_type', 'purchase')
+      .limit(1)
+      .maybeSingle()
+
+    if (purchaseCheckError) {
+      logError('Error checking purchase status', purchaseCheckError as Error, {
+        userId: user.id
+      })
+    }
+
+    if (!hasPurchase) {
+      return errorResponse(
+        'PURCHASE_REQUIRED',
+        'Du må kjøpe kreditt for å laste ned sanger. Gratis kreditt gir kun tilgang til å lage og lytte.',
+        403
+      )
+    }
+
+    // Step 5: Fetch song from database
     // RLS policy ensures users can only access their own songs
     const { data: song, error: songError } = await supabase
       .from('song')
@@ -102,7 +125,7 @@ export async function GET(
       .eq('id', songId)
       .single()
 
-    // Step 4: Handle errors
+    // Step 6: Handle errors
     if (songError) {
       // Check if song doesn't exist or user doesn't have access (RLS)
       if (songError.code === 'PGRST116') {
@@ -133,7 +156,7 @@ export async function GET(
       )
     }
 
-    // Step 5: Verify song is completed and has audio
+    // Step 7: Verify song is completed and has audio
     if (song.status !== 'completed') {
       return errorResponse(
         'NOT_READY',
@@ -150,7 +173,7 @@ export async function GET(
       )
     }
 
-    // Step 6: Generate signed URL for download
+    // Step 8: Generate signed URL for download
     // Audio URL could be a full URL (from Suno) or a storage path
     let downloadUrl = song.audio_url
 
@@ -181,7 +204,7 @@ export async function GET(
       downloadUrl = signedUrlData.signedUrl
     }
 
-    // Step 7: Return download URL and filename
+    // Step 9: Return download URL and filename
     const filename = `${sanitizeFilename(song.title)}-kimusikk.mp3`
 
     logInfo('Download URL generated', {

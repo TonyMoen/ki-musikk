@@ -309,7 +309,7 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
 
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <p className="text-sm text-green-800">
-                  <strong>🎁 Du har 2 gratis sanger!</strong>
+                  <strong>🎁 Du har 5 gratis sanger!</strong>
                   <br />
                   Trykk Start for å lage din første sang nå.
                 </p>

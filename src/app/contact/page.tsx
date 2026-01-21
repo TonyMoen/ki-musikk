@@ -1,4 +1,4 @@
-import { Mail, MessageCircle, Clock } from 'lucide-react'
+import { Mail, MessageCircle, Clock, Building2 } from 'lucide-react'
 
 export default function ContactPage() {
   return (
@@ -21,10 +21,10 @@ export default function ContactPage() {
             Send oss en e-post, så svarer vi så fort vi kan.
           </p>
           <a
-            href="mailto:hei@kimusikk.no"
+            href="mailto:groftefyllband@gmail.com"
             className="text-primary hover:underline font-medium"
           >
-            hei@kimusikk.no
+            groftefyllband@gmail.com
           </a>
         </div>
 
@@ -39,6 +39,40 @@ export default function ContactPage() {
             Vi svarer vanligvis innen 24-48 timer på hverdager. I helger og høytider
             kan det ta litt lengre tid.
           </p>
+        </div>
+      </div>
+
+      {/* Company Information - Required by Vipps */}
+      <div className="bg-muted/30 rounded-xl p-8 mb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <Building2 className="w-5 h-5 text-primary" />
+          </div>
+          <h2 className="text-xl font-semibold">Firmainformasjon</h2>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <p className="text-sm text-muted-foreground">Firmanavn</p>
+            <p className="font-medium">Moen Studio</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Organisasjonsnummer</p>
+            <p className="font-medium">931 659 685</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Adresse</p>
+            <p className="font-medium">Heddalsvegen 11<br />3674 Notodden</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">E-post</p>
+            <a
+              href="mailto:groftefyllband@gmail.com"
+              className="font-medium text-primary hover:underline"
+            >
+              groftefyllband@gmail.com
+            </a>
+          </div>
         </div>
       </div>
 
@@ -62,8 +96,8 @@ export default function ContactPage() {
           <div>
             <h3 className="font-semibold mb-2">Kan jeg få refusjon?</h3>
             <p className="text-muted-foreground">
-              Ubrukte kreditter kan refunderes innen 14 dager etter kjøp. Kontakt oss på e-post
-              med ordrenummeret ditt.
+              Du har 14 dagers angrerett på kjøp av kreditter. Kontakt oss på e-post
+              for å benytte angreretten.
             </p>
           </div>
 

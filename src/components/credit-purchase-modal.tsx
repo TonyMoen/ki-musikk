@@ -2,7 +2,7 @@
 
 /**
  * Credit Purchase Modal Component
- * Displays credit package options and initiates Stripe Checkout
+ * Displays credit package options and initiates Vipps payment
  */
 
 import { useState } from 'react'
@@ -47,7 +47,7 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
         throw new Error(data.error?.message || 'Purchase failed')
       }
 
-      // Redirect to Stripe Checkout
+      // Redirect to Vipps
       if (data.data?.checkoutUrl) {
         window.location.href = data.data.checkoutUrl
       } else {
@@ -58,7 +58,7 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
         context: 'credit-purchase',
         onRetry: () => handlePurchase(pkg),
         onContactSupport: () => {
-          window.location.href = 'mailto:hei@kimusikk.no'
+          window.location.href = 'mailto:groftefyllband@gmail.com'
         }
       })
       setLoading(null)
@@ -83,11 +83,11 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
             <Card
               key={pkg.id}
               className={`relative ${
-                pkg.badge ? 'border-[#D4A017] border-2' : ''
+                pkg.badge ? 'border-[#FF5B24] border-2' : ''
               }`}
             >
               {pkg.badge && (
-                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#D4A017] text-white text-xs">
+                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#FF5B24] text-white text-xs">
                   {pkg.badge}
                 </Badge>
               )}
@@ -95,15 +95,15 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
               <CardHeader className="text-center pb-2 sm:pb-3 pt-4 sm:pt-6">
                 <CardTitle className="text-base sm:text-lg">{pkg.name}</CardTitle>
                 <CardDescription>
-                  <span className="text-2xl sm:text-3xl font-bold text-[#E63946]">
-                    ${(pkg.price / 100).toFixed(0)}
+                  <span className="text-2xl sm:text-3xl font-bold text-[#FF5B24]">
+                    {pkg.priceNOK} kr
                   </span>
                 </CardDescription>
               </CardHeader>
 
               <CardContent className="text-center space-y-1 sm:space-y-2 py-2 sm:py-4">
                 <div className="text-xl sm:text-2xl font-semibold text-gray-900">
-                  {pkg.credits.toLocaleString()} credits
+                  {pkg.credits.toLocaleString()} kreditter
                 </div>
                 <div className="text-xs sm:text-sm text-gray-600">{pkg.description}</div>
               </CardContent>
@@ -112,15 +112,15 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
                 <Button
                   onClick={() => handlePurchase(pkg)}
                   disabled={loading !== null}
-                  className="w-full bg-[#E63946] hover:bg-[#D62839] text-white h-9 sm:h-10"
+                  className="w-full bg-[#FF5B24] hover:bg-[#E54D1C] text-white h-9 sm:h-10"
                 >
                   {loading === pkg.id ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
+                      Kobler til Vipps...
                     </>
                   ) : (
-                    'Velg'
+                    'Betal med Vipps'
                   )}
                 </Button>
               </CardFooter>
@@ -128,8 +128,15 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
           ))}
         </div>
 
-        <div className="text-xs text-gray-500 text-center mt-2 sm:mt-4">
-          Sikker betaling via Stripe • Priser i USD
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mt-2 sm:mt-4">
+          <svg
+            viewBox="0 0 24 24"
+            className="h-5 w-5"
+            fill="#FF5B24"
+          >
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          Sikker betaling med Vipps
         </div>
       </DialogContent>
     </Dialog>

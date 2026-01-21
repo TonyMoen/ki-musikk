@@ -275,12 +275,16 @@ export function SongPlayerCard({
     if (isDownloading) return
 
     setIsDownloading(true)
-    const success = await downloadSong(songId, title)
+    const result = await downloadSong(songId, title)
     setIsDownloading(false)
 
-    if (success) {
+    if (result.success) {
       toast({
         title: 'Sangen ble lastet ned!'
+      })
+    } else if (result.errorCode === 'PURCHASE_REQUIRED') {
+      showError(ErrorCode.PURCHASE_REQUIRED, {
+        context: 'song-download'
       })
     } else {
       showError(ErrorCode.SONG_DOWNLOAD_FAILED, {

@@ -95,7 +95,16 @@
       "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\prompts\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\prompts\")",
       "Bash(cmd /c:*)",
       "Bash(node:*)",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "Bash(vercel --version:*)",
+      "WebFetch(domain:sg-tony-v2.vercel.app)",
+      "Skill(bmad:bmm:workflows:create-story)",
+      "Bash(vercel --prod:*)",
+      "Skill(bmad:bmm:workflows:story-context)",
+      "Bash(git restore:*)",
+      "Bash(supabase db push:*)",
+      "WebFetch(domain:vippsmobilepay.com)",
+      "WebFetch(domain:www.forbrukertilsynet.no)"
     ],
     "deny": [],
     "ask": []

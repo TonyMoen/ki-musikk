@@ -32,6 +32,7 @@ export enum ErrorCode {
   SONG_NOT_FOUND = 'SONG_NOT_FOUND',
   SONG_DOWNLOAD_FAILED = 'SONG_DOWNLOAD_FAILED',
   SONG_DELETE_FAILED = 'SONG_DELETE_FAILED',
+  PURCHASE_REQUIRED = 'PURCHASE_REQUIRED',
 
   // Generic
   UNKNOWN_ERROR = 'UNKNOWN_ERROR'
@@ -167,6 +168,14 @@ export const ERROR_MESSAGES: Record<ErrorCode, ErrorMessage> = {
     description: 'Kunne ikke slette sangen. Prov igjen.',
     recoveryAction: { label: 'Prov igjen', action: 'retry' },
     severity: 'critical'
+  },
+
+  [ErrorCode.PURCHASE_REQUIRED]: {
+    code: ErrorCode.PURCHASE_REQUIRED,
+    title: 'Kjop pakrevd for nedlasting',
+    description: 'Du ma kjope kreditt for a laste ned sanger. Gratis kreditt gir kun tilgang til a lage og lytte.',
+    recoveryAction: { label: 'Kjop kreditter', action: 'buy-credits' },
+    severity: 'warning'
   },
 
   // Generic Error (Critical - Red)

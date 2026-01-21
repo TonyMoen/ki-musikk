@@ -1,12 +1,13 @@
 /**
  * Credit Purchase API Route
- * Creates a Stripe Checkout session for credit package purchases
+ * Creates a Vipps ePayment session for credit package purchases
  */
 
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { stripe } from '@/lib/stripe'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { createPayment, generatePaymentReference } from '@/lib/vipps/client'
 import { CREDIT_PACKAGES } from '@/lib/constants'
 
 export const dynamic = 'force-dynamic'
@@ -68,35 +69,67 @@ export async function POST(request: Request) {
     // 4. Get app URL for redirects
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-    // 5. Create Stripe Checkout session
-    const session = await stripe.checkout.sessions.create({
-      line_items: [
+    // 5. Generate unique payment reference
+    const reference = generatePaymentReference()
+
+    // 6. Create pending payment record in database
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Missing Supabase environment variables')
+      return NextResponse.json(
+        { error: { code: 'CONFIG_ERROR', message: 'Database not configured' } },
+        { status: 500 }
+      )
+    }
+
+    const serviceClient = createServiceClient(supabaseUrl, supabaseServiceKey)
+
+    const { error: insertError } = await serviceClient
+      .from('vipps_payment')
+      .insert({
+        reference,
+        user_id: user.id,
+        package_id: selectedPackage.id,
+        credits: selectedPackage.credits,
+        amount_ore: selectedPackage.priceOre,
+        status: 'pending',
+      })
+
+    if (insertError) {
+      console.error('Failed to create payment record:', insertError)
+      return NextResponse.json(
         {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `${selectedPackage.name} Credit Package`,
-              description: `${selectedPackage.credits} credits for KI MUSIKK (${selectedPackage.description})`,
-            },
-            unit_amount: selectedPackage.price,
+          error: {
+            code: 'DATABASE_ERROR',
+            message: 'Failed to create payment record',
           },
-          quantity: 1,
         },
-      ],
-      mode: 'payment',
-      success_url: `${appUrl}/settings?payment=success`,
-      cancel_url: `${appUrl}/settings?payment=cancelled`,
-      metadata: {
-        userId: user.id,
-        packageId: selectedPackage.id,
-        credits: selectedPackage.credits.toString(),
+        { status: 500 }
+      )
+    }
+
+    // 7. Create Vipps payment
+    const vippsPayment = await createPayment({
+      amount: {
+        currency: 'NOK',
+        value: selectedPackage.priceOre,
       },
+      paymentMethod: {
+        type: 'WALLET',
+      },
+      reference,
+      userFlow: 'WEB_REDIRECT',
+      returnUrl: `${appUrl}/api/vipps/callback?reference=${reference}`,
+      paymentDescription: `${selectedPackage.name} - ${selectedPackage.credits} kreditter`,
     })
 
-    // 6. Return Checkout URL
+    // 8. Return Vipps redirect URL
     return NextResponse.json({
       data: {
-        checkoutUrl: session.url,
+        checkoutUrl: vippsPayment.redirectUrl,
+        reference,
       },
     })
   } catch (error) {
@@ -105,7 +138,7 @@ export async function POST(request: Request) {
       {
         error: {
           code: 'PURCHASE_FAILED',
-          message: 'Failed to create checkout session',
+          message: 'Failed to create payment',
           details: error instanceof Error ? error.message : 'Unknown error',
         },
       },

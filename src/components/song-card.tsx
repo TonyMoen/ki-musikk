@@ -9,6 +9,9 @@ import { Button } from '@/components/ui/button'
 import { formatRelativeDate, formatDuration } from '@/lib/utils/date-formatter'
 import { downloadSong } from '@/lib/utils/download'
 import { cn } from '@/lib/utils'
+import { toast } from '@/hooks/use-toast'
+import { useErrorToast } from '@/hooks/use-error-toast'
+import { ErrorCode } from '@/lib/error-messages'
 
 interface SongCardProps {
   song: {
@@ -28,6 +31,7 @@ interface SongCardProps {
 export function SongCard({ song, onClick, isGenerating = false, isPartial = false }: SongCardProps) {
   const [isDownloading, setIsDownloading] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const { showError } = useErrorToast()
   const gradientFrom = song.gradient_colors?.from || '#E94560'
   const gradientTo = song.gradient_colors?.to || '#FFC93C'
   const hasImage = song.image_url && !imageError
@@ -53,8 +57,22 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
     if (isDownloading || isGenerating) return
 
     setIsDownloading(true)
-    await downloadSong(song.id, song.title)
+    const result = await downloadSong(song.id, song.title)
     setIsDownloading(false)
+
+    if (result.success) {
+      toast({
+        title: 'Sangen ble lastet ned!'
+      })
+    } else if (result.errorCode === 'PURCHASE_REQUIRED') {
+      showError(ErrorCode.PURCHASE_REQUIRED, {
+        context: 'song-card-download'
+      })
+    } else {
+      showError(ErrorCode.SONG_DOWNLOAD_FAILED, {
+        context: 'song-card-download'
+      })
+    }
   }
 
   return (

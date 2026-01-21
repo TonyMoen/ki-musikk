@@ -1,11 +1,7 @@
--- Migration: Update user profile trigger to include welcome bonus credits
--- Story: 7.6 - Update Onboarding Messaging and New User Credits
--- Purpose: New users receive 50 credits (5 free songs) automatically on signup
--- Note: Only updates the FUNCTION - trigger already exists from 20251122
+-- Migration: Increase welcome bonus credits from 24 to 50
+-- Purpose: New users now receive 50 credits (5 free songs) instead of 24 (2 songs)
 
 -- Welcome bonus: 50 credits = 5 free songs (10 credits per song)
--- Function to create user_profile with welcome bonus when a new user signs up
--- Using CREATE OR REPLACE to update existing function (no need to drop trigger)
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
