@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { GenreSelection } from '@/components/genre-selection'
 import { VoiceGenderSelector, type VocalGender } from '@/components/voice-gender-selector'
 import { LyricsInputSection } from '@/components/lyrics-input-section'
 import { PhoneticDiffViewer } from '@/components/phonetic-diff-viewer'
 import { OnboardingModal } from '@/components/onboarding-modal'
 import { HomepageSongs } from '@/components/homepage-songs'
-import { LoginModal } from '@/components/login-modal'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { useErrorToast } from '@/hooks/use-error-toast'
@@ -37,7 +37,7 @@ export default function Home() {
   const [showGenreSpotlight, setShowGenreSpotlight] = useState(false)
   const [vocalGender, setVocalGender] = useState<VocalGender>(null)
   const [isCustomTextMode, setIsCustomTextMode] = useState(false)
-  const [showLoginModal, setShowLoginModal] = useState(false)
+  const router = useRouter()
   const [generatedTitle, setGeneratedTitle] = useState('')
   const { toast } = useToast()
   const { showError } = useErrorToast()
@@ -280,7 +280,8 @@ export default function Home() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      setShowLoginModal(true)
+      // Redirect to login page - pending song data is auto-saved to localStorage
+      router.push('/auth/login')
       return
     }
 
@@ -564,19 +565,6 @@ export default function Home() {
         onSkip={handleOnboardingSkip}
       />
 
-      {/* Login Modal - shown when unauthenticated user tries to generate song */}
-      <LoginModal
-        open={showLoginModal}
-        onOpenChange={setShowLoginModal}
-        message="Du må logge inn for å lage låt"
-        pendingSongData={{
-          genre: selectedGenre,
-          concept,
-          lyrics,
-          isCustomTextMode,
-          vocalGender
-        }}
-      />
     </main>
   )
 }

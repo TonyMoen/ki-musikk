@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
-import { Loader2, Sparkles, Wand2, Info } from 'lucide-react'
+import { Loader2, Sparkles, Wand2 } from 'lucide-react'
+import { InfoTooltip } from '@/components/info-tooltip'
 import { FEATURES } from '@/lib/constants'
 
 interface LyricsInputSectionProps {
@@ -96,9 +97,15 @@ export function LyricsInputSection({
             <>
               {/* Concept Input with Generate Button */}
               <div className="space-y-2">
-                <Label htmlFor="concept-input" className="text-sm font-medium text-text-primary">
-                  Beskriv hva sangen skal handle om
-                </Label>
+                <div className="flex items-center gap-1">
+                  <Label htmlFor="concept-input" className="text-sm font-medium text-text-primary">
+                    Beskriv hva sangen skal handle om
+                  </Label>
+                  <InfoTooltip
+                    content="KI lager både melodi og tekst basert på din beskrivelse. Jo mer detaljer, jo bedre resultat!"
+                    side="right"
+                  />
+                </div>
                 <Textarea
                   id="concept-input"
                   placeholder="F.eks: En bursdagssang til Per som alltid kommer for sent og snakker om båten sin..."
@@ -138,14 +145,6 @@ export function LyricsInputSection({
                 </div>
               </div>
 
-              {/* Info Box */}
-              <div className="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                <Info className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-gray-600">
-                  KI lager både melodi og tekst basert på din beskrivelse.
-                  Jo mer detaljer, jo bedre resultat!
-                </p>
-              </div>
             </>
           )}
 

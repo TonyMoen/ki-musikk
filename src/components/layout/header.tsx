@@ -7,7 +7,6 @@ import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { UserMenu } from './user-menu'
 import { MobileNav } from './mobile-nav'
-import { LoginModal } from '@/components/login-modal'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCreditsStore } from '@/stores/credits-store'
@@ -16,7 +15,6 @@ import { Music } from 'lucide-react'
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [showLoginModal, setShowLoginModal] = useState(false)
   const { balance } = useCreditsStore()
   const router = useRouter()
 
@@ -100,7 +98,7 @@ export function Header() {
               </Link>
             ) : (
               <button
-                onClick={() => setShowLoginModal(true)}
+                onClick={() => router.push('/auth/login')}
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 Mine Sanger
@@ -143,7 +141,7 @@ export function Header() {
                     user={user}
                     credits={balance}
                     onSignOut={handleSignOut}
-                    onShowLoginModal={() => setShowLoginModal(true)}
+                    onShowLoginModal={() => router.push('/auth/login')}
                   />
                 </div>
               </>
@@ -163,7 +161,7 @@ export function Header() {
                     user={null}
                     credits={0}
                     onSignOut={handleSignOut}
-                    onShowLoginModal={() => setShowLoginModal(true)}
+                    onShowLoginModal={() => router.push('/auth/login')}
                   />
                 </div>
               </>
@@ -172,12 +170,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* Login Modal for protected nav items */}
-      <LoginModal
-        open={showLoginModal}
-        onOpenChange={setShowLoginModal}
-        message="Du må logge inn for å se sangene dine"
-      />
     </header>
   )
 }
