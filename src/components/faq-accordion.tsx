@@ -28,7 +28,7 @@ export function FAQAccordion({ categories }: FAQAccordionProps) {
         <section key={category.id} aria-labelledby={`category-${category.id}`}>
           <h2
             id={`category-${category.id}`}
-            className="text-lg font-semibold mb-4 text-[#0F3460]"
+            className="text-lg font-semibold mb-4 text-foreground"
           >
             {category.title}
           </h2>

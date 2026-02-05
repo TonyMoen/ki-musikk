@@ -7,7 +7,7 @@ import { FAQAccordion } from '@/components/faq-accordion'
 import { FAQ_DATA } from '@/lib/faq-data'
 import { Search, Mail } from 'lucide-react'
 
-export default function HelpPage() {
+export default function HjelpPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
 
@@ -39,7 +39,7 @@ export default function HelpPage() {
   return (
     <div className="container mx-auto p-6 pb-24">
       <div className="max-w-[640px] mx-auto">
-        <h1 className="text-2xl font-bold mb-6 text-[#0F3460]">
+        <h1 className="text-2xl font-bold mb-6 text-foreground">
           Hjelp og ofte stilte spørsmål
         </h1>
 
@@ -60,10 +60,10 @@ export default function HelpPage() {
         <FAQAccordion categories={filteredFAQ} />
 
         {/* Contact Section */}
-        <Card className="mt-8 border-[#0F3460]/20">
+        <Card className="mt-8 border-border">
           <CardContent className="pt-6">
             <div className="text-center">
-              <h2 className="text-lg font-semibold mb-2 text-[#0F3460]">
+              <h2 className="text-lg font-semibold mb-2 text-foreground">
                 Trenger du fortsatt hjelp?
               </h2>
               <p className="text-muted-foreground mb-4">
@@ -72,7 +72,7 @@ export default function HelpPage() {
               </p>
               <a
                 href="mailto:groftefyllband@gmail.com"
-                className="inline-flex items-center gap-2 text-[#E94560] hover:text-[#E94560]/80 font-medium min-h-[48px] px-4"
+                className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium min-h-[48px] px-4"
               >
                 <Mail className="h-5 w-5" />
                 groftefyllband@gmail.com

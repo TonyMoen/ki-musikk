@@ -314,8 +314,8 @@ function SettingsContent() {
         <Card className="mt-6">
           <CardContent className="pt-6">
             <Link
-              href="/help"
-              className="flex items-center justify-center gap-2 w-full min-h-[48px] text-[#0F3460] hover:text-[#0F3460]/80 font-medium"
+              href="/hjelp"
+              className="flex items-center justify-center gap-2 w-full min-h-[48px] text-primary hover:text-primary/80 font-medium"
             >
               <HelpCircle className="w-5 h-5" />
               Hjelp

@@ -36,7 +36,7 @@ export function Footer() {
               <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Om oss
               </Link>
-              <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/hjelp" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Hjelp & FAQ
               </Link>
               <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

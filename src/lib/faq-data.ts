@@ -23,17 +23,17 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'how-to-create',
         question: 'Hvordan lager jeg min første sang?',
-        answer: 'Velg en sjanger fra karusellen på forsiden, beskriv hva sangen skal handle om i tekstfeltet, og trykk "Lag sang". AI-en genererer teksten og musikken for deg på under 5 minutter!'
+        answer: 'Velg en sjanger fra forsiden, beskriv hva sangen skal handle om i tekstfeltet, og trykk "Lag sang". AI-en genererer teksten og musikken for deg. En generering tar vanligvis mellom 2-4 minutter.'
       },
       {
         id: 'what-are-credits',
         question: 'Hva er kreditter og hvordan fungerer de?',
-        answer: 'Kreditter er valutaen du bruker for å lage sanger. Én full sang koster 10 kreditter. Du kan kjøpe kredittpakker under "Innstillinger" - jo større pakke, jo bedre pris per sang.'
+        answer: 'Kreditter er valutaen du bruker for å lage sanger. Én full sang koster 10 kreditter. Du kan kjøpe kredittpakker på Priser-siden eller under "Innstillinger".'
       },
       {
-        id: 'free-preview',
-        question: 'Kan jeg prøve gratis før jeg kjøper kreditter?',
-        answer: 'Ja! Du kan generere en gratis 30-sekunders forhåndsvisning av sangen din for å høre hvordan den høres ut før du bruker kreditter på full versjon.'
+        id: 'generation-time',
+        question: 'Hvor lang tid tar det å generere en sang?',
+        answer: 'En sanggenerering tar vanligvis mellom 2-4 minutter. Du kan følge med på fremdriften, og sangen vil automatisk vises i "Mine sanger" når den er ferdig.'
       },
       {
         id: 'how-to-login',
@@ -43,54 +43,28 @@ export const FAQ_DATA: FAQCategory[] = [
     ]
   },
   {
-    id: 'norwegian-pronunciation',
-    title: 'Norsk uttale',
-    items: [
-      {
-        id: 'what-is-uttale',
-        question: 'Hva er "Uttalelse Bokmål"?',
-        answer: 'Uttalelse Bokmål er vår unike teknologi som optimaliserer sangtekster for bedre norsk uttale. KI-en konverterer norske ord til fonetisk stavemåte som gir mer autentisk norsk uttale i sangene.'
-      },
-      {
-        id: 'override-phonetic',
-        question: 'Kan jeg overstyre fonetiske endringer?',
-        answer: 'Ja, du kan se og redigere de fonetiske endringene i forhåndsvisningen før du genererer sangen. Endringer vises med grønn/rød markering så du kan se hva som er endret.'
-      },
-      {
-        id: 'why-sounds-better',
-        question: 'Hvorfor høres sangene mer norske ut enn andre AI-verktøy?',
-        answer: 'KI MUSIKK bruker avansert fonetisk konvertering som er spesialtilpasset norsk språk. Vi har utviklet egne regler for hvordan norske lyder skal skrives for optimal uttale i AI-generert musikk.'
-      },
-      {
-        id: 'dialects-nynorsk',
-        question: 'Fungerer det med dialekter eller nynorsk?',
-        answer: 'Per nå er systemet optimalisert for bokmål. Vi jobber med å utvide støtten til nynorsk og ulike dialekter i fremtidige versjoner.'
-      }
-    ]
-  },
-  {
     id: 'credits-payments',
     title: 'Kreditter og betaling',
     items: [
       {
         id: 'credit-packages',
-        question: 'Hvordan fungerer kredittpakkene?',
-        answer: 'Vi tilbyr tre pakker: 10 sanger (99 kr for 100 kreditter), 25 sanger (199 kr for 250 kreditter), og 100 sanger (499 kr for 1000 kreditter). Kredittene utløper aldri!'
+        question: 'Hvilke kredittpakker finnes?',
+        answer: 'Vi tilbyr tre pakker: 10 sanger (99 kr for 100 kreditter), 25 sanger (199 kr for 250 kreditter), og 100 sanger (499 kr for 1000 kreditter). Kredittene utløper aldri og er knyttet til din konto.'
       },
       {
         id: 'payment-methods',
-        question: 'Hvilke betalingsmetoder aksepterer dere?',
-        answer: 'Vi aksepterer betaling via Vipps - enkelt og trygt. Du trenger bare Vipps-appen på telefonen din.'
+        question: 'Hvordan betaler jeg?',
+        answer: 'Vi bruker Vipps for sikker betaling. Velg en kredittpakke, trykk "Betal med Vipps", og godkjenn betalingen i Vipps-appen. Kredittene blir tilgjengelige umiddelbart etter betaling.'
       },
       {
         id: 'song-cost',
         question: 'Hva koster det å lage en sang?',
-        answer: 'En full sang koster 10 kreditter. Med vår største pakke (499 kr for 1000 kreditter) blir det under 5 kr per sang. Forhåndsvisning er alltid gratis!'
+        answer: 'En full sang koster 10 kreditter. Med vår største pakke (499 kr for 1000 kreditter) blir det under 5 kr per sang!'
       },
       {
         id: 'refunds',
         question: 'Får jeg pengene tilbake hvis noe går galt?',
-        answer: 'Hvis sanggenereringen feiler, vil kredittene automatisk bli refundert til kontoen din. Ved tekniske problemer, kontakt oss på groftefyllband@gmail.com så hjelper vi deg.'
+        answer: 'Hvis sanggenereringen feiler, vil kredittene automatisk bli refundert til kontoen din. Du har også 14 dagers angrerett på ubrukte kreditter. Kontakt oss på groftefyllband@gmail.com ved spørsmål.'
       }
     ]
   },

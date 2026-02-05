@@ -122,7 +122,7 @@ export default function ContactPage() {
       <div className="text-center mt-12">
         <p className="text-muted-foreground">
           Fant du ikke svar på spørsmålet ditt? Sjekk vår{' '}
-          <a href="/help" className="text-primary hover:underline">hjelpeside</a> for mer informasjon.
+          <a href="/hjelp" className="text-primary hover:underline">hjelpeside</a> for mer informasjon.
         </p>
       </div>
     </div>
