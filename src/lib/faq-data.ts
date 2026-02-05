@@ -75,7 +75,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'credit-packages',
         question: 'Hvordan fungerer kredittpakkene?',
-        answer: 'Vi tilbyr tre pakker: Starter (79 kr for 500 kreditter), Pro (149 kr for 1000 kreditter), og Refill (199 kr for 1000 kreditter). Kredittene utløper aldri!'
+        answer: 'Vi tilbyr tre pakker: 10 sanger (99 kr for 100 kreditter), 25 sanger (199 kr for 250 kreditter), og 100 sanger (499 kr for 1000 kreditter). Kredittene utløper aldri!'
       },
       {
         id: 'payment-methods',
@@ -85,7 +85,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'song-cost',
         question: 'Hva koster det å lage en sang?',
-        answer: 'En full sang koster 10 kreditter. Med vår mest populære Pro-pakke (149 kr for 1000 kreditter) blir det ca. 1,50 kr per sang. Forhåndsvisning er alltid gratis!'
+        answer: 'En full sang koster 10 kreditter. Med vår største pakke (499 kr for 1000 kreditter) blir det under 5 kr per sang. Forhåndsvisning er alltid gratis!'
       },
       {
         id: 'refunds',

@@ -16,28 +16,28 @@ export interface CreditPackage {
 export const CREDIT_PACKAGES: CreditPackage[] = [
   {
     id: 'starter',
-    name: 'Starter',
-    priceNOK: 79,
-    priceOre: 7900,
-    credits: 500,
-    description: '~50 sanger',
+    name: '10 sanger',
+    priceNOK: 99,
+    priceOre: 9900,
+    credits: 100,
+    description: '100 kreditter',
   },
   {
     id: 'pro',
-    name: 'Pro',
-    priceNOK: 149,
-    priceOre: 14900,
-    credits: 1000,
-    description: '~100 sanger',
+    name: '25 sanger',
+    priceNOK: 199,
+    priceOre: 19900,
+    credits: 250,
+    description: '250 kreditter',
     badge: 'MEST POPULÆR',
   },
   {
     id: 'premium',
-    name: 'Refill',
-    priceNOK: 199,
-    priceOre: 19900,
+    name: '100 sanger',
+    priceNOK: 499,
+    priceOre: 49900,
     credits: 1000,
-    description: '~100 sanger',
+    description: '1000 kreditter',
   },
 ]
 
@@ -56,7 +56,7 @@ export type CreditCostType = keyof typeof CREDIT_COSTS
  */
 export const TOOLTIPS = {
   pronunciation: 'Forbedrer automatisk norsk uttale for Suno AI',
-  credits: '1 kreditt ≈ kr 5. Full sang koster 10 kreditter.',
+  credits: '10 kreditter = 1 sang. Kjøp kreditter under Innstillinger.',
   freePreview: '30-sekunders forhåndsvisning for å høre sangen din før kjøp',
   download: 'Last ned hele sangen som MP3 (tilgjengelig i 14 dager)',
 } as const
