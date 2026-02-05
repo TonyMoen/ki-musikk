@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { PlayCircle, Loader2, Download } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatRelativeDate, formatDuration } from '@/lib/utils/date-formatter'
 import { downloadSong } from '@/lib/utils/download'
@@ -140,10 +139,10 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
           <h3 className="font-semibold truncate min-w-[140px]" title={song.title}>
             {song.title}
           </h3>
-          <div className="flex items-center gap-2 text-sm text-gray-600 mt-1 flex-wrap">
-            <Badge variant="secondary" className="text-xs px-3 py-1 flex items-center justify-center">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1 flex-wrap">
+            <span className="text-xs">
               {song.genre}
-            </Badge>
+            </span>
             {isGenerating && !isPartial ? (
               <span className="text-xs text-[#E94560] font-medium">
                 Genererer...

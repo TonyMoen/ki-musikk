@@ -46,6 +46,27 @@ export default function Home() {
 
   const PENDING_SONG_KEY = 'kimusikk_pending_song'
 
+  // Helper function to save form state immediately (used before login redirect)
+  const savePendingSongData = () => {
+    try {
+      const hasData = selectedGenre || concept || lyrics || isCustomTextMode || vocalGender
+      if (!hasData) return
+
+      const dataToSave = {
+        genre: selectedGenre,
+        concept,
+        lyrics,
+        isCustomTextMode,
+        vocalGender,
+        generatedTitle,
+        originalLyrics
+      }
+      localStorage.setItem(PENDING_SONG_KEY, JSON.stringify(dataToSave))
+    } catch (e) {
+      console.warn('Could not save pending song data:', e)
+    }
+  }
+
   // Restore pending song data from localStorage after login
   useEffect(() => {
     try {
@@ -57,6 +78,8 @@ export default function Home() {
         if (data.lyrics) setLyrics(data.lyrics)
         if (data.isCustomTextMode !== undefined) setIsCustomTextMode(data.isCustomTextMode)
         if (data.vocalGender !== undefined) setVocalGender(data.vocalGender)
+        if (data.generatedTitle) setGeneratedTitle(data.generatedTitle)
+        if (data.originalLyrics) setOriginalLyrics(data.originalLyrics)
         // Clear after restoring
         localStorage.removeItem(PENDING_SONG_KEY)
       }
@@ -65,31 +88,37 @@ export default function Home() {
     }
   }, [])
 
-  // Auto-save form state to localStorage (for when user logs in via header/nav)
-  // This ensures state is preserved regardless of how user navigates to login
+  // Auto-save form state to localStorage immediately when data changes
+  // This ensures state is preserved when user navigates to login via header/nav
   useEffect(() => {
-    // Only save if there's meaningful data to preserve
     const hasData = selectedGenre || concept || lyrics || isCustomTextMode || vocalGender
     if (!hasData) return
 
-    // Debounce save to avoid excessive writes
-    const timeoutId = setTimeout(() => {
-      try {
-        const dataToSave = {
-          genre: selectedGenre,
-          concept,
-          lyrics,
-          isCustomTextMode,
-          vocalGender
-        }
-        localStorage.setItem(PENDING_SONG_KEY, JSON.stringify(dataToSave))
-      } catch (e) {
-        console.warn('Could not auto-save pending song data:', e)
+    // Save immediately (no debounce) to ensure data isn't lost on navigation
+    try {
+      const dataToSave = {
+        genre: selectedGenre,
+        concept,
+        lyrics,
+        isCustomTextMode,
+        vocalGender,
+        generatedTitle,
+        originalLyrics
       }
-    }, 500) // 500ms debounce
+      localStorage.setItem(PENDING_SONG_KEY, JSON.stringify(dataToSave))
+    } catch (e) {
+      console.warn('Could not auto-save pending song data:', e)
+    }
+  }, [selectedGenre, concept, lyrics, isCustomTextMode, vocalGender, generatedTitle, originalLyrics])
 
-    return () => clearTimeout(timeoutId)
-  }, [selectedGenre, concept, lyrics, isCustomTextMode, vocalGender])
+  // Backup: save on page unload (handles browser back/refresh)
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      savePendingSongData()
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  })
 
   const handleGenreSelect = (genreId: string, genreName: string) => {
     setSelectedGenre({ id: genreId, name: genreName })
@@ -280,7 +309,8 @@ export default function Home() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      // Redirect to login page - pending song data is auto-saved to localStorage
+      // Save form state before redirecting to login
+      savePendingSongData()
       router.push('/auth/logg-inn')
       return
     }

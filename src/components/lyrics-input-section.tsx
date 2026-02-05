@@ -106,41 +106,45 @@ export function LyricsInputSection({
                     side="right"
                   />
                 </div>
-                <Textarea
-                  id="concept-input"
-                  placeholder="F.eks: En bursdagssang til Per som alltid kommer for sent og snakker om båten sin..."
-                  rows={4}
-                  value={concept}
-                  onChange={(e) => onConceptChange(e.target.value)}
-                  maxLength={500}
-                  disabled={isGenerating || isOptimizing}
-                  className={cn(
-                    "font-mono text-sm resize-none",
-                    (isGenerating || isOptimizing) && 'opacity-50'
-                  )}
-                />
-                {/* Generate Button - centered, matching AI genre button style */}
-                <div className="flex justify-center mt-3">
-                  <Button
+                <div className="relative">
+                  <Textarea
+                    id="concept-input"
+                    placeholder="F.eks: En bursdagssang til Per som alltid kommer for sent og snakker om båten sin..."
+                    rows={4}
+                    value={concept}
+                    onChange={(e) => onConceptChange(e.target.value)}
+                    maxLength={500}
+                    disabled={isGenerating || isOptimizing}
+                    className={cn(
+                      "font-mono text-sm resize-none pb-10",
+                      (isGenerating || isOptimizing) && 'opacity-50'
+                    )}
+                  />
+                  {/* Generate Button - bottom left inside textarea */}
+                  <button
                     onClick={handleGenerateLyrics}
                     disabled={!canGenerate}
-                    variant="outline"
-                    className="h-10 px-6 border-dashed border-2 border-primary/50 text-primary hover:bg-primary/5 hover:border-primary disabled:opacity-50"
+                    className={cn(
+                      "absolute bottom-2 left-3 text-xs flex items-center gap-1 transition-colors",
+                      canGenerate
+                        ? "text-primary hover:text-primary/80"
+                        : "text-gray-400 cursor-not-allowed"
+                    )}
                   >
                     {isGenerating ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="h-3 w-3 animate-spin" />
                         Genererer...
                       </>
                     ) : (
                       <>
-                        <Sparkles className="mr-2 h-4 w-4" />
+                        <Sparkles className="h-3 w-3" />
                         Lag tekst med KI
                       </>
                     )}
-                  </Button>
+                  </button>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-end items-center">
                   <span className="text-xs text-text-secondary">
                     {concept.length}/500 tegn
                   </span>
