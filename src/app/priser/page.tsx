@@ -14,6 +14,7 @@ export default function PricingPage() {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
   const [user, setUser] = useState<boolean | null>(null)
+  const [selectedPlan, setSelectedPlan] = useState<string>('pro') // Default to most popular
   const { showError } = useErrorToast()
 
   useEffect(() => {
@@ -76,70 +77,77 @@ export default function PricingPage() {
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {CREDIT_PACKAGES.map((pkg) => (
-            <Card
-              key={pkg.id}
-              className={`relative ${
-                pkg.badge ? 'border-[#FF5B24] border-2 scale-105' : ''
-              }`}
-            >
-              {pkg.badge && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF5B24] text-white px-3 py-1">
-                  {pkg.badge}
-                </Badge>
-              )}
+          {CREDIT_PACKAGES.map((pkg) => {
+            const isSelected = selectedPlan === pkg.id
+            return (
+              <Card
+                key={pkg.id}
+                onClick={() => setSelectedPlan(pkg.id)}
+                className={`relative cursor-pointer transition-all duration-200 ${
+                  isSelected ? 'border-[#FF5B24] border-2 scale-105' : 'hover:border-gray-500'
+                }`}
+              >
+                {pkg.badge && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF5B24] text-white px-3 py-1">
+                    {pkg.badge}
+                  </Badge>
+                )}
 
-              <CardHeader className="text-center pb-2 pt-6">
-                <CardTitle className="text-xl text-white">{pkg.name}</CardTitle>
-                <CardDescription className="mt-2">
-                  <span className="text-3xl font-bold text-[#FF5B24]">
-                    {pkg.priceNOK} kr
-                  </span>
-                </CardDescription>
-              </CardHeader>
+                <CardHeader className="text-center pb-2 pt-6">
+                  <CardTitle className="text-xl text-white">{pkg.name}</CardTitle>
+                  <CardDescription className="mt-2">
+                    <span className="text-3xl font-bold text-[#FF5B24]">
+                      {pkg.priceNOK} kr
+                    </span>
+                  </CardDescription>
+                </CardHeader>
 
-              <CardContent className="text-center py-6">
-                <div className="text-2xl font-semibold text-white mb-2">
-                  {pkg.credits.toLocaleString()} kreditter
-                </div>
-                <p className="text-sm text-gray-400 mb-6">{pkg.description}</p>
+                <CardContent className="text-center py-6">
+                  <div className="text-2xl font-semibold text-white mb-1">
+                    {pkg.credits.toLocaleString()} kreditter
+                  </div>
+                  <p className="text-lg text-gray-400 mb-6">{pkg.description}</p>
 
-                <ul className="text-sm text-gray-300 space-y-2 text-left">
-                  <li className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                    10 kreditter = 1 sang
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                    Kreditter utløper aldri
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                    Gratis forhåndsvisning
-                  </li>
-                </ul>
-              </CardContent>
+                  <ul className="text-sm text-gray-300 space-y-2 text-left">
+                    <li className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-green-500" />
+                      10 kreditter = 1 sang
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-green-500" />
+                      Kreditter utløper aldri
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-green-500" />
+                      Gratis forhåndsvisning
+                    </li>
+                  </ul>
+                </CardContent>
 
-              <CardFooter className="pb-6">
-                <Button
-                  onClick={() => handlePurchase(pkg)}
-                  disabled={loading !== null}
-                  className="w-full bg-[#FF5B24] hover:bg-[#E54D1C] text-white h-11"
-                >
-                  {loading === pkg.id ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {user ? 'Kobler til Vipps...' : 'Laster...'}
-                    </>
-                  ) : user ? (
-                    'Betal med Vipps'
-                  ) : (
-                    'Logg inn for å kjøpe'
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                <CardFooter className="pb-6">
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handlePurchase(pkg)
+                    }}
+                    disabled={loading !== null}
+                    className="w-full bg-[#FF5B24] hover:bg-[#E54D1C] text-white h-11"
+                  >
+                    {loading === pkg.id ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {user ? 'Kobler til Vipps...' : 'Laster...'}
+                      </>
+                    ) : user ? (
+                      'Betal med Vipps'
+                    ) : (
+                      'Logg inn for å kjøpe'
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            )
+          })}
         </div>
 
         {/* Features Section */}
