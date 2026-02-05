@@ -51,8 +51,9 @@ export function useOnboarding(): UseOnboardingReturn {
           return
         }
 
-        // Show onboarding if not completed
-        setShowOnboarding(!profile?.onboarding_completed)
+        // TEMPORARILY DISABLED: Show onboarding if not completed
+        // setShowOnboarding(!profile?.onboarding_completed)
+        setShowOnboarding(false)
         setIsLoading(false)
       } catch (err) {
         if (!isMounted) return
