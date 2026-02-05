@@ -1,10 +1,10 @@
-export default function TermsPage() {
+export default function VilkaarPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
       <h1 className="text-4xl font-bold mb-6">Salgsbetingelser</h1>
 
       <p className="text-muted-foreground mb-8">
-        Sist oppdatert: Januar 2026
+        Sist oppdatert: Februar 2026
       </p>
 
       <div className="prose prose-lg max-w-none space-y-8">
@@ -46,13 +46,16 @@ export default function TermsPage() {
             som selger før kjøpet ikke har informert om, skal kjøper ikke bære.
           </p>
           <p className="text-muted-foreground mt-4">
-            KI MUSIKK selger kreditter som brukes til å generere sanger. Prisene er:
+            KI MUSIKK selger kreditter som brukes til å generere sanger. 10 kreditter = 1 sang. Prisene er:
           </p>
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground mt-2">
-            <li>Starter: 79 kr for 500 kreditter (~50 sanger)</li>
-            <li>Pro: 149 kr for 1000 kreditter (~100 sanger)</li>
-            <li>Refill: 199 kr for 1000 kreditter (~100 sanger)</li>
+            <li>10 sanger: 99 kr for 100 kreditter</li>
+            <li>25 sanger: 199 kr for 250 kreditter (mest populær)</li>
+            <li>100 sanger: 499 kr for 1000 kreditter</li>
           </ul>
+          <p className="text-muted-foreground mt-4">
+            Kreditter utløper aldri og er knyttet til din brukerkonto.
+          </p>
         </section>
 
         <section>

@@ -7,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { STANDARD_GENRES } from '@/lib/standard-genres'
 import { AIAssistantModal } from '@/components/ai-assistant/modal'
-import { saveCustomGenre } from '@/lib/custom-genres-storage'
 import { Sparkles } from 'lucide-react'
 
 // Default genres to display in 2x2 grid (reduces decision paralysis)
@@ -157,27 +156,15 @@ export function GenreSelection({
     }
   }
 
-  const handleSaveCustomGenre = (genre: {
-    id: string
-    name: string
-    display_name: string
-    sunoPrompt: string
-    createdAt: Date
-    isCustom: true
-  }) => {
-    // Save to localStorage
-    saveCustomGenre({
-      id: genre.id,
-      name: genre.name,
-      display_name: genre.display_name,
-      sunoPrompt: genre.sunoPrompt,
-      createdAt: genre.createdAt.toISOString()
-    })
-
-    // Select the new custom genre
-    setSelectedId(genre.id)
-    setPromptText(genre.sunoPrompt)
-    onGenreSelect?.(genre.id, genre.name, genre.sunoPrompt)
+  const handleUseAIPrompt = (prompt: string) => {
+    // Just insert the prompt into the textarea
+    setPromptText(prompt)
+    // Notify parent of prompt change
+    if (selectedId) {
+      const selectedGenre = genres.find(g => g.id === selectedId)
+      const genreName = selectedGenre?.name || 'Egendefinert'
+      onGenreSelect?.(selectedId, genreName, prompt)
+    }
   }
 
   if (isLoading) {
@@ -268,21 +255,23 @@ export function GenreSelection({
           ))}
         </div>
 
-        {/* AI Assistant Button */}
-        <Button
-          onClick={() => setShowAIAssistant(true)}
-          variant="outline"
-          className="w-full h-10 border-dashed border-2 border-primary/50 text-primary hover:bg-primary/5 hover:border-primary"
-        >
-          <Sparkles className="mr-2 h-4 w-4" />
-          Lag egen sjanger med AI
-        </Button>
+        {/* AI Assistant Button - centered with auto width */}
+        <div className="flex justify-center">
+          <Button
+            onClick={() => setShowAIAssistant(true)}
+            variant="outline"
+            className="h-10 px-6 border-dashed border-2 border-primary/50 text-primary hover:bg-primary/5 hover:border-primary"
+          >
+            <Sparkles className="mr-2 h-4 w-4" />
+            Lag egen sjanger med AI
+          </Button>
+        </div>
 
         {/* AI Assistant Modal */}
         <AIAssistantModal
           open={showAIAssistant}
           onClose={() => setShowAIAssistant(false)}
-          onSaveGenre={handleSaveCustomGenre}
+          onUsePrompt={handleUseAIPrompt}
         />
 
         {/* Prompt Text Box */}

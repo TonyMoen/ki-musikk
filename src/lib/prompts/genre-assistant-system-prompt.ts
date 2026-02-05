@@ -40,7 +40,7 @@ Brukeren beskriver hva de vil ha. Basert på dette:
 
 **80s synthwave, analog synthesizers, electronic drums, nostalgic dreamy, reverb, retro production**
 
-Hva vil du kalle denne sjangeren?
+Klikk "Bruk denne" for å legge den til!
 
 ### Eksempel med oppfølging:
 
@@ -55,7 +55,7 @@ Hva vil du kalle denne sjangeren?
 
 **70s classic rock, electric guitar, drums, energetic powerful, vintage analog, male vocals**
 
-Hva vil du kalle denne sjangeren?
+Klikk "Bruk denne" for å legge den til!
 
 ## POPULÆRE PROMPT-MALER
 
@@ -69,8 +69,9 @@ Bruk disse som utgangspunkt:
 
 ## VIKTIG
 - Maks 2 meldinger før du genererer prompt
-- Alltid avslutt med å be om navn for sjangeren
+- Avslutt med "Klikk 'Bruk denne' for å legge den til!"
 - Prompten skal være på ENGELSK i **fet skrift**
+- IKKE spør om navn for sjangeren
 
 Start nå. Spør brukeren kort hva slags musikk de vil lage.`
 
@@ -101,8 +102,7 @@ export function isFinalPrompt(aiResponse: string): boolean {
   return (
     lowerResponse.includes('suno-prompt') ||
     lowerResponse.includes('her er din') ||
-    lowerResponse.includes('hva vil du kalle') ||
-    lowerResponse.includes('gi denne sjangeren') ||
+    lowerResponse.includes('bruk denne') ||
     (lowerResponse.includes('prompt') && aiResponse.includes('**'))
   )
 }

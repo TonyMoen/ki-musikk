@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { SongCard } from '@/components/song-card'
 import { UnifiedPlayer } from '@/components/unified-player'
 import { Button } from '@/components/ui/button'
-import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Loader2, ChevronLeft, ChevronRight, Music } from 'lucide-react'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { useToast } from '@/hooks/use-toast'
 import { useGeneratingSongStore, type GeneratingSong } from '@/stores/generating-song-store'
@@ -301,7 +301,9 @@ export function HomepageSongs() {
   if (!isLoading && songs.length === 0 && currentPage === 0 && generatingSongs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-        <div className="text-5xl mb-4">🎵</div>
+        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+          <Music className="h-8 w-8 text-primary" />
+        </div>
         <h3 className="text-lg font-semibold mb-2">Ingen sanger ennå</h3>
         <p className="text-gray-600 text-sm">
           Lag din første sang ovenfor, så vises den her!

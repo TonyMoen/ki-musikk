@@ -119,24 +119,27 @@ export function LyricsInputSection({
                     (isGenerating || isOptimizing) && 'opacity-50'
                   )}
                 />
-                {/* Generate Button - separate from textarea */}
-                <Button
-                  onClick={handleGenerateLyrics}
-                  disabled={!canGenerate}
-                  className="w-auto px-6 h-10 bg-[#FF6B35] hover:bg-[#E85A2A] text-white text-sm font-medium mt-3"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Genererer...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      Lag tekst med KI
-                    </>
-                  )}
-                </Button>
+                {/* Generate Button - centered, matching AI genre button style */}
+                <div className="flex justify-center mt-3">
+                  <Button
+                    onClick={handleGenerateLyrics}
+                    disabled={!canGenerate}
+                    variant="outline"
+                    className="h-10 px-6 border-dashed border-2 border-primary/50 text-primary hover:bg-primary/5 hover:border-primary disabled:opacity-50"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Genererer...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Lag tekst med KI
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-text-secondary">
                     {concept.length}/500 tegn

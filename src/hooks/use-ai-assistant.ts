@@ -10,21 +10,12 @@ interface Message {
   timestamp: Date
 }
 
-interface CustomGenre {
-  id: string
-  name: string
-  display_name: string
-  sunoPrompt: string
-  createdAt: Date
-  isCustom: true
-}
-
 interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
 }
 
-export function useAIAssistant(onSave: (genre: CustomGenre) => void) {
+export function useAIAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -118,24 +109,6 @@ export function useAIAssistant(onSave: (genre: CustomGenre) => void) {
     [addMessage, sendMessageToGPT]
   )
 
-  const saveGenre = useCallback(
-    (genreName: string) => {
-      if (!generatedPrompt) return
-
-      const newGenre: CustomGenre = {
-        id: `custom-${Date.now()}`,
-        name: genreName,
-        display_name: genreName,
-        sunoPrompt: generatedPrompt,
-        createdAt: new Date(),
-        isCustom: true,
-      }
-
-      onSave(newGenre)
-    },
-    [generatedPrompt, onSave]
-  )
-
   const resetConversation = useCallback(() => {
     setMessages([
       {
@@ -154,16 +127,9 @@ export function useAIAssistant(onSave: (genre: CustomGenre) => void) {
     messages,
     generatedPrompt,
     handleUserResponse,
-    saveGenre,
     resetConversation,
     isComplete: generatedPrompt !== null,
     isLoading,
     error,
-    // Deprecated - no longer used with real AI
-    getCurrentQuickAnswers: () => [],
-    getCurrentPlaceholder: () =>
-      generatedPrompt
-        ? 'Skriv et navn for sjangeren...'
-        : 'Skriv ditt svar her...',
   }
 }

@@ -516,8 +516,8 @@ export default function Home() {
           />
         </div>
 
-        {/* Generate Song Button - Main CTA (always visible) */}
-        <div className="mb-8">
+        {/* Generate Song Button - Main CTA (always visible, centered) */}
+        <div className="mb-8 flex justify-center">
           <Button
             onClick={handleGenerateSong}
             disabled={isGeneratingSong || isGenerating || isOptimizing}

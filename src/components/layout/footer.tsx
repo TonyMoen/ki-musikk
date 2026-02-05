@@ -52,7 +52,7 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider">Juridisk</h3>
             <nav className="flex flex-col gap-2">
-              <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/vilkaar" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Vilkår og betingelser
               </Link>
               <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

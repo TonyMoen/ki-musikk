@@ -104,7 +104,7 @@ export default function ContactPage() {
           <div>
             <h3 className="font-semibold mb-2">Hvem eier sangene jeg lager?</h3>
             <p className="text-muted-foreground">
-              Du har full bruksrett til sangene du genererer. Se våre <a href="/terms" className="text-primary hover:underline">vilkår</a> for
+              Du har full bruksrett til sangene du genererer. Se våre <a href="/vilkaar" className="text-primary hover:underline">vilkår</a> for
               mer informasjon om opphavsrett og bruk.
             </p>
           </div>

@@ -5,7 +5,9 @@ import { Music } from 'lucide-react'
 export function EmptySongLibrary() {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-      <div className="text-6xl mb-4">🎵</div>
+      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+        <Music className="h-10 w-10 text-primary" />
+      </div>
       <h3 className="text-xl font-semibold mb-2">Ingen sanger ennå!</h3>
       <p className="text-gray-600 mb-6">La oss lage ditt første mesterverk</p>
       <Button asChild className="bg-[#E94560] hover:bg-[#D62839]">
