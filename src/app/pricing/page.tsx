@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants'
 import { useErrorToast } from '@/hooks/use-error-toast'
-import { Loader2, Check } from 'lucide-react'
+import { Loader2, Check, Music, Globe, Download } from 'lucide-react'
 
 export default function PricingPage() {
   const router = useRouter()
@@ -146,18 +146,24 @@ export default function PricingPage() {
         <div className="mt-16 text-center">
           <h2 className="text-xl font-semibold text-white mb-6">Inkludert i alle pakker</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-gray-400">
-            <div>
-              <div className="text-2xl mb-2">🎵</div>
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <Music className="h-6 w-6 text-primary" />
+              </div>
               <p className="font-medium text-white">Full sang</p>
               <p>AI-generert melodi og tekst</p>
             </div>
-            <div>
-              <div className="text-2xl mb-2">🇳🇴</div>
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <Globe className="h-6 w-6 text-primary" />
+              </div>
               <p className="font-medium text-white">Norsk uttale</p>
               <p>Optimalisert for autentisk norsk</p>
             </div>
-            <div>
-              <div className="text-2xl mb-2">💾</div>
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <Download className="h-6 w-6 text-primary" />
+              </div>
               <p className="font-medium text-white">MP3 nedlasting</p>
               <p>Last ned sangene dine</p>
             </div>

@@ -115,15 +115,15 @@ export function LyricsInputSection({
                   maxLength={500}
                   disabled={isGenerating || isOptimizing}
                   className={cn(
-                    "font-mono text-sm resize-none rounded-b-none border-b-0",
+                    "font-mono text-sm resize-none",
                     (isGenerating || isOptimizing) && 'opacity-50'
                   )}
                 />
-                {/* Generate Button - connected to textarea */}
+                {/* Generate Button - separate from textarea */}
                 <Button
                   onClick={handleGenerateLyrics}
                   disabled={!canGenerate}
-                  className="w-full h-9 rounded-t-none bg-[#FF6B35] hover:bg-[#E85A2A] text-white text-sm font-medium"
+                  className="w-auto px-6 h-10 bg-[#FF6B35] hover:bg-[#E85A2A] text-white text-sm font-medium mt-3"
                 >
                   {isGenerating ? (
                     <>

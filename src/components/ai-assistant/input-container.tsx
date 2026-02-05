@@ -58,14 +58,14 @@ export function InputContainer({
   }
 
   return (
-    <div className="border-t border-border p-4 bg-white">
+    <div className="border-t border-border p-4 bg-card">
       <div className="flex gap-2">
         <Textarea
           value={inputValue}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="min-h-[80px] resize-none focus-visible:ring-primary"
+          className="min-h-[80px] resize-none focus-visible:ring-primary bg-background text-foreground"
           disabled={submitDisabled}
         />
         <Button
