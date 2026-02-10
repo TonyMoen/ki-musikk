@@ -101,7 +101,10 @@ export async function createPayment(
 
   const response = await fetch(`${apiUrl}/epayment/v1/payments`, {
     method: 'POST',
-    headers,
+    headers: {
+      ...headers,
+      'Idempotency-Key': request.reference,
+    },
     body: JSON.stringify(request),
   })
 
