@@ -16,6 +16,9 @@ import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
+// Welcome bonus: 24 credits = 2 free songs (12 credits per song)
+const WELCOME_BONUS_CREDITS = 24
+
 interface VippsTokenResponse {
   access_token: string
   token_type: string
@@ -48,12 +51,12 @@ export async function GET(request: Request) {
     // Handle error from Vipps
     if (error) {
       console.error('Vipps OAuth error:', error, errorDescription)
-      return NextResponse.redirect(new URL(`/auth/login?error=vipps_denied`, appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=vipps_denied', appUrl))
     }
 
     if (!code || !state) {
       console.error('Missing code or state in callback')
-      return NextResponse.redirect(new URL('/auth/login?error=invalid_callback', appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=invalid_callback', appUrl))
     }
 
     // Verify state to prevent CSRF
@@ -62,7 +65,7 @@ export async function GET(request: Request) {
 
     if (!storedState || storedState !== state) {
       console.error('State mismatch - possible CSRF attack')
-      return NextResponse.redirect(new URL('/auth/login?error=invalid_state', appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=invalid_state', appUrl))
     }
 
     // Clear state cookie
@@ -75,7 +78,7 @@ export async function GET(request: Request) {
 
     if (!clientId || !clientSecret) {
       console.error('Missing Vipps Login credentials')
-      return NextResponse.redirect(new URL('/auth/login?error=config', appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=config', appUrl))
     }
 
     // Exchange code for tokens
@@ -98,7 +101,7 @@ export async function GET(request: Request) {
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text()
       console.error('Token exchange failed:', errorText)
-      return NextResponse.redirect(new URL('/auth/login?error=token_exchange', appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=token_exchange', appUrl))
     }
 
     const tokens: VippsTokenResponse = await tokenResponse.json()
@@ -116,7 +119,7 @@ export async function GET(request: Request) {
     if (!userInfoResponse.ok) {
       const errorText = await userInfoResponse.text()
       console.error('User info fetch failed:', errorText)
-      return NextResponse.redirect(new URL('/auth/login?error=userinfo', appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=userinfo', appUrl))
     }
 
     const userInfo: VippsUserInfo = await userInfoResponse.json()
@@ -133,7 +136,7 @@ export async function GET(request: Request) {
 
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error('Missing Supabase environment variables')
-      return NextResponse.redirect(new URL('/auth/login?error=config', appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=config', appUrl))
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
@@ -147,7 +150,7 @@ export async function GET(request: Request) {
     const email = userInfo.email
     if (!email) {
       console.error('No email provided by Vipps')
-      return NextResponse.redirect(new URL('/auth/login?error=no_email', appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=no_email', appUrl))
     }
 
     // Try to find existing user by email
@@ -157,6 +160,7 @@ export async function GET(request: Request) {
     )
 
     let userId: string
+    let isNewUser = false
 
     if (existingUser) {
       // User exists - use their ID
@@ -176,14 +180,50 @@ export async function GET(request: Request) {
 
       if (createError || !newUser.user) {
         console.error('Failed to create user:', createError)
-        return NextResponse.redirect(new URL('/auth/login?error=create_user', appUrl))
+        return NextResponse.redirect(new URL('/auth/logg-inn?error=create_user', appUrl))
       }
 
       userId = newUser.user.id
+      isNewUser = true
       console.log('New user created:', userId)
     }
 
-    // Generate magic link for session
+    // Create user profile with welcome bonus for new users
+    if (isNewUser) {
+      const displayName = userInfo.name || userInfo.given_name || email.split('@')[0] || 'User'
+
+      const { error: profileCreateError } = await supabase
+        .from('user_profile')
+        .insert({
+          id: userId,
+          display_name: displayName,
+          credit_balance: WELCOME_BONUS_CREDITS,
+          preferences: {},
+        })
+
+      if (profileCreateError && profileCreateError.code !== '23505') {
+        console.error('Failed to create user profile:', profileCreateError)
+      } else {
+        console.log(`Created user profile for ${userId} with ${WELCOME_BONUS_CREDITS} welcome bonus credits`)
+
+        // Record the signup bonus transaction
+        const { error: transactionError } = await supabase
+          .from('credit_transaction')
+          .insert({
+            user_id: userId,
+            amount: WELCOME_BONUS_CREDITS,
+            balance_after: WELCOME_BONUS_CREDITS,
+            transaction_type: 'signup_bonus' as 'purchase',
+            description: 'Velkomstbonus - 2 gratis sanger',
+          })
+
+        if (transactionError) {
+          console.error('Failed to record signup bonus transaction:', transactionError)
+        }
+      }
+    }
+
+    // Generate magic link and verify OTP to create a proper Supabase session
     const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
       type: 'magiclink',
       email,
@@ -194,7 +234,7 @@ export async function GET(request: Request) {
 
     if (linkError || !linkData.properties?.hashed_token) {
       console.error('Failed to generate magic link:', linkError)
-      return NextResponse.redirect(new URL('/auth/login?error=session', appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=session', appUrl))
     }
 
     // Verify the OTP to create session
@@ -205,26 +245,30 @@ export async function GET(request: Request) {
 
     if (sessionError || !sessionData.session) {
       console.error('Failed to create session:', sessionError)
-      return NextResponse.redirect(new URL('/auth/login?error=session', appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=session', appUrl))
     }
 
-    // Set session cookies
+    // Set session cookies using Supabase SSR compatible format
     const response = NextResponse.redirect(new URL('/', appUrl))
 
-    // Set auth cookies for Supabase
-    response.cookies.set('sb-access-token', sessionData.session.access_token, {
+    // The Supabase SSR client expects the session in a specific cookie format
+    // We need to set it so the middleware's createServerClient can read it
+    const cookieName = `sb-${new URL(supabaseUrl).hostname.split('.')[0]}-auth-token`
+    const sessionValue = JSON.stringify({
+      access_token: sessionData.session.access_token,
+      refresh_token: sessionData.session.refresh_token,
+      expires_at: Math.floor(Date.now() / 1000) + sessionData.session.expires_in,
+      expires_in: sessionData.session.expires_in,
+      token_type: 'bearer',
+      user: sessionData.session.user,
+    })
+
+    // Supabase SSR may chunk large cookies - set the base cookie
+    response.cookies.set(`${cookieName}.0`, sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-    })
-
-    response.cookies.set('sb-refresh-token', sessionData.session.refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
       path: '/',
     })
 
@@ -233,6 +277,6 @@ export async function GET(request: Request) {
     return response
   } catch (error) {
     console.error('Vipps callback error:', error)
-    return NextResponse.redirect(new URL('/auth/login?error=callback', appUrl))
+    return NextResponse.redirect(new URL('/auth/logg-inn?error=callback', appUrl))
   }
 }

@@ -23,7 +23,7 @@ export async function GET() {
 
     if (!clientId) {
       console.error('VIPPS_LOGIN_CLIENT_ID not configured')
-      return NextResponse.redirect(new URL('/auth/login?error=config', appUrl))
+      return NextResponse.redirect(new URL('/auth/logg-inn?error=config', appUrl))
     }
 
     // Generate CSRF state token
@@ -52,6 +52,6 @@ export async function GET() {
   } catch (error) {
     console.error('Vipps login initiation error:', error)
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    return NextResponse.redirect(new URL('/auth/login?error=vipps_init', appUrl))
+    return NextResponse.redirect(new URL('/auth/logg-inn?error=vipps_init', appUrl))
   }
 }
