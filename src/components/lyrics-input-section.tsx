@@ -109,7 +109,7 @@ export function LyricsInputSection({
                 <div className="relative">
                   <Textarea
                     id="concept-input"
-                    placeholder="F.eks: En bursdagssang til Per som alltid kommer for sent og snakker om båten sin..."
+                    placeholder="F.eks: En drikkevise til vorspiel om gjengen som alltid bestiller en øl til..."
                     rows={4}
                     value={concept}
                     onChange={(e) => onConceptChange(e.target.value)}

@@ -508,7 +508,7 @@ export default function Home() {
           KI MUSIKK
         </h1>
         <p className="text-lg mb-8 text-center md:text-left text-gray-600">
-          Lag morsomme norske sanger med KI - autentisk norsk uttale!
+          Lag den perfekte festsangen med KI - autentisk norsk uttale!
         </p>
 
         {/* Genre Selection Section */}
@@ -519,14 +519,6 @@ export default function Home() {
             Velg sjanger
           </h2>
           <GenreSelection onGenreSelect={handleGenreSelect} selectedGenreId={selectedGenre?.id} />
-        </div>
-
-        {/* Voice Gender Selection Section */}
-        <div className="mb-8">
-          <VoiceGenderSelector
-            value={vocalGender}
-            onChange={setVocalGender}
-          />
         </div>
 
         {/* Lyrics Input Section - Main textarea + AI generation */}
