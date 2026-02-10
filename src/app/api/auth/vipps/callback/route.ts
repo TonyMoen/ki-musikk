@@ -13,6 +13,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
 
 export const dynamic = 'force-dynamic'
 
@@ -237,8 +238,34 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL('/auth/logg-inn?error=session', appUrl))
     }
 
-    // Verify the OTP to create session
-    const { data: sessionData, error: sessionError } = await supabase.auth.verifyOtp({
+    // Use the SSR client to verify OTP and set session cookies properly
+    // This ensures cookies are in the exact format the middleware expects
+    const response = NextResponse.redirect(new URL('/', appUrl))
+
+    const supabaseSSR = createServerClient(
+      supabaseUrl,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            const cookieHeader = request.headers.get('cookie') || ''
+            const pairs = cookieHeader.split(';').filter(Boolean).map(pair => {
+              const [name, ...rest] = pair.trim().split('=')
+              return { name, value: rest.join('=') }
+            })
+            return pairs
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, options)
+            })
+          },
+        },
+      }
+    )
+
+    // Verify OTP through the SSR client - this automatically sets session cookies
+    const { data: sessionData, error: sessionError } = await supabaseSSR.auth.verifyOtp({
       token_hash: linkData.properties.hashed_token,
       type: 'magiclink',
     })
@@ -247,30 +274,6 @@ export async function GET(request: Request) {
       console.error('Failed to create session:', sessionError)
       return NextResponse.redirect(new URL('/auth/logg-inn?error=session', appUrl))
     }
-
-    // Set session cookies using Supabase SSR compatible format
-    const response = NextResponse.redirect(new URL('/', appUrl))
-
-    // The Supabase SSR client expects the session in a specific cookie format
-    // We need to set it so the middleware's createServerClient can read it
-    const cookieName = `sb-${new URL(supabaseUrl).hostname.split('.')[0]}-auth-token`
-    const sessionValue = JSON.stringify({
-      access_token: sessionData.session.access_token,
-      refresh_token: sessionData.session.refresh_token,
-      expires_at: Math.floor(Date.now() / 1000) + sessionData.session.expires_in,
-      expires_in: sessionData.session.expires_in,
-      token_type: 'bearer',
-      user: sessionData.session.user,
-    })
-
-    // Supabase SSR may chunk large cookies - set the base cookie
-    response.cookies.set(`${cookieName}.0`, sessionValue, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-    })
 
     console.log('Vipps login successful:', { userId, email })
 
