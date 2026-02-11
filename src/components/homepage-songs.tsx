@@ -1,19 +1,22 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { SongCard } from '@/components/song-card'
-import { UnifiedPlayer } from '@/components/unified-player'
+import { TrackListHeader } from '@/components/track-list/track-list-header'
+import { TrackRow } from '@/components/track-list/track-row'
 import { Button } from '@/components/ui/button'
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { AppLogo } from '@/components/app-logo'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { useToast } from '@/hooks/use-toast'
+import { useAudioPlayer } from '@/contexts/audio-player-context'
 import { useGeneratingSongStore, type GeneratingSong } from '@/stores/generating-song-store'
+import { downloadSong } from '@/lib/utils/download'
+import { SongThumbnail } from '@/components/track-list/song-thumbnail'
 import type { Song } from '@/types/song'
 
 const SONGS_PER_PAGE = 10
-const POLLING_INTERVAL = 3000 // 3 seconds - faster detection
-const MAX_POLLING_ATTEMPTS = 100 // 100 × 3s = 5 minutes max
+const POLLING_INTERVAL = 3000
+const MAX_POLLING_ATTEMPTS = 100
 
 export function HomepageSongs() {
   const [songs, setSongs] = useState<Song[]>([])
@@ -21,15 +24,14 @@ export function HomepageSongs() {
   const [hasMore, setHasMore] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isChangingPage, setIsChangingPage] = useState(false)
-  const [selectedSongIndex, setSelectedSongIndex] = useState<number | null>(null)
-  const [isPlayerOpen, setIsPlayerOpen] = useState(false)
   const { showError } = useErrorToast()
   const { toast } = useToast()
   const hasFetchedRef = useRef(false)
 
-  // Generating songs store (supports multiple concurrent)
+  const { currentSong, isPlaying, playSong, togglePlayPause, stopAudio } = useAudioPlayer()
+
+  // Generating songs store
   const { generatingSongs, updateGeneratingSong, removeGeneratingSong } = useGeneratingSongStore()
-  // Track polling attempts per song
   const pollingAttemptsRef = useRef<Map<string, number>>(new Map())
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -45,34 +47,25 @@ export function HomepageSongs() {
       const offset = currentPage * SONGS_PER_PAGE
       const response = await fetch(
         `/api/songs?offset=${offset}&limit=${SONGS_PER_PAGE}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
+        { method: 'GET', headers: { 'Content-Type': 'application/json' } }
       )
 
-      // If not logged in (401), just show empty list - no error
       if (response.status === 401) {
         setSongs([])
         setHasMore(false)
         return
       }
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch songs')
-      }
+      if (!response.ok) throw new Error('Failed to fetch songs')
 
       const data = await response.json()
       const fetchedSongs = data.data || []
-
       setSongs(fetchedSongs)
       setHasMore(fetchedSongs.length === SONGS_PER_PAGE)
     } catch (error) {
       showError(error, {
         context: 'load-homepage-songs',
-        onRetry: () => fetchSongs(showPageLoader)
+        onRetry: () => fetchSongs(showPageLoader),
       })
     } finally {
       setIsLoading(false)
@@ -80,7 +73,6 @@ export function HomepageSongs() {
     }
   }, [currentPage, showError])
 
-  // Initial load only
   useEffect(() => {
     if (!hasFetchedRef.current) {
       hasFetchedRef.current = true
@@ -88,7 +80,7 @@ export function HomepageSongs() {
     }
   }, [fetchSongs])
 
-  // Poll status for a single generating song
+  // --- Polling for generating songs ---
   const pollSingleSongStatus = useCallback(async (generatingSong: GeneratingSong) => {
     const songId = generatingSong.id
     const attempts = pollingAttemptsRef.current.get(songId) || 0
@@ -97,7 +89,7 @@ export function HomepageSongs() {
       removeGeneratingSong(songId)
       pollingAttemptsRef.current.delete(songId)
       showError(new Error(`Tidsavbrudd: "${generatingSong.title}" tok for lang tid`), {
-        context: 'song-generation-timeout'
+        context: 'song-generation-timeout',
       })
       return
     }
@@ -105,84 +97,57 @@ export function HomepageSongs() {
     try {
       const response = await fetch(`/api/songs/${songId}`)
       const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to fetch song status')
-      }
+      if (!response.ok) throw new Error(data.error?.message || 'Failed to fetch song status')
 
       const song = data.data
 
       if (song.status === 'partial') {
-        // Still generating — keep polling, no preview
         pollingAttemptsRef.current.set(songId, attempts + 1)
       } else if (song.status === 'completed') {
-        // Success - remove from generating and refresh list
         removeGeneratingSong(songId)
         pollingAttemptsRef.current.delete(songId)
-
-        toast({
-          title: `"${generatingSong.title}" er klar!`,
-          description: 'Sangen er ferdig generert'
-        })
-
-        // Refresh songs list to show the new song
+        toast({ title: `"${generatingSong.title}" er klar!`, description: 'Sangen er ferdig generert' })
         fetchSongs(false)
       } else if (song.status === 'failed') {
-        // Failed - remove from generating
         removeGeneratingSong(songId)
         pollingAttemptsRef.current.delete(songId)
-        console.warn(`Song generation failed for "${generatingSong.title}":`, song.errorMessage)
       } else if (song.status === 'cancelled') {
-        // Cancelled
         removeGeneratingSong(songId)
         pollingAttemptsRef.current.delete(songId)
-        toast({
-          title: 'Generering avbrutt',
-          description: `"${generatingSong.title}" ble avbrutt`
-        })
+        toast({ title: 'Generering avbrutt', description: `"${generatingSong.title}" ble avbrutt` })
       } else {
-        // Still generating
         pollingAttemptsRef.current.set(songId, attempts + 1)
       }
     } catch (error) {
-      console.error(`Polling error for song ${songId}:`, error)
       const newAttempts = attempts + 1
       pollingAttemptsRef.current.set(songId, newAttempts)
-
-      // After 3 consecutive failures for this song, remove it
       if (newAttempts >= 3) {
         removeGeneratingSong(songId)
         pollingAttemptsRef.current.delete(songId)
         showError(new Error(`Kunne ikke hente status for "${generatingSong.title}"`), {
-          context: 'song-generation-network-error'
+          context: 'song-generation-network-error',
         })
       }
     }
-  }, [updateGeneratingSong, removeGeneratingSong, showError, toast, fetchSongs])
+  }, [removeGeneratingSong, showError, toast, fetchSongs])
 
-  // Poll all generating songs
   const pollAllSongs = useCallback(async () => {
     if (generatingSongs.length === 0) return
-    // Poll all songs in parallel
-    await Promise.all(generatingSongs.map(song => pollSingleSongStatus(song)))
+    await Promise.all(generatingSongs.map((song) => pollSingleSongStatus(song)))
   }, [generatingSongs, pollSingleSongStatus])
 
-  // Start/stop polling when generating songs change
   useEffect(() => {
     if (generatingSongs.length > 0) {
-      // Start polling if not already
       if (!pollingIntervalRef.current) {
-        pollAllSongs() // Poll immediately
+        pollAllSongs()
         pollingIntervalRef.current = setInterval(pollAllSongs, POLLING_INTERVAL)
       }
     } else {
-      // Stop polling when no songs are generating
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current)
         pollingIntervalRef.current = null
       }
     }
-
     return () => {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current)
@@ -191,19 +156,49 @@ export function HomepageSongs() {
     }
   }, [generatingSongs.length, pollAllSongs])
 
-  // Handle song card click - open unified player at clicked song index
-  const handleSongClick = (song: Song, index: number) => {
-    setSelectedSongIndex(index)
-    setIsPlayerOpen(true)
+  // --- Download handler ---
+  const handleDownload = async (song: Song) => {
+    const result = await downloadSong(song.id, song.title)
+    if (result.success) {
+      toast({ title: 'Nedlasting startet', description: song.title })
+    } else if (result.errorCode === 'PURCHASE_REQUIRED') {
+      toast({
+        title: 'Kjøp kreves',
+        description: 'Du må kjøpe kreditter for å laste ned sanger.',
+        variant: 'destructive',
+      })
+    } else {
+      toast({ title: 'Nedlasting feilet', variant: 'destructive' })
+    }
   }
 
-  // Handle player close
-  const handleClosePlayer = () => {
-    setIsPlayerOpen(false)
-    setSelectedSongIndex(null)
+  // --- Pagination ---
+  const fetchSongsForPage = async (page: number) => {
+    setIsChangingPage(true)
+    try {
+      const offset = page * SONGS_PER_PAGE
+      const response = await fetch(
+        `/api/songs?offset=${offset}&limit=${SONGS_PER_PAGE}`,
+        { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+      )
+      if (response.status === 401) {
+        setSongs([])
+        setHasMore(false)
+        return
+      }
+      if (!response.ok) throw new Error('Failed to fetch songs')
+
+      const data = await response.json()
+      const fetchedSongs = data.data || []
+      setSongs(fetchedSongs)
+      setHasMore(fetchedSongs.length === SONGS_PER_PAGE)
+    } catch (error) {
+      showError(error, { context: 'load-homepage-songs', onRetry: () => fetchSongsForPage(page) })
+    } finally {
+      setIsChangingPage(false)
+    }
   }
 
-  // Navigation handlers
   const handlePreviousPage = () => {
     if (currentPage > 0) {
       const newPage = currentPage - 1
@@ -220,51 +215,9 @@ export function HomepageSongs() {
     }
   }
 
-  // Fetch for specific page (used by pagination)
-  const fetchSongsForPage = async (page: number) => {
-    setIsChangingPage(true)
-
-    try {
-      const offset = page * SONGS_PER_PAGE
-      const response = await fetch(
-        `/api/songs?offset=${offset}&limit=${SONGS_PER_PAGE}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-
-      // If not logged in (401), just show empty list - no error
-      if (response.status === 401) {
-        setSongs([])
-        setHasMore(false)
-        return
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch songs')
-      }
-
-      const data = await response.json()
-      const fetchedSongs = data.data || []
-
-      setSongs(fetchedSongs)
-      setHasMore(fetchedSongs.length === SONGS_PER_PAGE)
-    } catch (error) {
-      showError(error, {
-        context: 'load-homepage-songs',
-        onRetry: () => fetchSongsForPage(page)
-      })
-    } finally {
-      setIsChangingPage(false)
-    }
-  }
-
   const hasPrevious = currentPage > 0
 
-  // Loading state
+  // Loading
   if (isLoading && songs.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -273,7 +226,7 @@ export function HomepageSongs() {
     )
   }
 
-  // Empty state (don't show if songs are generating)
+  // Empty state
   if (!isLoading && songs.length === 0 && currentPage === 0 && generatingSongs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
@@ -288,60 +241,69 @@ export function HomepageSongs() {
     )
   }
 
-  // Check if we have content to show (songs or generating songs)
   const hasContent = songs.length > 0 || generatingSongs.length > 0
 
   return (
     <>
-      {/* Songs grid */}
-      <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${(hasPrevious || hasMore) ? 'mb-6' : ''}`}>
-        {/* Generating songs at top (only on first page) */}
-        {currentPage === 0 && generatingSongs.map((genSong) => (
-          <SongCard
-            key={`generating-${genSong.id}`}
-            song={{
-              id: genSong.id,
-              title: genSong.title,
-              genre: genSong.genre,
-              duration_seconds: undefined,
-              created_at: genSong.startedAt.toISOString(),
-            }}
-            onClick={() => {}}
-            isGenerating
-          />
-        ))}
-        {/* Regular songs */}
-        {songs.map((song, index) => (
-          <SongCard
-            key={song.id}
-            song={song}
-            onClick={() => handleSongClick(song, index)}
-          />
-        ))}
-      </div>
-
-      {/* Show generating indicator when no songs yet */}
-      {!hasContent && isLoading && (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-[rgba(130,170,240,0.45)]" />
+      {/* Generating songs indicator */}
+      {currentPage === 0 && generatingSongs.length > 0 && (
+        <div className="space-y-2 mb-4">
+          {generatingSongs.map((genSong) => (
+            <div
+              key={`generating-${genSong.id}`}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[rgba(90,140,255,0.08)] bg-[rgba(20,40,80,0.15)] animate-pulse"
+            >
+              <SongThumbnail
+                song={{ id: genSong.id, title: genSong.title, genre: genSong.genre }}
+                size={40}
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">{genSong.title}</p>
+                <p className="text-xs text-[rgba(130,170,240,0.45)]">Genererer...</p>
+              </div>
+              <Loader2 className="h-4 w-4 animate-spin text-[#F26522] flex-shrink-0" />
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Loading overlay for page changes only */}
+      {/* Track list */}
+      {songs.length > 0 && (
+        <div className="rounded-xl border border-[rgba(90,140,255,0.08)] bg-[rgba(20,40,80,0.15)] overflow-hidden">
+          <TrackListHeader />
+          <div className="divide-y divide-[rgba(90,140,255,0.05)]">
+            {songs.map((song, index) => (
+              <TrackRow
+                key={song.id}
+                song={song}
+                index={index}
+                isCurrentSong={currentSong?.id === song.id}
+                isPlaying={currentSong?.id === song.id && isPlaying}
+                onPlay={() => playSong(song, songs)}
+                onPause={togglePlayPause}
+                onDownload={() => handleDownload(song)}
+                onDelete={() => {}}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Loading overlay for page changes */}
       {isChangingPage && (
         <div className="flex justify-center py-4">
           <Loader2 className="h-5 w-5 animate-spin text-[rgba(130,170,240,0.45)]" />
         </div>
       )}
 
-      {/* Pagination controls - only show if there are multiple pages */}
+      {/* Pagination */}
       {(hasPrevious || hasMore) && !isChangingPage && (
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 mt-6">
           <Button
             variant="outline"
             onClick={handlePreviousPage}
             disabled={!hasPrevious}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-[rgba(90,140,255,0.15)] text-[rgba(180,200,240,0.5)]"
           >
             <ChevronLeft className="h-4 w-4" />
             Forrige
@@ -350,21 +312,12 @@ export function HomepageSongs() {
             variant="outline"
             onClick={handleNextPage}
             disabled={!hasMore}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-[rgba(90,140,255,0.15)] text-[rgba(180,200,240,0.5)]"
           >
             Neste
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-      )}
-
-      {/* Unified Player */}
-      {isPlayerOpen && selectedSongIndex !== null && songs.length > 0 && (
-        <UnifiedPlayer
-          songs={songs}
-          initialIndex={selectedSongIndex}
-          onClose={handleClosePlayer}
-        />
       )}
     </>
   )

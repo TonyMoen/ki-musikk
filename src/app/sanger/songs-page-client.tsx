@@ -1,18 +1,16 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Howl } from 'howler'
 import { Search, SlidersHorizontal, ChevronDown, Music, Loader2 } from 'lucide-react'
 import { EmptySongLibrary } from '@/components/empty-song-library'
-import { UnifiedPlayer } from '@/components/unified-player'
 import { TrackListHeader } from '@/components/track-list/track-list-header'
 import { TrackRow } from '@/components/track-list/track-row'
-import { NowPlayingBar } from '@/components/track-list/now-playing-bar'
 import { DeleteSongDialog } from '@/components/track-list/delete-song-dialog'
 import { Button } from '@/components/ui/button'
 import { downloadSong } from '@/lib/utils/download'
 import { toast } from '@/hooks/use-toast'
 import { useErrorToast } from '@/hooks/use-error-toast'
+import { useAudioPlayer } from '@/contexts/audio-player-context'
 import { cn } from '@/lib/utils'
 import type { Song } from '@/types/song'
 
@@ -42,21 +40,12 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
   const [searchQuery, setSearchQuery] = useState('')
   const [sortMode, setSortMode] = useState<SortMode>('newest')
 
-  // Audio playback
-  const [playingSongId, setPlayingSongId] = useState<string | null>(null)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const howlerRef = useRef<Howl | null>(null)
-  const animFrameRef = useRef<number | null>(null)
-
-  // UI
-  const [isFullPlayerOpen, setIsFullPlayerOpen] = useState(false)
+  // Delete
   const [deletingSong, setDeletingSong] = useState<Song | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [downloadingSongId, setDownloadingSongId] = useState<string | null>(null)
 
   const { showError } = useErrorToast()
+  const { currentSong, isPlaying, playSong, togglePlayPause, stopAudio } = useAudioPlayer()
 
   // --- Filtered & sorted songs ---
   const filteredSongs = songs.filter((song) =>
@@ -75,104 +64,10 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
     }
   })
 
-  const playingSong = songs.find((s) => s.id === playingSongId) || null
-
   // --- Total duration for footer ---
   const totalDuration = filteredSongs.reduce((acc, s) => acc + (s.duration_seconds || 0), 0)
   const totalMins = Math.floor(totalDuration / 60)
   const totalSecs = Math.floor(totalDuration % 60)
-
-  // --- Audio management ---
-  const updateTime = useCallback(() => {
-    if (howlerRef.current && howlerRef.current.playing()) {
-      setCurrentTime(howlerRef.current.seek() as number)
-      animFrameRef.current = requestAnimationFrame(updateTime)
-    }
-  }, [])
-
-  const stopAudio = useCallback(() => {
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current)
-      animFrameRef.current = null
-    }
-    if (howlerRef.current) {
-      howlerRef.current.unload()
-      howlerRef.current = null
-    }
-    setIsPlaying(false)
-    setCurrentTime(0)
-    setDuration(0)
-  }, [])
-
-  const playSong = useCallback((song: Song) => {
-    const audioUrl = song.audio_url || song.stream_audio_url
-    if (!audioUrl) return
-
-    // Stop current
-    if (howlerRef.current) {
-      howlerRef.current.unload()
-    }
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current)
-    }
-
-    setPlayingSongId(song.id)
-    setIsPlaying(true)
-    setCurrentTime(0)
-    setDuration(song.duration_seconds || 0)
-
-    const howl = new Howl({
-      src: [audioUrl],
-      html5: true,
-      onplay: () => {
-        setIsPlaying(true)
-        animFrameRef.current = requestAnimationFrame(updateTime)
-      },
-      onpause: () => {
-        setIsPlaying(false)
-        if (animFrameRef.current) {
-          cancelAnimationFrame(animFrameRef.current)
-        }
-      },
-      onend: () => {
-        // Auto-advance to next song
-        const currentIdx = sortedSongs.findIndex((s) => s.id === song.id)
-        if (currentIdx >= 0 && currentIdx < sortedSongs.length - 1) {
-          playSong(sortedSongs[currentIdx + 1])
-        } else {
-          setIsPlaying(false)
-          setPlayingSongId(null)
-        }
-      },
-      onload: () => {
-        const dur = howl.duration()
-        if (dur > 0) setDuration(dur)
-      },
-      onloaderror: () => {
-        setIsPlaying(false)
-        setPlayingSongId(null)
-      },
-    })
-
-    howl.play()
-    howlerRef.current = howl
-  }, [updateTime, sortedSongs])
-
-  const togglePlayPause = useCallback(() => {
-    if (!howlerRef.current) return
-    if (howlerRef.current.playing()) {
-      howlerRef.current.pause()
-    } else {
-      howlerRef.current.play()
-    }
-  }, [])
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      stopAudio()
-    }
-  }, [stopAudio])
 
   // --- Infinite scroll ---
   const loadMoreSongs = useCallback(async () => {
@@ -216,22 +111,17 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
 
   // --- Download handler ---
   const handleDownload = async (song: Song) => {
-    setDownloadingSongId(song.id)
-    try {
-      const result = await downloadSong(song.id, song.title)
-      if (result.success) {
-        toast({ title: 'Nedlasting startet', description: `${song.title}` })
-      } else if (result.errorCode === 'PURCHASE_REQUIRED') {
-        toast({
-          title: 'Kjøp kreves',
-          description: 'Du må kjøpe kreditter for å laste ned sanger.',
-          variant: 'destructive',
-        })
-      } else {
-        toast({ title: 'Nedlasting feilet', variant: 'destructive' })
-      }
-    } finally {
-      setDownloadingSongId(null)
+    const result = await downloadSong(song.id, song.title)
+    if (result.success) {
+      toast({ title: 'Nedlasting startet', description: song.title })
+    } else if (result.errorCode === 'PURCHASE_REQUIRED') {
+      toast({
+        title: 'Kjøp kreves',
+        description: 'Du må kjøpe kreditter for å laste ned sanger.',
+        variant: 'destructive',
+      })
+    } else {
+      toast({ title: 'Nedlasting feilet', variant: 'destructive' })
     }
   }
 
@@ -241,16 +131,11 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
     setIsDeleting(true)
 
     try {
-      const response = await fetch(`/api/songs/${deletingSong.id}`, {
-        method: 'DELETE',
-      })
-
+      const response = await fetch(`/api/songs/${deletingSong.id}`, { method: 'DELETE' })
       if (!response.ok) throw new Error('Failed to delete song')
 
-      // Stop audio if deleting the playing song
-      if (playingSongId === deletingSong.id) {
+      if (currentSong?.id === deletingSong.id) {
         stopAudio()
-        setPlayingSongId(null)
       }
 
       setSongs((prev) => prev.filter((s) => s.id !== deletingSong.id))
@@ -263,37 +148,11 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
     }
   }
 
-  // --- Full player ---
-  const handleOpenFullPlayer = () => {
-    // Stop inline audio — UnifiedPlayer will create its own
-    if (howlerRef.current) {
-      howlerRef.current.unload()
-      howlerRef.current = null
-    }
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current)
-      animFrameRef.current = null
-    }
-    setIsFullPlayerOpen(true)
-  }
-
-  const handleCloseFullPlayer = () => {
-    setIsFullPlayerOpen(false)
-    // Reset inline audio state — user can click play again
-    setIsPlaying(false)
-    setCurrentTime(0)
-  }
-
   // --- Sort cycling ---
   const cycleSort = () => {
     const currentIdx = SORT_ORDER.indexOf(sortMode)
     setSortMode(SORT_ORDER[(currentIdx + 1) % SORT_ORDER.length])
   }
-
-  // Find the index in the full songs array for UnifiedPlayer
-  const fullPlayerInitialIndex = playingSong
-    ? songs.findIndex((s) => s.id === playingSong.id)
-    : 0
 
   // --- Empty state ---
   if (songs.length === 0 && !isLoading) {
@@ -314,15 +173,11 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-white">
-                Mine sanger
-              </h1>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white">Mine sanger</h1>
               <p className="text-sm text-[rgba(130,170,240,0.45)] mt-1">
                 {songs.length} {songs.length === 1 ? 'sang' : 'sanger'}
               </p>
             </div>
-
-            {/* Sort toggle */}
             <button
               onClick={cycleSort}
               className="flex items-center gap-1.5 text-sm text-[rgba(180,200,240,0.5)] hover:text-white transition-colors self-start sm:self-auto"
@@ -360,9 +215,9 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
                     key={song.id}
                     song={song}
                     index={index}
-                    isCurrentSong={playingSongId === song.id}
-                    isPlaying={playingSongId === song.id && isPlaying}
-                    onPlay={() => playSong(song)}
+                    isCurrentSong={currentSong?.id === song.id}
+                    isPlaying={currentSong?.id === song.id && isPlaying}
+                    onPlay={() => playSong(song, sortedSongs)}
                     onPause={togglePlayPause}
                     onDownload={() => handleDownload(song)}
                     onDelete={() => setDeletingSong(song)}
@@ -371,7 +226,6 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
               </div>
             </div>
           ) : (
-            /* Empty search state */
             <div className="flex flex-col items-center justify-center py-20 text-[rgba(130,170,240,0.35)]">
               <Music className="h-7 w-7 mb-3" />
               <p className="text-sm">Ingen sanger funnet</p>
@@ -398,14 +252,12 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
             </div>
           )}
 
-          {/* End of list */}
           {!hasMore && songs.length > 0 && sortedSongs.length > 0 && (
             <div className="text-center text-[rgba(130,170,240,0.25)] text-xs py-8">
               Du har sett alle sangene dine
             </div>
           )}
 
-          {/* Footer stats */}
           {sortedSongs.length > 0 && (
             <div className="flex items-center justify-between text-[rgba(130,170,240,0.25)] text-xs px-1 mt-2">
               <span>
@@ -421,30 +273,6 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
         </div>
       </main>
 
-      {/* Now Playing Bar */}
-      {playingSong && !isFullPlayerOpen && (
-        <NowPlayingBar
-          song={playingSong}
-          isPlaying={isPlaying}
-          currentTime={currentTime}
-          duration={duration}
-          onTogglePlay={togglePlayPause}
-          onOpenFullPlayer={handleOpenFullPlayer}
-          onDownload={() => handleDownload(playingSong)}
-          isDownloading={downloadingSongId === playingSong.id}
-        />
-      )}
-
-      {/* Full Player */}
-      {isFullPlayerOpen && songs.length > 0 && (
-        <UnifiedPlayer
-          songs={songs}
-          initialIndex={fullPlayerInitialIndex}
-          onClose={handleCloseFullPlayer}
-        />
-      )}
-
-      {/* Delete confirmation */}
       <DeleteSongDialog
         songTitle={deletingSong?.title || null}
         isOpen={!!deletingSong}

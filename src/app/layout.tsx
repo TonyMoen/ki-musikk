@@ -4,6 +4,8 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
+import { AudioPlayerProvider } from "@/contexts/audio-player-context";
+import { GlobalPlayer } from "@/components/layout/global-player";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -37,12 +39,15 @@ export default function RootLayout({
     <html lang="nb">
       <body className="min-h-screen flex flex-col">
         <TooltipProvider delayDuration={400}>
-          <Header />
-          <main className="flex-1 pt-16">
-            {children}
-          </main>
-          <Footer />
-          <Toaster />
+          <AudioPlayerProvider>
+            <Header />
+            <main className="flex-1 pt-16">
+              {children}
+            </main>
+            <Footer />
+            <GlobalPlayer />
+            <Toaster />
+          </AudioPlayerProvider>
         </TooltipProvider>
       </body>
     </html>

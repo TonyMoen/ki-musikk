@@ -35,7 +35,7 @@ export function NowPlayingBar({
 }: NowPlayingBarProps) {
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-40 animate-fade-up"
+      className="fixed left-0 right-0 z-40 animate-fade-up bottom-16 md:bottom-0"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       {/* Progress bar at top of the bar */}
