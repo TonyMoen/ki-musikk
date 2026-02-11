@@ -298,12 +298,12 @@ export function HomepageSongs() {
 
       {/* Pagination */}
       {(hasPrevious || hasMore) && !isChangingPage && (
-        <div className="flex justify-center gap-4 mt-6">
+        <div className="flex justify-center gap-4 mt-6 mb-8">
           <Button
             variant="outline"
             onClick={handlePreviousPage}
             disabled={!hasPrevious}
-            className="flex items-center gap-2 border-[rgba(90,140,255,0.15)] text-[rgba(180,200,240,0.5)]"
+            className="flex items-center gap-2 border-[rgba(90,140,255,0.15)] text-[rgba(180,200,240,0.5)] hover:bg-[rgba(242,101,34,0.1)] hover:text-[#F26522] hover:border-[#F26522]/40"
           >
             <ChevronLeft className="h-4 w-4" />
             Forrige
@@ -312,7 +312,7 @@ export function HomepageSongs() {
             variant="outline"
             onClick={handleNextPage}
             disabled={!hasMore}
-            className="flex items-center gap-2 border-[rgba(90,140,255,0.15)] text-[rgba(180,200,240,0.5)]"
+            className="flex items-center gap-2 border-[rgba(90,140,255,0.15)] text-[rgba(180,200,240,0.5)] hover:bg-[rgba(242,101,34,0.1)] hover:text-[#F26522] hover:border-[#F26522]/40"
           >
             Neste
             <ChevronRight className="h-4 w-4" />
