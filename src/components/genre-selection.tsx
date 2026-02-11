@@ -276,16 +276,18 @@ export function GenreSelection({
 
         {/* Prompt Text Box */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-text-primary">
-            Stil-beskrivelse (valgfritt)
-          </label>
-          <Textarea
-            value={promptText}
-            onChange={(e) => handlePromptChange(e.target.value)}
-            placeholder="Beskriv stilen du ønsker, f.eks: pop, akustisk gitar, rolig, norsk vokal..."
-            maxLength={1000}
-            className="min-h-[80px] text-text-primary placeholder:text-text-secondary"
-          />
+          <div className="relative">
+            <span className="absolute top-2 left-3 text-xs font-medium text-text-secondary pointer-events-none z-10">
+              Stil/sjanger
+            </span>
+            <Textarea
+              value={promptText}
+              onChange={(e) => handlePromptChange(e.target.value)}
+              placeholder="Beskriv stilen du ønsker, f.eks: pop, akustisk gitar, rolig, norsk vokal..."
+              maxLength={1000}
+              className="min-h-[80px] pt-7 text-text-primary placeholder:text-text-secondary"
+            />
+          </div>
           <div className="flex justify-between">
             <p className="text-xs text-gray-500">
               Tips: Beskriv instrumenter, tempo, stemning og stil

@@ -161,7 +161,7 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
           </div>
           <p className="text-xs text-gray-500 mt-1">
             {isGenerating && !isPartial
-              ? 'Vennligst vent...'
+              ? 'Tar vanligvis 2–4 minutter'
               : isPartial
               ? 'Ferdigstilles i bakgrunnen...'
               : formatRelativeDate(song.created_at)}

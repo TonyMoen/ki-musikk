@@ -97,16 +97,18 @@ export function LyricsInputSection({
             <>
               {/* Concept Input with Generate Button */}
               <div className="space-y-2">
-                <div className="flex items-center gap-1">
-                  <Label htmlFor="concept-input" className="text-sm font-medium text-text-primary">
-                    Beskriv hva sangen skal handle om
-                  </Label>
-                  <InfoTooltip
-                    content="KI lager både melodi og tekst basert på din beskrivelse. Jo mer detaljer, jo bedre resultat!"
-                    side="right"
-                  />
-                </div>
                 <div className="relative">
+                  <div className="absolute top-2 left-3 flex items-center gap-1 z-10 pointer-events-none">
+                    <span className="text-xs font-medium text-text-secondary">
+                      Beskriv hva sangen skal handle om
+                    </span>
+                    <span className="pointer-events-auto">
+                      <InfoTooltip
+                        content="KI lager både melodi og tekst basert på din beskrivelse. Jo mer detaljer, jo bedre resultat!"
+                        side="right"
+                      />
+                    </span>
+                  </div>
                   <Textarea
                     id="concept-input"
                     placeholder="F.eks: En drikkevise til vorspiel om gjengen som alltid bestiller en øl til..."
@@ -116,7 +118,7 @@ export function LyricsInputSection({
                     maxLength={500}
                     disabled={isGenerating || isOptimizing}
                     className={cn(
-                      "font-mono text-sm resize-none pb-10",
+                      "font-mono text-sm resize-none pt-7 pb-10",
                       (isGenerating || isOptimizing) && 'opacity-50'
                     )}
                   />
@@ -157,13 +159,10 @@ export function LyricsInputSection({
           {/* Show generated lyrics AFTER generation */}
           {showGeneratedLyricsInAIMode && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="generated-lyrics" className="text-sm font-medium text-text-primary">
-                  Generert sangtekst
-                </Label>
-              </div>
-
               <div className="relative">
+                <span className="absolute top-2 left-3 text-xs font-medium text-text-secondary pointer-events-none z-10">
+                  Sangtekst
+                </span>
                 <Textarea
                   id="generated-lyrics"
                   value={lyrics}
@@ -171,7 +170,7 @@ export function LyricsInputSection({
                   disabled={isGenerating || isOptimizing}
                   maxLength={2000}
                   className={cn(
-                    'min-h-[200px] font-mono text-sm leading-relaxed resize-none whitespace-pre-wrap pb-8',
+                    'min-h-[200px] pt-7 font-mono text-sm leading-relaxed resize-none whitespace-pre-wrap pb-8',
                     (isGenerating || isOptimizing) && 'opacity-50'
                   )}
                 />
@@ -222,6 +221,9 @@ export function LyricsInputSection({
         {/* Egen Tekst Tab Content */}
         <TabsContent value="own" className="space-y-2 mt-0">
           <div className="relative">
+            <span className="absolute top-2 left-3 text-xs font-medium text-text-secondary pointer-events-none z-10">
+              Sangtekst
+            </span>
             <Textarea
               id="custom-lyrics"
               placeholder={`Skriv din egen sangtekst her...
@@ -238,7 +240,7 @@ Du er min...`}
               onChange={(e) => onLyricsChange(e.target.value)}
               disabled={isGenerating || isOptimizing}
               className={cn(
-                "font-mono text-sm min-h-[280px] resize-none pb-8",
+                "font-mono text-sm min-h-[280px] resize-none pt-7 pb-8",
                 (isGenerating || isOptimizing) && 'opacity-50'
               )}
             />
