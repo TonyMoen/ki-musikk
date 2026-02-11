@@ -25,7 +25,7 @@ export function WizardNavButtons({
         <button
           type="button"
           onClick={onBack}
-          className="px-5 py-2.5 text-sm font-medium text-gray-400 hover:text-white transition-colors rounded-xl"
+          className="px-5 py-2.5 text-sm font-medium text-[rgba(130,170,240,0.45)] hover:text-white transition-colors rounded-xl"
         >
           {backLabel}
         </button>
@@ -38,7 +38,7 @@ export function WizardNavButtons({
           className={cn(
             'px-6 py-2.5 text-sm font-medium rounded-xl transition-all duration-200',
             nextDisabled
-              ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+              ? 'bg-[rgba(40,80,160,0.15)] text-[rgba(180,200,240,0.5)] cursor-not-allowed'
               : 'bg-[#F26522] text-white hover:bg-[#E05A1B] shadow-lg shadow-[#F26522]/20'
           )}
         >

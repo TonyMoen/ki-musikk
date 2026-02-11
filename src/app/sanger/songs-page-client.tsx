@@ -127,7 +127,7 @@ export function SongsPageClient({
           {hasMore && (
             <div ref={loadMoreRef} className="flex justify-center py-8">
               {isLoading ? (
-                <div className="flex items-center text-gray-600">
+                <div className="flex items-center text-[rgba(180,200,240,0.5)]">
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   Laster flere sanger...
                 </div>
@@ -145,7 +145,7 @@ export function SongsPageClient({
 
           {/* End of list message */}
           {!hasMore && songs.length > 0 && (
-            <div className="text-center text-gray-500 text-sm py-8">
+            <div className="text-center text-[rgba(180,200,240,0.5)] text-sm py-8">
               Du har sett alle sangene dine
             </div>
           )}

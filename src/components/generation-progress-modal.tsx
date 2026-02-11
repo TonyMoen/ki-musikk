@@ -271,14 +271,14 @@ export function GenerationProgressModal({
             <div className="flex flex-col items-center space-y-6 py-8">
               {/* Progress Circle */}
               <div className="relative">
-                <div className="w-32 h-32 rounded-full border-8 border-gray-200 flex items-center justify-center">
+                <div className="w-32 h-32 rounded-full border-8 border-[rgba(90,140,255,0.1)] flex items-center justify-center">
                   <div
                     className="absolute inset-0 rounded-full border-8 border-[#E94560] transition-all duration-500"
                     style={{
                       clipPath: `inset(0 ${100 - progress}% 0 0)`,
                     }}
                   />
-                  <span className="text-3xl font-bold text-gray-900 z-10">
+                  <span className="text-3xl font-bold text-white z-10">
                     {Math.round(progress)}%
                   </span>
                 </div>
@@ -288,10 +288,10 @@ export function GenerationProgressModal({
               {/* Stage Message */}
               <div className="text-center space-y-2">
                 <currentStage.Icon className="w-16 h-16 mx-auto text-primary" />
-                <p className="text-lg font-semibold text-gray-800">
+                <p className="text-lg font-semibold text-white">
                   {currentStage.text}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-[rgba(180,200,240,0.5)]">
                   {formatRemainingTime(remainingSeconds)}
                 </p>
               </div>
@@ -302,7 +302,7 @@ export function GenerationProgressModal({
               </div>
 
               {/* Info message */}
-              <p className="text-sm text-gray-500 text-center mt-2">
+              <p className="text-sm text-[rgba(180,200,240,0.5)] text-center mt-2">
                 Dette tar vanligvis 2-3 minutter
               </p>
             </div>
@@ -313,20 +313,20 @@ export function GenerationProgressModal({
           <div className="flex flex-col items-center space-y-6 py-8">
             {/* Progress indicator showing almost done */}
             <div className="relative">
-              <div className="w-32 h-32 rounded-full border-8 border-gray-200 flex items-center justify-center">
+              <div className="w-32 h-32 rounded-full border-8 border-[rgba(90,140,255,0.1)] flex items-center justify-center">
                 <div
                   className="absolute inset-0 rounded-full border-8 border-[#06D6A0] transition-all duration-500"
                   style={{ clipPath: `inset(0 15% 0 0)` }}
                 />
-                <span className="text-3xl font-bold text-gray-900 z-10">85%</span>
+                <span className="text-3xl font-bold text-white z-10">85%</span>
               </div>
               <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-40 text-[#06D6A0] animate-spin opacity-20" />
             </div>
 
             <div className="text-center space-y-2">
               <Headphones className="w-16 h-16 mx-auto text-success" />
-              <h2 className="text-xl font-bold text-gray-900">Forhåndsvisning klar!</h2>
-              <p className="text-gray-600">Lytt til sangen mens vi ferdigstiller den</p>
+              <h2 className="text-xl font-bold text-white">Forhåndsvisning klar!</h2>
+              <p className="text-[rgba(180,200,240,0.5)]">Lytt til sangen mens vi ferdigstiller den</p>
             </div>
 
             {streamAudioUrl ? (
@@ -348,7 +348,7 @@ export function GenerationProgressModal({
               <Progress value={85} className="h-2" />
             </div>
 
-            <p className="text-sm text-gray-500 text-center">
+            <p className="text-sm text-[rgba(180,200,240,0.5)] text-center">
               Ferdigstiller høykvalitetsversjon...
             </p>
           </div>
@@ -362,7 +362,7 @@ export function GenerationProgressModal({
                 <PartyPopper className="w-8 h-8 text-primary" />
                 Sangen din er klar!
               </h2>
-              <p className="text-gray-600">Din norske sang er nå ferdig generert</p>
+              <p className="text-[rgba(180,200,240,0.5)]">Din norske sang er nå ferdig generert</p>
             </div>
             <Button
               onClick={() => onComplete('')}
@@ -377,10 +377,10 @@ export function GenerationProgressModal({
           <div className="flex flex-col items-center space-y-6 py-8">
             <XCircle className="h-24 w-24 text-[#EF476F]" />
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-white">
                 Generering feilet
               </h2>
-              <p className="text-gray-600">
+              <p className="text-[rgba(180,200,240,0.5)]">
                 {errorMessage || 'Kunne ikke generere sangen. Prøv igjen.'}
               </p>
             </div>

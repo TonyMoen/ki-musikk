@@ -212,15 +212,15 @@ function SettingsContent() {
 
         {/* Low Balance Warning (if applicable) */}
         {balance < 20 && balance > 0 && (
-          <Card className="mb-6 bg-yellow-50 border-yellow-400 border-2">
+          <Card className="mb-6 bg-yellow-900/20 border-yellow-600 border-2">
             <CardContent className="pt-6">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 text-2xl">⚠️</div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                  <h3 className="font-semibold text-lg text-white mb-1">
                     Lav kredittsaldo!
                   </h3>
-                  <p className="text-gray-700 mb-4">
+                  <p className="text-[rgba(180,200,240,0.5)] mb-4">
                     Du har {balance} kreditter igjen. Kjøp flere kreditter for å fortsette å lage sanger.
                   </p>
                   <Button
@@ -237,15 +237,15 @@ function SettingsContent() {
 
         {/* Zero Balance Error (if applicable) */}
         {balance === 0 && (
-          <Card className="mb-6 bg-red-50 border-red-400 border-2">
+          <Card className="mb-6 bg-red-900/20 border-red-600 border-2">
             <CardContent className="pt-6">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 text-2xl">❌</div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                  <h3 className="font-semibold text-lg text-white mb-1">
                     Ingen kreditter igjen
                   </h3>
-                  <p className="text-gray-700 mb-4">
+                  <p className="text-[rgba(180,200,240,0.5)] mb-4">
                     Du må kjøpe kreditter for å kunne generere sanger.
                   </p>
                   <Button
@@ -261,7 +261,7 @@ function SettingsContent() {
         )}
 
         {/* Credit Balance Card */}
-        <Card className={`mb-6 ${balance < 20 ? 'bg-gradient-to-br from-red-50 to-orange-50 border-red-200' : 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200'}`}>
+        <Card className={`mb-6 ${balance < 20 ? 'bg-gradient-to-br from-red-900/20 to-orange-900/20 border-red-800' : 'bg-gradient-to-br from-amber-900/20 to-yellow-900/20 border-amber-800'}`}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Coins className={`w-5 h-5 ${balance < 20 ? 'text-red-600' : 'text-amber-600'}`} />
@@ -273,7 +273,7 @@ function SettingsContent() {
               <div className={`text-6xl font-bold mb-2 ${balance < 20 ? 'text-red-500' : 'text-amber-500'}`}>
                 {balance}
               </div>
-              <p className={`text-lg ${balance < 20 ? 'text-red-700' : 'text-amber-700'}`}>kreditter</p>
+              <p className={`text-lg ${balance < 20 ? 'text-red-400' : 'text-amber-400'}`}>kreditter</p>
             </div>
 
             <Button

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Music } from 'lucide-react'
+import { AppLogo } from '@/components/app-logo'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -12,7 +12,7 @@ export function Footer() {
           {/* Column 1: Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Music className="h-6 w-6 text-primary" />
+              <AppLogo size={24} />
               <span className="text-lg font-bold">KI MUSIKK</span>
             </div>
             <p className="text-sm text-muted-foreground">

@@ -30,7 +30,7 @@ export function ConceptInput({
     if (isTooLong) return 'text-red-600'
     if (isTooShort) return 'text-yellow-600'
     if (isValid) return 'text-green-600'
-    return 'text-gray-500'
+    return 'text-[rgba(180,200,240,0.5)]'
   }
 
   const getCharCountMessage = () => {
@@ -44,7 +44,7 @@ export function ConceptInput({
     <div className={cn('space-y-2', className)}>
       <label
         htmlFor="concept-input"
-        className="block text-sm font-medium text-gray-700"
+        className="block text-sm font-medium text-[rgba(180,200,240,0.5)]"
       >
         Beskriv sangkonseptet ditt
       </label>

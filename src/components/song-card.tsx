@@ -159,7 +159,7 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
               )
             )}
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-[rgba(180,200,240,0.5)] mt-1">
             {isGenerating && !isPartial
               ? 'Tar vanligvis 2–4 minutter'
               : isPartial

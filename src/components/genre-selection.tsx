@@ -174,7 +174,7 @@ export function GenreSelection({
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="h-[70px] rounded-lg bg-gray-200 animate-pulse"
+              className="h-[70px] rounded-lg bg-[rgba(20,40,80,0.35)] animate-pulse"
             />
           ))}
         </div>
@@ -225,7 +225,7 @@ export function GenreSelection({
                   "flex items-center justify-center",
                   isSelected
                     ? 'border-[3px] border-primary text-white hover:opacity-90'
-                    : 'border border-gray-300 text-gray-800 hover:border-primary/50 hover:bg-gray-50',
+                    : 'border border-[rgba(90,140,255,0.13)] text-white hover:border-primary/50 hover:bg-[rgba(20,40,80,0.35)]',
                   "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 )}
                 role="radio"
@@ -246,7 +246,7 @@ export function GenreSelection({
               onClick={() => handleStandardGenreClick(stdGenre)}
               className={cn(
                 "py-2 px-2 text-xs font-medium rounded-lg transition-all truncate",
-                "bg-white border border-gray-300 text-gray-700 hover:border-primary hover:text-primary"
+                "bg-white border border-[rgba(90,140,255,0.13)] text-[rgba(180,200,240,0.5)] hover:border-primary hover:text-primary"
               )}
               title={`Bruk ${stdGenre.display_name} prompt`}
             >
@@ -289,7 +289,7 @@ export function GenreSelection({
             />
           </div>
           <div className="flex justify-between">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[rgba(180,200,240,0.5)]">
               Tips: Beskriv instrumenter, tempo, stemning og stil
             </p>
             <span className="text-xs text-text-secondary">{promptText.length}/1000 tegn</span>

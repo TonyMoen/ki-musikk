@@ -143,18 +143,18 @@ export function GenreLibraryModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col p-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-200">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-[rgba(90,140,255,0.1)]">
           <DialogTitle className="text-2xl font-bold">Sjanger-bibliotek</DialogTitle>
         </DialogHeader>
 
         <div className="px-6 pt-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgba(130,170,240,0.45)]" />
             <Input
               placeholder="Sok etter sjanger eller stil..."
               value={library.searchQuery}
               onChange={(e) => library.setSearchQuery(e.target.value)}
-              className="pl-10 text-gray-900 placeholder:text-gray-400"
+              className="pl-10 text-white placeholder:text-[rgba(130,170,240,0.25)]"
             />
           </div>
         </div>
@@ -162,7 +162,7 @@ export function GenreLibraryModal({
         {/* Naming Form - shown when adding a genre */}
         {addingGenre && (
           <div className="px-6 py-4 bg-orange-50 border-y border-orange-200">
-            <p className="text-sm font-medium text-gray-700 mb-2">
+            <p className="text-sm font-medium text-[rgba(180,200,240,0.5)] mb-2">
               Gi sjangeren et navn:
             </p>
             <div className="flex gap-2">
@@ -170,7 +170,7 @@ export function GenreLibraryModal({
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
                 placeholder="Sjangernavn..."
-                className="flex-1 text-gray-900 placeholder:text-gray-400"
+                className="flex-1 text-white placeholder:text-[rgba(130,170,240,0.25)]"
                 autoFocus
               />
               <Button onClick={handleConfirmAdd} className="bg-primary hover:bg-primary/90">
@@ -180,7 +180,7 @@ export function GenreLibraryModal({
                 Avbryt
               </Button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-[rgba(180,200,240,0.5)] mt-2">
               Prompt: {addingGenre.sunoPrompt}
             </p>
           </div>
@@ -189,7 +189,7 @@ export function GenreLibraryModal({
         {/* Custom Prompt Creation Form */}
         {showCustomPrompt && (
           <div className="px-6 py-4 bg-purple-50 border-y border-purple-200">
-            <p className="text-sm font-medium text-gray-700 mb-2">
+            <p className="text-sm font-medium text-[rgba(180,200,240,0.5)] mb-2">
               Lag din egen sjanger:
             </p>
             <div className="space-y-3">
@@ -197,14 +197,14 @@ export function GenreLibraryModal({
                 value={customPromptName}
                 onChange={(e) => setCustomPromptName(e.target.value)}
                 placeholder="Sjangernavn (f.eks. Min Rock)"
-                className="text-gray-900 placeholder:text-gray-400"
+                className="text-white placeholder:text-[rgba(130,170,240,0.25)]"
                 autoFocus
               />
               <Textarea
                 value={customPromptText}
                 onChange={(e) => setCustomPromptText(e.target.value)}
                 placeholder="Beskriv stilen for Suno AI (f.eks. rock, electric guitar, energetic, 120 bpm)"
-                className="text-gray-900 placeholder:text-gray-400 min-h-[80px]"
+                className="text-white placeholder:text-[rgba(130,170,240,0.25)] min-h-[80px]"
               />
               <div className="flex gap-2">
                 <Button
@@ -242,7 +242,7 @@ export function GenreLibraryModal({
           <div className="flex-1 overflow-y-auto px-6 pb-6 mt-4">
             <TabsContent value="active" className="mt-0 space-y-3">
               {filteredActive.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-[rgba(180,200,240,0.5)]">
                   {library.searchQuery
                     ? 'Ingen aktive sjangere matchet soket'
                     : 'Ingen aktive sjangere enna. Legg til fra Standard-fanen!'}
@@ -266,7 +266,7 @@ export function GenreLibraryModal({
 
             <TabsContent value="archived" className="mt-0 space-y-3">
               {filteredArchived.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-[rgba(180,200,240,0.5)]">
                   {library.searchQuery
                     ? 'Ingen arkiverte sjangere matchet soket'
                     : 'Ingen arkiverte sjangere'}
@@ -307,7 +307,7 @@ export function GenreLibraryModal({
               )}
 
               {filteredStandard.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-[rgba(180,200,240,0.5)]">
                   Ingen standard sjangere matchet soket
                 </div>
               ) : (

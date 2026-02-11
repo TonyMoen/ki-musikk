@@ -268,7 +268,7 @@ export function HomepageSongs() {
   if (isLoading && songs.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-[rgba(130,170,240,0.45)]" />
       </div>
     )
   }
@@ -281,7 +281,7 @@ export function HomepageSongs() {
           <AppLogo size={32} />
         </div>
         <h3 className="text-lg font-semibold mb-2">Ingen sanger ennå</h3>
-        <p className="text-gray-600 text-sm">
+        <p className="text-[rgba(180,200,240,0.5)] text-sm">
           Lag din første sang ovenfor, så vises den her!
         </p>
       </div>
@@ -323,14 +323,14 @@ export function HomepageSongs() {
       {/* Show generating indicator when no songs yet */}
       {!hasContent && isLoading && (
         <div className="flex justify-center items-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-[rgba(130,170,240,0.45)]" />
         </div>
       )}
 
       {/* Loading overlay for page changes only */}
       {isChangingPage && (
         <div className="flex justify-center py-4">
-          <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+          <Loader2 className="h-5 w-5 animate-spin text-[rgba(130,170,240,0.45)]" />
         </div>
       )}
 

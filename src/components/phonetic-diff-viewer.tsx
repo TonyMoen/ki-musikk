@@ -134,7 +134,7 @@ export function PhoneticDiffViewer({
             <Sparkles className="h-5 w-5 text-[#E94560]" />
             <h2 className="text-xl font-semibold">Optimaliser norsk uttale</h2>
           </div>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[rgba(180,200,240,0.5)]">
             AI synger bedre med disse justeringene
           </p>
 
@@ -144,21 +144,21 @@ export function PhoneticDiffViewer({
               <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
               {changes.length} endringer funnet
             </span>
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-[rgba(130,170,240,0.45)]">
               {selectedCount} av {linesWithChanges.length} valgt
             </span>
           </div>
 
           {/* Tabs */}
-          <div className="flex items-center justify-between mt-4 border-b border-gray-200">
+          <div className="flex items-center justify-between mt-4 border-b border-[rgba(90,140,255,0.1)]">
             <div className="flex gap-1">
               <button
                 onClick={() => setActiveTab('all')}
                 className={cn(
                   'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
                   activeTab === 'all'
-                    ? 'border-gray-900 text-gray-900'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? 'border-[rgba(90,140,255,0.13)] text-white'
+                    : 'border-transparent text-[rgba(180,200,240,0.5)] hover:text-white'
                 )}
               >
                 Alle linjer
@@ -168,8 +168,8 @@ export function PhoneticDiffViewer({
                 className={cn(
                   'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
                   activeTab === 'changes'
-                    ? 'border-gray-900 text-gray-900'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? 'border-[rgba(90,140,255,0.13)] text-white'
+                    : 'border-transparent text-[rgba(180,200,240,0.5)] hover:text-white'
                 )}
               >
                 Kun endringer ({linesWithChanges.length})
@@ -196,7 +196,7 @@ export function PhoneticDiffViewer({
               if (isMarker) {
                 return (
                   <div key={line.lineNumber} className="py-2">
-                    <span className="text-sm font-mono text-gray-400">{lineText}</span>
+                    <span className="text-sm font-mono text-[rgba(130,170,240,0.45)]">{lineText}</span>
                   </div>
                 )
               }
@@ -205,7 +205,7 @@ export function PhoneticDiffViewer({
               if (!line.hasChanges) {
                 return (
                   <div key={line.lineNumber} className="py-1">
-                    <span className="text-sm font-mono text-gray-400">{lineText}</span>
+                    <span className="text-sm font-mono text-[rgba(130,170,240,0.45)]">{lineText}</span>
                   </div>
                 )
               }
@@ -218,7 +218,7 @@ export function PhoneticDiffViewer({
                     'p-4 rounded-lg border-2 transition-colors',
                     line.isOptimizationEnabled
                       ? 'border-[#10B981]/50 bg-[#10B981]/5'
-                      : 'border-gray-200 bg-gray-50'
+                      : 'border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)]'
                   )}
                 >
                   <div className="flex items-start gap-3">
@@ -242,8 +242,8 @@ export function PhoneticDiffViewer({
                       <div className="flex flex-wrap gap-3 mb-2">
                         {changeInfos.map((info, idx) => (
                           <div key={idx} className="flex items-center gap-2 text-sm">
-                            <span className="text-gray-500 font-mono">{info.original}</span>
-                            <span className="text-gray-400">→</span>
+                            <span className="text-[rgba(180,200,240,0.5)] font-mono">{info.original}</span>
+                            <span className="text-[rgba(130,170,240,0.45)]">→</span>
                             <span className="bg-[#10B981] text-white px-1.5 py-0.5 rounded font-mono text-xs">
                               {info.optimized}
                             </span>
@@ -252,7 +252,7 @@ export function PhoneticDiffViewer({
                       </div>
 
                       {/* Full line with highlights */}
-                      <div className="text-sm font-mono text-gray-700">
+                      <div className="text-sm font-mono text-[rgba(180,200,240,0.5)]">
                         {renderLineText(line)}
                       </div>
                     </div>
@@ -264,10 +264,10 @@ export function PhoneticDiffViewer({
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-gray-200 bg-gray-50">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)]">
           <button
             onClick={handleRevert}
-            className="text-sm text-gray-600 hover:text-gray-900 font-medium order-3 sm:order-1"
+            className="text-sm text-[rgba(180,200,240,0.5)] hover:text-white font-medium order-3 sm:order-1"
           >
             Tilbakestill alle
           </button>

@@ -92,7 +92,7 @@ export function StepStyle({
     <div className="space-y-5">
       {/* Genre grid */}
       <div className="space-y-3">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        <p className="text-xs font-semibold text-[rgba(130,170,240,0.45)] uppercase tracking-wider">
           Velg sjanger
         </p>
 
@@ -101,7 +101,7 @@ export function StepStyle({
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-[56px] rounded-xl bg-[rgba(255,255,255,0.03)] animate-pulse"
+                className="h-[56px] rounded-xl bg-[rgba(20,40,80,0.35)] animate-pulse"
               />
             ))}
           </div>
@@ -120,12 +120,12 @@ export function StepStyle({
                     'flex items-center justify-center gap-2',
                     isSelected
                       ? 'border-2 border-[#F26522] bg-[#F26522]/10 text-white'
-                      : 'border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)] text-gray-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.06)]'
+                      : 'border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] text-[rgba(180,200,240,0.5)] hover:border-[rgba(90,140,255,0.13)] hover:bg-[rgba(40,80,160,0.15)]'
                   )}
                 >
                   <Icon className={cn(
                     'h-4 w-4 flex-shrink-0',
-                    isSelected ? 'text-[#F26522]' : 'text-gray-500'
+                    isSelected ? 'text-[#F26522]' : 'text-[rgba(130,170,240,0.45)]'
                   )} />
                   {genre.display_name}
                 </button>
@@ -136,11 +136,11 @@ export function StepStyle({
       </div>
 
       {/* Divider */}
-      <div className="border-t border-[rgba(255,255,255,0.06)]" />
+      <div className="border-t border-[rgba(90,140,255,0.1)]" />
 
       {/* Style textarea */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        <p className="text-xs font-semibold text-[rgba(130,170,240,0.45)] uppercase tracking-wider">
           Stil / prompt
         </p>
         <div className="relative">
@@ -151,8 +151,8 @@ export function StepStyle({
             maxLength={1000}
             rows={3}
             className={cn(
-              'w-full rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(0,0,0,0.3)] px-4 py-3',
-              'text-sm text-white placeholder:text-gray-500 resize-none',
+              'w-full rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(8,16,35,0.7)] px-4 py-3',
+              'text-sm text-white placeholder:text-[rgba(130,170,240,0.25)] resize-none',
               'focus:outline-none focus:border-[#F26522]/50 transition-colors'
             )}
           />
@@ -160,7 +160,7 @@ export function StepStyle({
             {styleText.length}/1000
           </span>
         </div>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[rgba(180,200,240,0.5)]">
           Tips: Beskriv instrumenter, tempo, stemning og stil
         </p>
       </div>

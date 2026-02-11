@@ -9,7 +9,7 @@ export function EmptySongLibrary() {
         <AppLogo size={40} />
       </div>
       <h3 className="text-xl font-semibold mb-2">Ingen sanger ennå!</h3>
-      <p className="text-gray-600 mb-6">La oss lage ditt første mesterverk</p>
+      <p className="text-[rgba(180,200,240,0.5)] mb-6">La oss lage ditt første mesterverk</p>
       <Button asChild className="bg-[#E94560] hover:bg-[#D62839]">
         <Link href="/">
           <AppLogo size={20} className="mr-2" />

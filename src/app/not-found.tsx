@@ -15,10 +15,10 @@ export default function NotFound() {
         </div>
 
         {/* Message */}
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
           Siden finnes ikke
         </h1>
-        <p className="text-gray-600 mb-8">
+        <p className="text-[rgba(180,200,240,0.5)] mb-8">
           Beklager, vi kunne ikke finne siden du leter etter.
           Den kan ha blitt flyttet eller slettet.
         </p>
@@ -43,7 +43,7 @@ export default function NotFound() {
         <div className="mt-8">
           <button
             onClick={() => typeof window !== 'undefined' && window.history.back()}
-            className="text-sm text-gray-500 hover:text-gray-700 inline-flex items-center"
+            className="text-sm text-[rgba(180,200,240,0.5)] hover:text-white inline-flex items-center"
           >
             <ArrowLeft className="mr-1 h-3 w-3" />
             Gå tilbake

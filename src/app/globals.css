@@ -4,43 +4,43 @@
 
 @layer base {
   :root {
-    /* Modern AI Music Platform Theme - Dark Mode Base */
-    --background: 0 0% 4%;
+    /* AI Modern Theme - Deep Navy Base (#06090F) */
+    --background: 220 43% 4%;
     --foreground: 0 0% 100%;
-    --card: 0 0% 8%;
+    --card: 220 60% 8%;
     --card-foreground: 0 0% 100%;
-    --popover: 0 0% 10%;
+    --popover: 220 60% 8%;
     --popover-foreground: 0 0% 100%;
-    /* Primary: Suno Orange #FF6B35 */
+    /* Primary: Orange #F26522 */
     --primary: 15 100% 61%;
     --primary-foreground: 0 0% 100%;
     --primary-hover: 15 100% 70%;
     /* Secondary: Purple for AI Features #7C3AED */
     --secondary: 258 85% 57%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 63%;
+    --muted: 220 50% 10%;
+    --muted-foreground: 220 40% 55%;
     /* Accent: Hot Pink #FF006E */
     --accent: 333 100% 51%;
     --accent-foreground: 0 0% 100%;
     /* Destructive/Error: Keep standard red */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    /* Borders: Dark Gray */
-    --border: 0 0% 16%;
-    --input: 0 0% 16%;
+    /* Borders: Deep Navy Blue */
+    --border: 222 50% 14%;
+    --input: 222 50% 14%;
     --ring: 15 100% 61%;
     /* Additional Color Utilities */
     --success: 160 73% 45%;
     --warning: 46 100% 50%;
     /* Surface & Text Utilities */
-    --surface: 0 0% 8%;
-    --surface-hover: 0 0% 12%;
-    --elevated: 0 0% 10%;
+    --surface: 220 43% 6%;
+    --surface-hover: 220 50% 10%;
+    --elevated: 220 50% 8%;
     --text-primary: 0 0% 100%;
-    --text-secondary: 0 0% 63%;
-    --text-tertiary: 0 0% 44%;
-    --border-focus: 0 0% 25%;
+    --text-secondary: 220 40% 55%;
+    --text-tertiary: 220 30% 40%;
+    --border-focus: 222 50% 20%;
     /* Chart colors updated for orange/purple theme */
     --chart-1: 15 100% 61%;
     --chart-2: 258 85% 57%;
@@ -51,24 +51,24 @@
   }
   .dark {
     /* Dark mode uses same values as root (dark-first design) */
-    --background: 0 0% 4%;
+    --background: 220 43% 4%;
     --foreground: 0 0% 100%;
-    --card: 0 0% 8%;
+    --card: 220 60% 8%;
     --card-foreground: 0 0% 100%;
-    --popover: 0 0% 10%;
+    --popover: 220 60% 8%;
     --popover-foreground: 0 0% 100%;
     --primary: 15 100% 61%;
     --primary-foreground: 0 0% 100%;
     --secondary: 258 85% 57%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 63%;
+    --muted: 220 50% 10%;
+    --muted-foreground: 220 40% 55%;
     --accent: 333 100% 51%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 16%;
-    --input: 0 0% 16%;
+    --border: 222 50% 14%;
+    --input: 222 50% 14%;
     --ring: 15 100% 61%;
     --chart-1: 15 100% 61%;
     --chart-2: 258 85% 57%;
@@ -90,14 +90,14 @@
   body {
     @apply bg-background text-foreground;
   }
-  /* Gradient overlay for visual depth - orange top-right, purple bottom-left */
+  /* Ambient background glow - subtle orange top-left, blue bottom-right */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse at top right, rgba(255, 107, 53, 0.08) 0%, transparent 40%),
-      radial-gradient(ellipse at bottom left, rgba(124, 58, 237, 0.06) 0%, transparent 40%);
+      radial-gradient(ellipse at 20% 0%, rgba(242,101,34,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(90,140,255,0.08) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
   }
@@ -118,6 +118,13 @@
   .my-safe {
     margin-top: env(safe-area-inset-top, 8px);
     margin-bottom: env(safe-area-inset-bottom, 8px);
+  }
+  /* Heading text gradient */
+  .text-gradient-heading {
+    background: linear-gradient(135deg, #fff, rgba(150,190,255,0.6));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 
@@ -151,11 +158,11 @@
   }
 }
 
-/* Custom scrollbar styling for dark theme */
+/* Custom scrollbar styling */
 @layer base {
   * {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+    scrollbar-color: rgba(90,140,255,0.15) transparent;
   }
 
   *::-webkit-scrollbar {
@@ -169,14 +176,14 @@
   }
 
   *::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.3);
+    background: rgba(90,140,255,0.15);
     border-radius: 4px;
     border: 2px solid transparent;
     background-clip: content-box;
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.5);
+    background: rgba(90,140,255,0.25);
     background-clip: content-box;
   }
 
@@ -186,11 +193,11 @@
   }
 
   textarea::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary) / 0.3);
+    background: rgba(90,140,255,0.2);
     border-radius: 3px;
   }
 
   textarea::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary) / 0.5);
+    background: rgba(90,140,255,0.3);
   }
 }

@@ -50,7 +50,7 @@ export function VoiceGenderSelector({
             ${
               value === 'm'
                 ? 'border-[3px] border-[#E94560] text-white hover:opacity-90 bg-gradient-to-br from-[#E94560] to-[#FFC93C]'
-                : 'border border-gray-300 text-gray-700 bg-white hover:bg-gradient-to-br hover:from-[#E94560] hover:to-[#FFC93C] hover:text-white hover:border-[#E94560]'
+                : 'border border-[rgba(90,140,255,0.13)] text-[rgba(180,200,240,0.5)] bg-transparent hover:bg-gradient-to-br hover:from-[#E94560] hover:to-[#FFC93C] hover:text-white hover:border-[#E94560]'
             }
             focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-2
           `}
@@ -74,7 +74,7 @@ export function VoiceGenderSelector({
             ${
               value === 'f'
                 ? 'border-[3px] border-[#E94560] text-white hover:opacity-90 bg-gradient-to-br from-[#E94560] to-[#FFC93C]'
-                : 'border border-gray-300 text-gray-700 bg-white hover:bg-gradient-to-br hover:from-[#E94560] hover:to-[#FFC93C] hover:text-white hover:border-[#E94560]'
+                : 'border border-[rgba(90,140,255,0.13)] text-[rgba(180,200,240,0.5)] bg-transparent hover:bg-gradient-to-br hover:from-[#E94560] hover:to-[#FFC93C] hover:text-white hover:border-[#E94560]'
             }
             focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-2
           `}

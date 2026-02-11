@@ -71,7 +71,7 @@ export default function PricingPage() {
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
             Enkel prising
           </h1>
-          <p className="text-lg text-gray-400">
+          <p className="text-lg text-[rgba(180,200,240,0.5)]">
             Kjøp kreditter og lag norske sanger med KI
           </p>
         </div>
@@ -85,7 +85,7 @@ export default function PricingPage() {
                 key={pkg.id}
                 onClick={() => setSelectedPlan(pkg.id)}
                 className={`relative cursor-pointer transition-all duration-200 ${
-                  isSelected ? 'border-[#FF5B24] border-2 scale-105' : 'hover:border-gray-500'
+                  isSelected ? 'border-[#FF5B24] border-2 scale-105' : 'hover:border-[rgba(90,140,255,0.13)]'
                 }`}
               >
                 {pkg.badge && (
@@ -107,9 +107,9 @@ export default function PricingPage() {
                   <div className="text-2xl font-semibold text-white mb-1">
                     {pkg.credits.toLocaleString()} kreditter
                   </div>
-                  <p className="text-lg text-gray-400 mb-6">{pkg.description}</p>
+                  <p className="text-lg text-[rgba(180,200,240,0.5)] mb-6">{pkg.description}</p>
 
-                  <ul className="text-sm text-gray-300 space-y-2 text-left">
+                  <ul className="text-sm text-[rgba(180,200,240,0.5)] space-y-2 text-left">
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-green-500" />
                       10 kreditter = 1 sang
@@ -154,7 +154,7 @@ export default function PricingPage() {
         {/* Features Section */}
         <div className="mt-16 text-center">
           <h2 className="text-xl font-semibold text-white mb-6">Inkludert i alle pakker</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-gray-400">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-[rgba(180,200,240,0.5)]">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
                 <AppLogo size={24} />
@@ -180,7 +180,7 @@ export default function PricingPage() {
         </div>
 
         {/* Payment Badge */}
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-400 mt-12">
+        <div className="flex items-center justify-center gap-2 text-sm text-[rgba(180,200,240,0.5)] mt-12">
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="#FF5B24">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
           </svg>

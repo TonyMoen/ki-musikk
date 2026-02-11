@@ -65,12 +65,12 @@ export function ExpandedGenreCard({
         // Edit Mode
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-600">Rediger sjanger</span>
+            <span className="text-sm font-medium text-[rgba(180,200,240,0.5)]">Rediger sjanger</span>
             <button
               onClick={handleCancelEdit}
-              className="p-1 hover:bg-gray-200 rounded"
+              className="p-1 hover:bg-[rgba(40,80,160,0.15)] rounded"
             >
-              <X className="w-4 h-4 text-gray-500" />
+              <X className="w-4 h-4 text-[rgba(180,200,240,0.5)]" />
             </button>
           </div>
 
@@ -78,14 +78,14 @@ export function ExpandedGenreCard({
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
             placeholder="Sjangernavn"
-            className="text-gray-900 font-medium"
+            className="text-white font-medium"
           />
 
           <Textarea
             value={editPrompt}
             onChange={(e) => setEditPrompt(e.target.value)}
             placeholder="Beskriv stilen for Suno AI..."
-            className="text-gray-900 min-h-[80px] text-sm"
+            className="text-white min-h-[80px] text-sm"
           />
 
           <div className="flex gap-2">
@@ -108,7 +108,7 @@ export function ExpandedGenreCard({
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Star className="w-5 h-5 text-primary fill-primary" />
-              <h4 className="font-bold text-gray-900 text-lg">{genreName}</h4>
+              <h4 className="font-bold text-white text-lg">{genreName}</h4>
             </div>
             <Button
               variant="outline"
@@ -121,9 +121,9 @@ export function ExpandedGenreCard({
             </Button>
           </div>
 
-          <div className="bg-white/60 rounded-md p-3 border border-gray-200">
-            <p className="text-sm text-gray-600 font-medium mb-1">Suno prompt:</p>
-            <p className="text-sm text-gray-800">
+          <div className="bg-white/60 rounded-md p-3 border border-[rgba(90,140,255,0.1)]">
+            <p className="text-sm text-[rgba(180,200,240,0.5)] font-medium mb-1">Suno prompt:</p>
+            <p className="text-sm text-white">
               {showFullPrompt ? displayPrompt : truncatedPrompt}
             </p>
             {displayPrompt.length > 120 && (

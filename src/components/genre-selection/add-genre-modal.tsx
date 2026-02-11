@@ -79,7 +79,7 @@ export function AddGenreModal({
             {view === 'custom-prompt' && (
               <button
                 onClick={handleBackToChoice}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-1 hover:bg-[rgba(40,80,160,0.15)] rounded-full transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
@@ -94,7 +94,7 @@ export function AddGenreModal({
             <button
               onClick={handleSelectCustomPrompt}
               className={cn(
-                "w-full p-4 rounded-lg border-2 border-gray-200",
+                "w-full p-4 rounded-lg border-2 border-[rgba(90,140,255,0.1)]",
                 "hover:border-purple-400 hover:bg-purple-50 transition-all",
                 "flex items-start gap-4 text-left"
               )}
@@ -103,8 +103,8 @@ export function AddGenreModal({
                 <PenLine className="w-6 h-6 text-purple-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Egendefinert prompt</h3>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <h3 className="font-semibold text-white">Egendefinert prompt</h3>
+                <p className="text-sm text-[rgba(180,200,240,0.5)] mt-0.5">
                   Skriv din egen stil og beskrivelse
                 </p>
               </div>
@@ -113,7 +113,7 @@ export function AddGenreModal({
             <button
               onClick={handleSelectAI}
               className={cn(
-                "w-full p-4 rounded-lg border-2 border-gray-200",
+                "w-full p-4 rounded-lg border-2 border-[rgba(90,140,255,0.1)]",
                 "hover:border-orange-400 hover:bg-orange-50 transition-all",
                 "flex items-start gap-4 text-left"
               )}
@@ -122,8 +122,8 @@ export function AddGenreModal({
                 <Bot className="w-6 h-6 text-orange-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">AI-assistent</h3>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <h3 className="font-semibold text-white">AI-assistent</h3>
+                <p className="text-sm text-[rgba(180,200,240,0.5)] mt-0.5">
                   Fa hjelp til a lage en unik sjanger
                 </p>
               </div>
@@ -132,7 +132,7 @@ export function AddGenreModal({
             <button
               onClick={handleSelectLib}
               className={cn(
-                "w-full p-4 rounded-lg border-2 border-gray-200",
+                "w-full p-4 rounded-lg border-2 border-[rgba(90,140,255,0.1)]",
                 "hover:border-blue-400 hover:bg-blue-50 transition-all",
                 "flex items-start gap-4 text-left"
               )}
@@ -141,8 +141,8 @@ export function AddGenreModal({
                 <Library className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Bibliotek</h3>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <h3 className="font-semibold text-white">Bibliotek</h3>
+                <p className="text-sm text-[rgba(180,200,240,0.5)] mt-0.5">
                   Velg fra ferdige maler og arkiv
                 </p>
               </div>
@@ -152,29 +152,29 @@ export function AddGenreModal({
           // Custom Prompt View
           <div className="space-y-4 pt-2">
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+              <label className="text-sm font-medium text-[rgba(180,200,240,0.5)] mb-1.5 block">
                 Sjangernavn
               </label>
               <Input
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
                 placeholder="F.eks. Min Rock, Sommerviser..."
-                className="text-gray-900"
+                className="text-white"
                 autoFocus
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+              <label className="text-sm font-medium text-[rgba(180,200,240,0.5)] mb-1.5 block">
                 Suno prompt
               </label>
               <Textarea
                 value={customPrompt}
                 onChange={(e) => setCustomPrompt(e.target.value)}
                 placeholder="Beskriv stilen for Suno AI, f.eks: rock, electric guitar, energetic drums, powerful vocals, 120 bpm"
-                className="text-gray-900 min-h-[100px]"
+                className="text-white min-h-[100px]"
               />
-              <p className="text-xs text-gray-500 mt-1.5">
+              <p className="text-xs text-[rgba(180,200,240,0.5)] mt-1.5">
                 Tips: Beskriv instrumenter, tempo, stemning og stil
               </p>
             </div>

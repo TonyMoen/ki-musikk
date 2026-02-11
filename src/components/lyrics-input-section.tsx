@@ -130,7 +130,7 @@ export function LyricsInputSection({
                       "absolute bottom-2 left-3 text-xs flex items-center gap-1 transition-colors",
                       canGenerate
                         ? "text-primary hover:text-primary/80"
-                        : "text-gray-400 cursor-not-allowed"
+                        : "text-[rgba(130,170,240,0.45)] cursor-not-allowed"
                     )}
                   >
                     {isGenerating ? (
@@ -179,7 +179,7 @@ export function LyricsInputSection({
                 {FEATURES.ENABLE_PHONETIC_OPTIMIZATION && hasContent && !isGenerating && !isOptimizing && (
                   <button
                     onClick={onOptimizeLyrics}
-                    className="absolute bottom-2 right-4 text-xs text-gray-500 hover:text-primary flex items-center gap-1 transition-colors"
+                    className="absolute bottom-2 right-4 text-xs text-[rgba(180,200,240,0.5)] hover:text-primary flex items-center gap-1 transition-colors"
                   >
                     <Wand2 className="h-3 w-3" />
                     Optimaliser tekst
@@ -249,7 +249,7 @@ Du er min...`}
             {FEATURES.ENABLE_PHONETIC_OPTIMIZATION && hasContent && !isGenerating && !isOptimizing && (
               <button
                 onClick={onOptimizeLyrics}
-                className="absolute bottom-2 right-4 text-xs text-gray-500 hover:text-primary flex items-center gap-1 transition-colors"
+                className="absolute bottom-2 right-4 text-xs text-[rgba(180,200,240,0.5)] hover:text-primary flex items-center gap-1 transition-colors"
               >
                 <Wand2 className="h-3 w-3" />
                 Optimaliser tekst

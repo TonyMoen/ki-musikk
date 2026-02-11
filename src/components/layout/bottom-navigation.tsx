@@ -22,7 +22,7 @@ export function BottomNavigation() {
   ]
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 md:hidden z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-[#06090F] border-t border-[rgba(90,140,255,0.1)] md:hidden z-50">
       <div className="flex justify-around items-center h-16">
         {navItems.map((item) => {
           const Icon = item.icon
@@ -34,8 +34,8 @@ export function BottomNavigation() {
               href={item.href}
               className={`flex flex-col items-center justify-center flex-1 h-full relative ${
                 isActive
-                  ? 'text-amber-500'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'text-[#F26522]'
+                  : 'text-[rgba(180,200,240,0.5)] hover:text-white'
               }`}
             >
               <div className="relative">

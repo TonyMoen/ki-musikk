@@ -30,9 +30,9 @@ export function StepReview({
   return (
     <div className="space-y-5">
       {/* Lyrics summary card */}
-      <div className="rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)] p-4 space-y-2">
+      <div className="rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] p-4 space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          <p className="text-xs font-semibold text-[rgba(130,170,240,0.45)] uppercase tracking-wider">
             Sangtekst
           </p>
           <button
@@ -44,19 +44,19 @@ export function StepReview({
           </button>
         </div>
         <div className="relative">
-          <pre className="text-sm text-gray-300 font-mono whitespace-pre-wrap leading-relaxed">
+          <pre className="text-sm text-[rgba(180,200,240,0.5)] font-mono whitespace-pre-wrap leading-relaxed">
             {previewLines}
           </pre>
           {hasMoreLines && (
-            <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[rgba(255,255,255,0.03)] to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[rgba(20,40,80,0.35)] to-transparent pointer-events-none" />
           )}
         </div>
       </div>
 
       {/* Style summary card */}
-      <div className="rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)] p-4 space-y-2">
+      <div className="rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] p-4 space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          <p className="text-xs font-semibold text-[rgba(130,170,240,0.45)] uppercase tracking-wider">
             Stil & sjanger
           </p>
           <button
@@ -73,7 +73,7 @@ export function StepReview({
           </span>
         )}
         {styleText && (
-          <p className="text-sm text-gray-300">{styleText}</p>
+          <p className="text-sm text-[rgba(180,200,240,0.5)]">{styleText}</p>
         )}
       </div>
 
@@ -82,7 +82,7 @@ export function StepReview({
         <button
           type="button"
           onClick={onBack}
-          className="px-5 py-2.5 text-sm font-medium text-gray-400 hover:text-white transition-colors rounded-xl"
+          className="px-5 py-2.5 text-sm font-medium text-[rgba(130,170,240,0.45)] hover:text-white transition-colors rounded-xl"
         >
           ← Tilbake
         </button>

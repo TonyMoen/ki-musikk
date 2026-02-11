@@ -73,7 +73,7 @@ export function StepLyrics({
   return (
     <div className="space-y-5">
       {/* Pill toggle */}
-      <div className="flex bg-[rgba(255,255,255,0.06)] rounded-full p-1 w-fit mx-auto">
+      <div className="flex bg-[rgba(40,80,160,0.15)] rounded-full p-1 w-fit mx-auto">
         <button
           type="button"
           onClick={() => onCustomTextModeChange(false)}
@@ -82,7 +82,7 @@ export function StepLyrics({
             'px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200',
             !isCustomTextMode
               ? 'bg-[#F26522] text-white'
-              : 'text-gray-400 hover:text-gray-300'
+              : 'text-[rgba(130,170,240,0.45)] hover:text-white'
           )}
         >
           KI genererer
@@ -95,7 +95,7 @@ export function StepLyrics({
             'px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200',
             isCustomTextMode
               ? 'bg-[#F26522] text-white'
-              : 'text-gray-400 hover:text-gray-300'
+              : 'text-[rgba(130,170,240,0.45)] hover:text-white'
           )}
         >
           Egen tekst
@@ -117,8 +117,8 @@ export function StepLyrics({
                   disabled={isGenerating}
                   rows={5}
                   className={cn(
-                    'w-full rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(0,0,0,0.3)] px-4 py-3',
-                    'text-sm text-white placeholder:text-gray-500 resize-none',
+                    'w-full rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(8,16,35,0.7)] px-4 py-3',
+                    'text-sm text-white placeholder:text-[rgba(130,170,240,0.25)] resize-none',
                     'focus:outline-none focus:border-[#F26522]/50 transition-colors',
                     isGenerating && 'opacity-50'
                   )}
@@ -137,7 +137,7 @@ export function StepLyrics({
                   'w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all',
                   isConceptValid && !isGenerating
                     ? 'bg-[#F26522] text-white hover:bg-[#E05A1B] shadow-lg shadow-[#F26522]/20'
-                    : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                    : 'bg-[rgba(40,80,160,0.15)] text-[rgba(180,200,240,0.5)] cursor-not-allowed'
                 )}
               >
                 {isGenerating ? (
@@ -165,7 +165,7 @@ export function StepLyrics({
                   readOnly={isAnimating}
                   maxLength={2000}
                   className={cn(
-                    'w-full min-h-[280px] rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(0,0,0,0.3)] px-4 py-3',
+                    'w-full min-h-[280px] rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(8,16,35,0.7)] px-4 py-3',
                     'text-sm text-white font-mono leading-relaxed resize-none whitespace-pre-wrap',
                     'focus:outline-none focus:border-[#F26522]/50 transition-colors',
                     isAnimating && 'cursor-pointer'
@@ -183,7 +183,7 @@ export function StepLyrics({
                 <button
                   type="button"
                   onClick={handleResetDescription}
-                  className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 text-sm text-[rgba(130,170,240,0.45)] hover:text-white transition-colors"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   Ny beskrivelse
@@ -205,7 +205,7 @@ export function StepLyrics({
               maxLength={2000}
               rows={12}
               className={cn(
-                'w-full min-h-[280px] rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(0,0,0,0.3)] px-4 py-3',
+                'w-full min-h-[280px] rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(8,16,35,0.7)] px-4 py-3',
                 'text-sm text-white font-mono leading-relaxed resize-none whitespace-pre-wrap',
                 'focus:outline-none focus:border-[#F26522]/50 transition-colors'
               )}

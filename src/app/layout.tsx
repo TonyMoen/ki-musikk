@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   keywords: "norsk musikk, KI sanggenerator, norske sanger, festsanger, personlige sanger, norsk uttale",
   authors: [{ name: "KI MUSIKK" }],
   icons: {
-    icon: "/55-558640_free-png-ios-emoji-musical-note-png-images.png",
-    apple: "/55-558640_free-png-ios-emoji-musical-note-png-images.png",
+    icon: "/ki-musikk.png",
+    apple: "/ki-musikk.png",
   },
   openGraph: {
     title: "KI MUSIKK - Lag norske sanger med KI",

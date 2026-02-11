@@ -25,12 +25,12 @@ function isArchivedGenre(genre: LibraryGenre | ArchivedGenre): genre is Archived
 
 export function GenreCard({ genre, actions, showArchiveDate }: GenreCardProps) {
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors">
+    <div className="bg-white border border-[rgba(90,140,255,0.1)] rounded-lg p-4 hover:border-[rgba(90,140,255,0.13)] transition-colors">
       <div className="flex items-start justify-between gap-4 mb-2">
         <div className="flex-1 min-w-0">
-          <h4 className="font-bold text-gray-900 truncate">{genre.display_name}</h4>
+          <h4 className="font-bold text-white truncate">{genre.display_name}</h4>
           {showArchiveDate && isArchivedGenre(genre) && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[rgba(180,200,240,0.5)] mt-1">
               Arkivert {formatDistanceToNow(new Date(genre.archivedAt), {
                 addSuffix: true,
                 locale: nb
@@ -50,7 +50,7 @@ export function GenreCard({ genre, actions, showArchiveDate }: GenreCardProps) {
                 action.variant === 'primary'
                   ? 'bg-primary hover:bg-primary/90 text-white border-primary'
                   : action.variant === 'secondary'
-                  ? 'bg-transparent hover:bg-gray-100'
+                  ? 'bg-transparent hover:bg-[rgba(40,80,160,0.15)]'
                   : ''
               }
             >
@@ -59,7 +59,7 @@ export function GenreCard({ genre, actions, showArchiveDate }: GenreCardProps) {
           ))}
         </div>
       </div>
-      <p className="text-sm text-gray-600 line-clamp-2">{genre.sunoPrompt}</p>
+      <p className="text-sm text-[rgba(180,200,240,0.5)] line-clamp-2">{genre.sunoPrompt}</p>
     </div>
   )
 }

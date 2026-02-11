@@ -39,7 +39,7 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
                   'w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300',
                   isCurrent && 'bg-[#F26522] text-white shadow-lg shadow-[#F26522]/25',
                   isCompleted && 'border-2 border-[#F26522] text-[#F26522] group-hover:bg-[#F26522]/10',
-                  isFuture && 'border-2 border-gray-600 text-gray-500'
+                  isFuture && 'border-2 border-[rgba(90,140,255,0.13)] text-[rgba(180,200,240,0.5)]'
                 )}
               >
                 {isCompleted ? (
@@ -53,7 +53,7 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
                   'text-xs font-medium whitespace-nowrap',
                   isCurrent && 'text-white',
                   isCompleted && 'text-[#F26522]',
-                  isFuture && 'text-gray-500'
+                  isFuture && 'text-[rgba(180,200,240,0.5)]'
                 )}
               >
                 {step.label}
@@ -65,7 +65,7 @@ export function StepIndicator({ currentStep, onStepClick }: StepIndicatorProps) 
               <div
                 className={cn(
                   'flex-1 h-[2px] mx-2 mt-[-20px] transition-colors duration-300',
-                  step.number < currentStep ? 'bg-[#F26522]' : 'bg-gray-700'
+                  step.number < currentStep ? 'bg-[#F26522]' : 'bg-[rgba(90,140,255,0.1)]'
                 )}
               />
             )}

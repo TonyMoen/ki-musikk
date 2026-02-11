@@ -71,7 +71,7 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
           <DialogTitle className="text-xl sm:text-2xl text-white">
             Kjøp kreditter
           </DialogTitle>
-          <DialogDescription className="text-gray-300">
+          <DialogDescription className="text-[rgba(180,200,240,0.5)]">
             Velg en kredittpakke for å lage norske sanger
           </DialogDescription>
         </DialogHeader>
@@ -103,7 +103,7 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
                 <div className="text-xl sm:text-2xl font-semibold text-white">
                   {pkg.credits.toLocaleString()} kreditter
                 </div>
-                <div className="text-xs sm:text-sm text-gray-400">{pkg.description}</div>
+                <div className="text-xs sm:text-sm text-[rgba(130,170,240,0.45)]">{pkg.description}</div>
               </CardContent>
 
               <CardFooter className="pb-3 sm:pb-6">
@@ -126,7 +126,7 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
           ))}
         </div>
 
-        <div className="flex items-center justify-center gap-2 text-xs text-gray-400 mt-2 sm:mt-4">
+        <div className="flex items-center justify-center gap-2 text-xs text-[rgba(130,170,240,0.45)] mt-2 sm:mt-4">
           <svg
             viewBox="0 0 24 24"
             className="h-5 w-5"

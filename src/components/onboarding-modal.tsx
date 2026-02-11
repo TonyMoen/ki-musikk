@@ -166,11 +166,11 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
             <div
               key={step}
               className={`h-2 w-8 rounded-full transition-colors ${
-                step <= currentStep ? 'bg-[#E94560]' : 'bg-gray-200'
+                step <= currentStep ? 'bg-[#E94560]' : 'bg-[rgba(20,40,80,0.35)]'
               }`}
             />
           ))}
-          <span className="ml-2 text-sm text-gray-500">{currentStep} / 3</span>
+          <span className="ml-2 text-sm text-[rgba(180,200,240,0.5)]">{currentStep} / 3</span>
         </div>
 
         {/* Step Content */}
@@ -181,7 +181,7 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
               <h3 className="text-lg font-semibold text-center">
                 Velg dine favorittsjangre
               </h3>
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-sm text-[rgba(180,200,240,0.5)] text-center">
                 {selectedGenres.length} av 3 valgt
               </p>
 
@@ -190,7 +190,7 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
                   {[...Array(8)].map((_, i) => (
                     <div
                       key={i}
-                      className="h-12 w-32 rounded-lg bg-gray-200 animate-pulse"
+                      className="h-12 w-32 rounded-lg bg-[rgba(20,40,80,0.35)] animate-pulse"
                     />
                   ))}
                 </div>
@@ -215,15 +215,15 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
                             isSelected
                               ? 'text-white border-2 border-white shadow-lg'
                               : canSelect
-                              ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                              : 'border border-gray-200 text-gray-400 cursor-not-allowed'
+                              ? 'border border-[rgba(90,140,255,0.13)] text-[rgba(180,200,240,0.5)] hover:bg-[rgba(40,80,160,0.15)]'
+                              : 'border border-[rgba(90,140,255,0.1)] text-[rgba(130,170,240,0.45)] cursor-not-allowed'
                           }
                           focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-2
                         `}
                         style={{
                           background: isSelected
                             ? `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`
-                            : 'white'
+                            : 'transparent'
                         }}
                       >
                         {isSelected && (
@@ -256,12 +256,12 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
                 maxLength={500}
               />
 
-              <p className="text-sm text-gray-500 text-right">
+              <p className="text-sm text-[rgba(180,200,240,0.5)] text-right">
                 {songConcept.length} / 500 tegn
               </p>
 
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-600">
+              <div className="bg-[rgba(20,40,80,0.35)] rounded-lg p-4">
+                <p className="text-sm text-[rgba(180,200,240,0.5)]">
                   <strong>Tips:</strong> Jo mer detaljer du gir, jo bedre blir sangen!
                   Inkluder gjerne navn, hobbyer, eller morsomme detaljer.
                 </p>
@@ -280,14 +280,14 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
 
               <div className="space-y-2">
                 <p className="text-lg font-medium">Alt er klart!</p>
-                <p className="text-gray-600">
+                <p className="text-[rgba(180,200,240,0.5)]">
                   Vi har det vi trenger for å lage din første sang.
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 text-left">
+              <div className="bg-[rgba(20,40,80,0.35)] rounded-lg p-4 text-left">
                 <h4 className="font-semibold mb-2">Dine valg:</h4>
-                <ul className="space-y-1 text-sm text-gray-700">
+                <ul className="space-y-1 text-sm text-[rgba(180,200,240,0.5)]">
                   <li>
                     🎸 Sjangre:{' '}
                     {selectedGenres.length > 0
@@ -308,8 +308,8 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
                 </ul>
               </div>
 
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="text-sm text-green-800">
+              <div className="bg-green-900/20 border border-green-800 rounded-lg p-4">
+                <p className="text-sm text-green-300">
                   <strong>🎁 Du har 5 gratis sanger!</strong>
                   <br />
                   Trykk Start for å lage din første sang nå.
@@ -324,7 +324,7 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
           <Button
             variant="ghost"
             onClick={handleSkip}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-[rgba(180,200,240,0.5)] hover:text-[rgba(180,200,240,0.5)]"
           >
             Hopp over
           </Button>

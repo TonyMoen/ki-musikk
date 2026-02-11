@@ -25,12 +25,12 @@ export function LyricsEditor({
       <div className="flex items-center justify-between">
         <label
           htmlFor="lyrics-editor"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-[rgba(180,200,240,0.5)]"
         >
           Sangtekst
         </label>
         {value && (
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-[rgba(180,200,240,0.5)]">
             {lineCount} {lineCount === 1 ? 'linje' : 'linjer'}
           </span>
         )}
@@ -45,12 +45,12 @@ export function LyricsEditor({
         className={cn(
           'min-h-[200px] font-mono text-sm leading-relaxed resize-none whitespace-pre-wrap',
           value && 'bg-white',
-          !value && 'bg-gray-50'
+          !value && 'bg-[rgba(20,40,80,0.35)]'
         )}
       />
 
       {value && (
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[rgba(180,200,240,0.5)]">
           Du kan redigere teksten etter generering
         </p>
       )}

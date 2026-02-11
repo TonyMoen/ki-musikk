@@ -141,7 +141,7 @@ export function TransactionHistory({
 
   if (transactions.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500">
+      <div className="text-center py-12 text-[rgba(180,200,240,0.5)]">
         <p className="text-lg font-medium">Ingen transaksjoner ennå</p>
         <p className="text-sm mt-2">Kjøp kreditter for å komme i gang!</p>
       </div>
@@ -193,7 +193,7 @@ export function TransactionHistory({
                   <div className="flex flex-col">
                     <span>{transaction.description}</span>
                     {transaction.stripe_session_id && (
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-[rgba(180,200,240,0.5)]">
                         Økt: {transaction.stripe_session_id.substring(0, 12)}...
                       </span>
                     )}
@@ -220,7 +220,7 @@ export function TransactionHistory({
       {/* Pagination */}
       {pagination.totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-[rgba(180,200,240,0.5)]">
             Side {pagination.currentPage} av {pagination.totalPages}
             {' '}({pagination.totalCount} totalt)
           </p>
