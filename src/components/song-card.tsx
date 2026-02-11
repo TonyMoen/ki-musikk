@@ -31,7 +31,7 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
   const [isDownloading, setIsDownloading] = useState(false)
   const [imageError, setImageError] = useState(false)
   const { showError } = useErrorToast()
-  const gradientFrom = song.gradient_colors?.from || '#E94560'
+  const gradientFrom = song.gradient_colors?.from || '#FF6B35'
   const gradientTo = song.gradient_colors?.to || '#FFC93C'
   const hasImage = song.image_url && !imageError
 
@@ -144,7 +144,7 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
               {song.genre}
             </span>
             {isGenerating && !isPartial ? (
-              <span className="text-xs text-[#E94560] font-medium">
+              <span className="text-xs text-[#FF6B35] font-medium">
                 Genererer...
               </span>
             ) : isPartial ? (

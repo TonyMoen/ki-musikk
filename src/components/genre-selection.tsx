@@ -206,7 +206,7 @@ export function GenreSelection({
           {displayGenres.map((genre) => {
             const isSelected = selectedId === genre.id
             const gradientFrom = genre.gradient_colors?.from || '#FF6B35'
-            const gradientTo = genre.gradient_colors?.to || '#FF006E'
+            const gradientTo = genre.gradient_colors?.to || '#E85A2A'
 
             return (
               <Button

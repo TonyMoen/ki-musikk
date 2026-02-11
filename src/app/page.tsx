@@ -514,13 +514,6 @@ export default function Home() {
           Lag den perfekte festsangen med KI - autentisk norsk uttale!
         </p>
 
-        {/* Genre Selection Section */}
-        <div className={`mb-8 rounded-lg transition-all duration-500 ${
-          showGenreSpotlight ? 'ring-4 ring-[#E94560] ring-opacity-60 animate-pulse p-4 bg-pink-50/30' : ''
-        }`}>
-          <GenreSelection onGenreSelect={handleGenreSelect} selectedGenreId={selectedGenre?.id} />
-        </div>
-
         {/* Lyrics Input Section - Main textarea + AI generation */}
         <div className="mb-8">
           <LyricsInputSection
@@ -536,6 +529,13 @@ export default function Home() {
             isCustomTextMode={isCustomTextMode}
             onCustomTextModeChange={setIsCustomTextMode}
           />
+        </div>
+
+        {/* Genre Selection Section */}
+        <div className={`mb-8 rounded-lg transition-all duration-500 ${
+          showGenreSpotlight ? 'ring-4 ring-[#FF6B35] ring-opacity-60 animate-pulse p-4 bg-orange-50/30' : ''
+        }`}>
+          <GenreSelection onGenreSelect={handleGenreSelect} selectedGenreId={selectedGenre?.id} />
         </div>
 
         {/* Generate Song Button - Main CTA (always visible, centered) */}
