@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Home, Music, ArrowLeft } from 'lucide-react'
+import { Home, ArrowLeft } from 'lucide-react'
+import { AppLogo } from '@/components/app-logo'
 
 export default function NotFound() {
   return (
@@ -32,7 +33,7 @@ export default function NotFound() {
           </Button>
           <Button asChild variant="outline">
             <Link href="/sanger">
-              <Music className="mr-2 h-4 w-4" />
+              <AppLogo size={16} className="mr-2" />
               Mine sanger
             </Link>
           </Button>

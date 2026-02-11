@@ -1,7 +1,8 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { Music, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { AppLogo } from '@/components/app-logo'
 
 interface StepReviewProps {
   lyrics: string
@@ -108,7 +109,7 @@ export function StepReview({
               </>
             ) : (
               <>
-                <Music className="h-4 w-4" />
+                <AppLogo size={16} />
                 Lag sang
               </>
             )}

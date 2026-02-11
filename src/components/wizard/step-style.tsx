@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { Sparkles, Music, Guitar, Mic2, Radio, Headphones, Heart, Waves, Drum, Piano } from 'lucide-react'
+import { Sparkles, Guitar, Mic2, Radio, Headphones, Heart, Waves, Drum, Piano } from 'lucide-react'
 import { STANDARD_GENRES } from '@/lib/standard-genres'
 import { FEATURES } from '@/lib/constants'
 import { WizardNavButtons } from './wizard-nav-buttons'
@@ -18,8 +18,8 @@ interface Genre {
 // Map genre names (lowercase) to Lucide icons
 const GENRE_ICON_MAP: Record<string, LucideIcon> = {
   'country': Guitar,
-  'norsk pop': Music,
-  'pop': Music,
+  'norsk pop': Radio,
+  'pop': Radio,
   'rap/hip-hop': Mic2,
   'rap': Mic2,
   'hip-hop': Mic2,
@@ -48,7 +48,7 @@ const GENRE_ICON_MAP: Record<string, LucideIcon> = {
 }
 
 function getGenreIcon(genreName: string): LucideIcon {
-  return GENRE_ICON_MAP[genreName.toLowerCase()] || Music
+  return GENRE_ICON_MAP[genreName.toLowerCase()] || Headphones
 }
 
 interface StepStyleProps {

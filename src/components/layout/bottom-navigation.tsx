@@ -2,7 +2,8 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Home, Music, Settings } from 'lucide-react'
+import { Home, Settings } from 'lucide-react'
+import { AppLogo } from '@/components/app-logo'
 import { useCreditsStore } from '@/stores/credits-store'
 import { useEffect } from 'react'
 
@@ -16,7 +17,7 @@ export function BottomNavigation() {
 
   const navItems = [
     { href: '/', icon: Home, label: 'Hjem' },
-    { href: '/sanger', icon: Music, label: 'Sanger' },
+    { href: '/sanger', icon: ({ className }: { className?: string }) => <AppLogo size={24} className={className} />, label: 'Sanger' },
     { href: '/innstillinger', icon: Settings, label: 'Innstillinger' }
   ]
 

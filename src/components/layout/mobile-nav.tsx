@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   Menu,
-  Music,
   Home,
   CreditCard,
   Settings,
@@ -23,6 +22,7 @@ import {
   LogIn,
   Sparkles,
 } from 'lucide-react'
+import { AppLogo } from '@/components/app-logo'
 
 interface MobileNavProps {
   user: User | null
@@ -53,7 +53,7 @@ export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: Mobile
 
   // Items that require auth
   const authRequiredItems = [
-    { href: '/sanger', icon: Music, label: 'Mine Sanger', requiresAuth: true },
+    { href: '/sanger', icon: ({ className }: { className?: string }) => <AppLogo size={20} className={className} />, label: 'Mine Sanger', requiresAuth: true },
   ]
 
   // Items that don't require auth
@@ -75,7 +75,7 @@ export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: Mobile
       <SheetContent side="right" className="w-80 p-0">
         <SheetHeader className="px-6 py-4 border-b">
           <SheetTitle className="flex items-center gap-2">
-            <Music className="h-6 w-6 text-primary" />
+            <AppLogo size={24} />
             <span>KI MUSIKK</span>
           </SheetTitle>
         </SheetHeader>
@@ -217,9 +217,9 @@ export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: Mobile
                 </Button>
               </SheetClose>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <SheetClose asChild>
-                  <Link href="/auth/logg-inn">
+                  <Link href="/auth/logg-inn" className="block">
                     <Button variant="outline" className="w-full justify-start gap-3">
                       <LogIn className="h-5 w-5" />
                       Logg inn
@@ -227,7 +227,7 @@ export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: Mobile
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="/auth/logg-inn">
+                  <Link href="/auth/logg-inn" className="block">
                     <Button className="w-full justify-start gap-3">
                       <Sparkles className="h-5 w-5" />
                       Kom i gang

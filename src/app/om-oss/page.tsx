@@ -1,4 +1,5 @@
-import { Music, Sparkles, Heart, Globe } from 'lucide-react'
+import { Sparkles, Heart, Globe } from 'lucide-react'
+import { AppLogo } from '@/components/app-logo'
 
 export default function AboutPage() {
   return (
@@ -15,7 +16,7 @@ export default function AboutPage() {
           <div className="flex gap-4">
             <div className="flex-shrink-0">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Music className="w-6 h-6 text-primary" />
+                <AppLogo size={24} />
               </div>
             </div>
             <div>

@@ -16,7 +16,8 @@
  */
 
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { Loader2, XCircle, CheckCircle, Play, Music, Mic, Guitar, Headphones, PartyPopper } from 'lucide-react'
+import { Loader2, XCircle, CheckCircle, Play, Mic, Guitar, Headphones, PartyPopper } from 'lucide-react'
+import { AppLogo } from '@/components/app-logo'
 import {
   Dialog,
   DialogContent,
@@ -57,12 +58,12 @@ interface SongResponse {
 // Conditionally include phonetic optimization stage based on feature flag
 const GENERATION_STAGES = FEATURES.ENABLE_PHONETIC_OPTIMIZATION
   ? [
-      { min: 0, max: 30, Icon: Music, text: 'AI skriver norske tekster...' },
+      { min: 0, max: 30, Icon: ({ className }: { className?: string }) => <AppLogo size={20} className={className} />, text: 'AI skriver norske tekster...' },
       { min: 30, max: 50, Icon: Mic, text: 'Optimerer uttale...' },
       { min: 50, max: 100, Icon: Guitar, text: 'Genererer musikk med Suno...' },
     ]
   : [
-      { min: 0, max: 50, Icon: Music, text: 'AI skriver norske tekster...' },
+      { min: 0, max: 50, Icon: ({ className }: { className?: string }) => <AppLogo size={20} className={className} />, text: 'AI skriver norske tekster...' },
       { min: 50, max: 100, Icon: Guitar, text: 'Genererer musikk med Suno...' },
     ]
 

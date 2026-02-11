@@ -11,7 +11,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { createClient } from '@/lib/supabase/client'
-import { ChevronLeft, ChevronRight, Sparkles, Music, Check } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Sparkles, Check } from 'lucide-react'
+import { AppLogo } from '@/components/app-logo'
 
 interface GradientColors {
   from: string
@@ -273,7 +274,7 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
             <div className="space-y-6 text-center">
               <div className="flex items-center justify-center">
                 <div className="rounded-full bg-gradient-to-r from-[#E94560] to-[#FFC93C] p-4">
-                  <Music className="h-12 w-12 text-white" />
+                  <AppLogo size={48} />
                 </div>
               </div>
 
@@ -346,7 +347,7 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
                 onClick={handleComplete}
                 className="bg-[#E94560] hover:bg-[#D62839]"
               >
-                <Music className="h-4 w-4 mr-2" />
+                <AppLogo size={16} className="mr-2" />
                 Start
               </Button>
             )}

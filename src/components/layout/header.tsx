@@ -10,7 +10,7 @@ import { MobileNav } from './mobile-nav'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCreditsStore } from '@/stores/credits-store'
-import { Music } from 'lucide-react'
+import { AppLogo } from '@/components/app-logo'
 
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
@@ -75,7 +75,7 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <Music className="h-8 w-8 text-primary" />
+            <AppLogo size={32} />
             <span className="text-xl font-bold text-foreground hidden sm:inline">
               KI MUSIKK
             </span>
