@@ -78,7 +78,7 @@ export default function PricingPage() {
             Velg din pakke
           </h1>
           <p className="text-lg text-[rgba(180,200,240,0.5)]">
-            Kjøp kreditter og lag norske sanger med KI
+            Engangskjøp, ingen abonnement
           </p>
         </div>
 
@@ -95,7 +95,7 @@ export default function PricingPage() {
                 className={`
                   relative rounded-2xl transition-all duration-200 cursor-pointer
                   ${isSelected
-                    ? 'md:scale-105 md:z-10 border-2 border-[#FF5B24] bg-[rgba(242,101,34,0.06)] shadow-[0_0_30px_rgba(242,101,34,0.12)]'
+                    ? 'md:scale-105 md:z-10 border-2 border-[#FF5B24] bg-[rgba(20,40,80,0.35)] shadow-[0_0_30px_rgba(242,101,34,0.12)]'
                     : 'border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] hover:border-[rgba(90,140,255,0.2)]'
                   }
                 `}
@@ -157,7 +157,9 @@ export default function PricingPage() {
                         ? 'bg-[#FF5B24] hover:bg-[#E54D1C] text-white'
                         : pkg.id === 'premium'
                           ? 'border-[#FF5B24]/40 text-[#FF5B24] hover:bg-[rgba(242,101,34,0.1)] hover:border-[#FF5B24]/60'
-                          : 'border-[rgba(90,140,255,0.2)] text-[rgba(180,200,240,0.7)] hover:bg-[rgba(40,80,160,0.15)] hover:text-white hover:border-[rgba(90,140,255,0.3)]'
+                          : pkg.id === 'starter'
+                            ? 'border-[rgba(90,140,255,0.1)] bg-[rgba(40,80,160,0.1)] text-[rgba(180,200,240,0.5)] hover:bg-[rgba(40,80,160,0.15)] hover:text-[rgba(180,200,240,0.7)]'
+                            : 'border-[rgba(90,140,255,0.2)] text-[rgba(180,200,240,0.7)] hover:bg-[rgba(40,80,160,0.15)] hover:text-white hover:border-[rgba(90,140,255,0.3)]'
                       }
                     `}
                   >
@@ -216,7 +218,7 @@ export default function PricingPage() {
                 </svg>
               </div>
               <p className="font-medium text-white">Utløper aldri</p>
-              <p>Kredittene dine varer for alltid</p>
+              <p>Ingen utløpsdato</p>
             </div>
           </div>
         </div>

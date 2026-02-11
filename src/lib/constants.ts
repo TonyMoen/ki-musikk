@@ -16,7 +16,7 @@ export interface CreditPackage {
 export const CREDIT_PACKAGES: CreditPackage[] = [
   {
     id: 'starter',
-    name: 'Liten',
+    name: 'Allsang',
     priceNOK: 99,
     priceOre: 9900,
     credits: 100,
@@ -24,7 +24,7 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
   },
   {
     id: 'pro',
-    name: 'Medium',
+    name: 'Hitmaker',
     priceNOK: 199,
     priceOre: 19900,
     credits: 250,
@@ -33,7 +33,7 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
   },
   {
     id: 'premium',
-    name: 'Stor',
+    name: 'Headliner',
     priceNOK: 499,
     priceOre: 49900,
     credits: 1000,
