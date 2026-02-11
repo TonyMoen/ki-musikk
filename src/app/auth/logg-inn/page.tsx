@@ -5,27 +5,16 @@
  *
  * Displays Google OAuth and Vipps Login buttons for user authentication.
  * After successful authentication, users are redirected to the home page.
- *
- * UX:
- * - Centered card layout with KI MUSIKK branding
- * - "Logg inn med Vipps" button (primary, Vipps orange)
- * - "Logg inn med Google" button (secondary)
- * - Loading states during OAuth redirects
- *
- * Flow:
- * 1. User clicks login button (Vipps or Google)
- * 2. Redirected to OAuth consent screen
- * 3. After granting permission, redirected to respective callback
- * 4. Callback handler creates session and redirects to home page
  */
 
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Loader2, Sparkles } from 'lucide-react';
 import { Suspense } from 'react';
+import Link from 'next/link';
 
 function LoginContent() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -33,7 +22,6 @@ function LoginContent() {
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
 
-  // Check for error from callback
   const errorParam = searchParams.get('error');
   const errorMessage = errorParam ? getErrorMessage(errorParam) : null;
 
@@ -66,28 +54,79 @@ function LoginContent() {
   const handleVippsSignIn = () => {
     setIsVippsLoading(true);
     setError(null);
-    // Redirect to Vipps OAuth initiation route
     window.location.href = '/api/auth/vipps';
   };
 
   const displayError = error || errorMessage;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center space-y-3">
-          <CardTitle className="text-3xl font-bold text-white">
-            Velkommen til KI MUSIKK
-          </CardTitle>
-          <div className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#E94560]/10 to-[#FFC93C]/10 border border-[#E94560]/20 rounded-full px-4 py-2">
-            <span className="text-2xl">🎁</span>
-            <span className="text-base font-semibold text-[#E94560]">5 gratis sanger ved registrering!</span>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      {/* Background waveform decoration */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <svg
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-[0.03]"
+          viewBox="0 0 400 400"
+          fill="none"
+        >
+          {/* Concentric sound wave rings */}
+          <circle cx="200" cy="200" r="60" stroke="#FF5B24" strokeWidth="1.5" />
+          <circle cx="200" cy="200" r="100" stroke="#FF5B24" strokeWidth="1" />
+          <circle cx="200" cy="200" r="140" stroke="#FF5B24" strokeWidth="0.8" />
+          <circle cx="200" cy="200" r="180" stroke="#FF5B24" strokeWidth="0.5" />
+          {/* Waveform bars */}
+          {[...Array(40)].map((_, i) => {
+            const x = 20 + i * 9;
+            const h = 15 + Math.sin(i * 0.5) * 30 + Math.cos(i * 0.3) * 20;
+            return (
+              <rect
+                key={i}
+                x={x}
+                y={350 - h / 2}
+                width="4"
+                height={h}
+                rx="2"
+                fill="#FF5B24"
+                opacity={0.6 + Math.sin(i * 0.4) * 0.4}
+              />
+            );
+          })}
+        </svg>
+      </div>
+
+      {/* Social proof - above the card */}
+      <div className="flex flex-col items-center mb-6 relative z-10">
+        <div className="flex items-center gap-2 text-sm text-[rgba(180,200,240,0.5)]">
+          <svg className="h-5 w-5 text-[#1DB954]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+          </svg>
+          <span>Lagd av <strong className="text-white">Grøftefyll</strong></span>
+        </div>
+        <p className="text-xs text-[rgba(130,170,240,0.45)] mt-1">
+          Norsk AI-artist med 80.000+ månedlige lyttere på Spotify
+        </p>
+      </div>
+
+      {/* Tagline */}
+      <div className="text-center mb-8 relative z-10">
+        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
+          Velkommen til KI MUSIKK
+        </h1>
+        <p className="text-[rgba(180,200,240,0.5)]">
+          Lag norske sanger med KI – helt gratis å prøve
+        </p>
+      </div>
+
+      {/* Login Card */}
+      <Card className="w-full max-w-md shadow-lg relative z-10">
+        <CardContent className="p-6 space-y-5">
+          {/* Free songs banner - info style with left accent */}
+          <div className="flex items-center gap-3 bg-[rgba(242,101,34,0.06)] border-l-[3px] border-l-[#FF5B24] rounded-r-lg px-4 py-3">
+            <Sparkles className="h-5 w-5 text-[#FF5B24] flex-shrink-0" />
+            <span className="text-sm font-medium text-[rgba(180,200,240,0.7)]">
+              <strong className="text-white">5 gratis sanger</strong> ved registrering
+            </span>
           </div>
-          <CardDescription className="text-base">
-            Lag norske sanger med KI – helt gratis å prøve
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+
           {displayError && (
             <div className="bg-red-900/20 border border-red-800 rounded-md p-3">
               <p className="text-sm text-red-200">{displayError}</p>
@@ -116,21 +155,22 @@ function LoginContent() {
             )}
           </Button>
 
+          {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t border-[rgba(90,140,255,0.15)]" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-[rgba(130,170,240,0.45)]">eller</span>
+              <span className="bg-card px-3 text-[rgba(130,170,240,0.45)] font-medium">eller</span>
             </div>
           </div>
 
-          {/* Google Login Button - Secondary */}
+          {/* Google Login Button - with visible border */}
           <Button
             onClick={handleGoogleSignIn}
             disabled={isGoogleLoading || isVippsLoading}
             variant="outline"
-            className="w-full h-12 text-base font-medium"
+            className="w-full h-12 text-base font-medium border-[rgba(90,140,255,0.2)] bg-[rgba(20,40,80,0.35)] hover:bg-[rgba(40,80,160,0.2)] text-white"
           >
             {isGoogleLoading ? (
               <>
@@ -162,21 +202,17 @@ function LoginContent() {
             )}
           </Button>
 
-          <p className="text-xs text-center text-[rgba(130,170,240,0.45)] mt-4">
-            Ved å logge inn godtar du våre vilkår og personvernregler
+          {/* Legal text with clickable links */}
+          <p className="text-xs text-center text-[rgba(130,170,240,0.45)] pt-1">
+            Ved å logge inn godtar du våre{' '}
+            <Link href="/vilkar" className="text-[#FF5B24] hover:underline">
+              vilkår
+            </Link>{' '}
+            og{' '}
+            <Link href="/personvern" className="text-[#FF5B24] hover:underline">
+              personvernregler
+            </Link>
           </p>
-
-          <div className="mt-6 pt-4 border-t border-[rgba(90,140,255,0.1)]">
-            <div className="flex items-center justify-center gap-2 text-sm text-[rgba(180,200,240,0.5)]">
-              <svg className="h-5 w-5 text-[#1DB954]" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-              </svg>
-              <span>Lagd av <strong className="text-white">Grøftefyll</strong></span>
-            </div>
-            <p className="text-xs text-center text-[rgba(130,170,240,0.45)] mt-1">
-              Norsk AI-artist med 80.000+ månedlige lyttere på Spotify
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
