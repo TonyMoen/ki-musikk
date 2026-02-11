@@ -112,42 +112,17 @@ export function HomepageSongs() {
       const song = data.data
 
       if (song.status === 'partial') {
-        // Early playback available (FIRST_SUCCESS)
-        console.log('[HomepageSongs] Partial status detected:', {
-          songId,
-          streamAudioUrl: song.streamAudioUrl,
-          isAlreadyPartial: generatingSong.isPartial
-        })
-        if (song.streamAudioUrl && !generatingSong.isPartial) {
-          console.log('[HomepageSongs] Updating song to partial with URL:', song.streamAudioUrl)
-          updateGeneratingSong(songId, {
-            isPartial: true,
-            streamAudioUrl: song.streamAudioUrl,
-            duration: song.duration
-          })
-
-          toast({
-            title: `"${generatingSong.title}" klar! 🎵`,
-            description: 'Du kan nå spille av mens vi ferdigstiller'
-          })
-        }
+        // Still generating — keep polling, no preview
         pollingAttemptsRef.current.set(songId, attempts + 1)
       } else if (song.status === 'completed') {
         // Success - remove from generating and refresh list
         removeGeneratingSong(songId)
         pollingAttemptsRef.current.delete(songId)
 
-        if (!generatingSong.isPartial) {
-          toast({
-            title: `"${generatingSong.title}" er klar! 🎉`,
-            description: 'Sangen er ferdig generert'
-          })
-        } else {
-          toast({
-            title: `"${generatingSong.title}" ferdigstilt! ✨`,
-            description: 'Nå i full kvalitet'
-          })
-        }
+        toast({
+          title: `"${generatingSong.title}" er klar!`,
+          description: 'Sangen er ferdig generert'
+        })
 
         // Refresh songs list to show the new song
         fetchSongs(false)
@@ -327,39 +302,11 @@ export function HomepageSongs() {
               id: genSong.id,
               title: genSong.title,
               genre: genSong.genre,
-              duration_seconds: genSong.duration,
+              duration_seconds: undefined,
               created_at: genSong.startedAt.toISOString(),
             }}
-            onClick={() => {
-              // If partial (has streamAudioUrl), open player with preview
-              if (genSong.isPartial && genSong.streamAudioUrl) {
-                console.log('[HomepageSongs] Opening partial song in player:', {
-                  id: genSong.id,
-                  streamAudioUrl: genSong.streamAudioUrl
-                })
-                // Create a temporary song object for the player
-                const tempSong = {
-                  id: genSong.id,
-                  user_id: '',
-                  title: genSong.title,
-                  genre: genSong.genre,
-                  phonetic_enabled: false,
-                  status: 'partial' as const,
-                  stream_audio_url: genSong.streamAudioUrl,
-                  duration_seconds: genSong.duration,
-                  shared_count: 0,
-                  created_at: genSong.startedAt.toISOString(),
-                  updated_at: new Date().toISOString(),
-                }
-                // Add to beginning of songs array temporarily for player
-                setSongs(prev => [tempSong as typeof prev[0], ...prev])
-                setSelectedSongIndex(0)
-                setIsPlayerOpen(true)
-              }
-              // Generating songs can't be opened in player yet
-            }}
-            isGenerating={!genSong.isPartial}
-            isPartial={genSong.isPartial}
+            onClick={() => {}}
+            isGenerating
           />
         ))}
         {/* Regular songs */}

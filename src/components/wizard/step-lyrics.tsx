@@ -163,7 +163,6 @@ export function StepLyrics({
                     if (!isAnimating) onLyricsChange(e.target.value)
                   }}
                   readOnly={isAnimating}
-                  onClick={isAnimating ? handleSkipAnimation : undefined}
                   maxLength={2000}
                   className={cn(
                     'w-full min-h-[280px] rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(0,0,0,0.3)] px-4 py-3',
@@ -172,11 +171,6 @@ export function StepLyrics({
                     isAnimating && 'cursor-pointer'
                   )}
                 />
-                {isAnimating && (
-                  <span className="absolute bottom-2 right-3 text-xs text-gray-500 animate-[blink_1s_infinite]">
-                    Klikk for å hoppe over
-                  </span>
-                )}
                 {!isAnimating && (
                   <span className="absolute bottom-2 right-3 text-xs text-gray-500">
                     {lyrics.length}/2000
