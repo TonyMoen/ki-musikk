@@ -14,6 +14,7 @@ export default function PricingPage() {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
   const [user, setUser] = useState<boolean | null>(null)
+  const [selectedPlan, setSelectedPlan] = useState<string>('pro')
   const { showError } = useErrorToast()
 
   useEffect(() => {
@@ -66,7 +67,6 @@ export default function PricingPage() {
     return (pkg.priceNOK / songs).toFixed(2).replace('.', ',')
   }
 
-  const isPopular = (pkg: CreditPackage) => pkg.id === 'pro'
   const isBestValue = (pkg: CreditPackage) => pkg.id === 'premium'
 
   return (
@@ -85,15 +85,16 @@ export default function PricingPage() {
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           {CREDIT_PACKAGES.map((pkg) => {
-            const popular = isPopular(pkg)
+            const isSelected = selectedPlan === pkg.id
             const bestValue = isBestValue(pkg)
 
             return (
               <div
                 key={pkg.id}
+                onClick={() => setSelectedPlan(pkg.id)}
                 className={`
-                  relative rounded-2xl transition-all duration-200
-                  ${popular
+                  relative rounded-2xl transition-all duration-200 cursor-pointer
+                  ${isSelected
                     ? 'md:scale-105 md:z-10 border-2 border-[#FF5B24] bg-[rgba(242,101,34,0.06)] shadow-[0_0_30px_rgba(242,101,34,0.12)]'
                     : 'border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] hover:border-[rgba(90,140,255,0.2)]'
                   }
@@ -144,12 +145,15 @@ export default function PricingPage() {
 
                   {/* CTA Button */}
                   <Button
-                    onClick={() => handlePurchase(pkg)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handlePurchase(pkg)
+                    }}
                     disabled={loading !== null}
-                    variant={popular ? 'default' : 'outline'}
+                    variant={isSelected ? 'default' : 'outline'}
                     className={`
                       w-full h-12 text-sm font-semibold transition-all
-                      ${popular
+                      ${isSelected
                         ? 'bg-[#FF5B24] hover:bg-[#E54D1C] text-white'
                         : 'border-[rgba(90,140,255,0.2)] text-[rgba(180,200,240,0.7)] hover:bg-[rgba(40,80,160,0.15)] hover:text-white hover:border-[rgba(90,140,255,0.3)]'
                       }
