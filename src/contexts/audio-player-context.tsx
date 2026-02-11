@@ -19,11 +19,14 @@ interface AudioPlayerContextType {
   currentTime: number
   duration: number
   queue: Song[]
+  volume: number
 
   // Audio controls
   playSong: (song: Song, queue?: Song[]) => void
   togglePlayPause: () => void
   stopAudio: () => void
+  setVolume: (v: number) => void
+  seekTo: (time: number) => void
 
   // Full player
   isFullPlayerOpen: boolean
@@ -46,6 +49,13 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isFullPlayerOpen, setIsFullPlayerOpen] = useState(false)
+  const [volume, setVolumeState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('kimusikk-volume')
+      return saved ? parseInt(saved, 10) : 80
+    }
+    return 80
+  })
 
   const howlerRef = useRef<Howl | null>(null)
   const animFrameRef = useRef<number | null>(null)
@@ -107,6 +117,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       const howl = new Howl({
         src: [audioUrl],
         html5: true,
+        volume: volume / 100,
         onplay: () => {
           setIsPlaying(true)
           animFrameRef.current = requestAnimationFrame(updateTime)
@@ -151,6 +162,22 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const setVolume = useCallback((v: number) => {
+    const clamped = Math.max(0, Math.min(100, v))
+    setVolumeState(clamped)
+    if (howlerRef.current) {
+      howlerRef.current.volume(clamped / 100)
+    }
+    localStorage.setItem('kimusikk-volume', String(clamped))
+  }, [])
+
+  const seekTo = useCallback((time: number) => {
+    if (howlerRef.current) {
+      howlerRef.current.seek(time)
+      setCurrentTime(time)
+    }
+  }, [])
+
   const openFullPlayer = useCallback(() => {
     // Pause inline audio — UnifiedPlayer will create its own Howl
     stopAnimFrame()
@@ -185,9 +212,12 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
         currentTime,
         duration,
         queue,
+        volume,
         playSong,
         togglePlayPause,
         stopAudio,
+        setVolume,
+        seekTo,
         isFullPlayerOpen,
         openFullPlayer,
         closeFullPlayer,

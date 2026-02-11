@@ -14,10 +14,13 @@ export function GlobalPlayer() {
     currentTime,
     duration,
     queue,
+    volume,
     togglePlayPause,
     openFullPlayer,
     closeFullPlayer,
     isFullPlayerOpen,
+    setVolume,
+    seekTo,
   } = useAudioPlayer()
 
   const [isDownloading, setIsDownloading] = useState(false)
@@ -59,9 +62,12 @@ export function GlobalPlayer() {
           isPlaying={isPlaying}
           currentTime={currentTime}
           duration={duration}
+          volume={volume}
           onTogglePlay={togglePlayPause}
           onOpenFullPlayer={openFullPlayer}
           onDownload={handleDownload}
+          onVolumeChange={setVolume}
+          onSeek={seekTo}
           isDownloading={isDownloading}
         />
       )}
