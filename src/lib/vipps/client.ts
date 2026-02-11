@@ -157,7 +157,10 @@ export async function capturePayment(
     `${apiUrl}/epayment/v1/payments/${reference}/capture`,
     {
       method: 'POST',
-      headers,
+      headers: {
+        ...headers,
+        'Idempotency-Key': `capture-${reference}`,
+      },
       body: JSON.stringify(request),
     }
   )
@@ -182,7 +185,10 @@ export async function cancelPayment(reference: string): Promise<void> {
     `${apiUrl}/epayment/v1/payments/${reference}/cancel`,
     {
       method: 'POST',
-      headers,
+      headers: {
+        ...headers,
+        'Idempotency-Key': `cancel-${reference}`,
+      },
     }
   )
 
