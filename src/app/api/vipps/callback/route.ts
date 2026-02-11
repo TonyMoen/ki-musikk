@@ -103,7 +103,7 @@ export async function GET(request: Request) {
           credits: paymentRecord.credits,
         })
 
-        return NextResponse.redirect(new URL('/innstillinger?payment=success', appUrl))
+        return NextResponse.redirect(new URL('/?payment=success', appUrl))
       } catch (captureError) {
         console.error('Failed to capture payment:', captureError)
         return NextResponse.redirect(new URL('/innstillinger?payment=error', appUrl))

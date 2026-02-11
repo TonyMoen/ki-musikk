@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { useOnboarding } from '@/hooks/use-onboarding'
 import { useGeneratingSongStore, MAX_CONCURRENT_SONGS } from '@/stores/generating-song-store'
+import { useCreditsStore } from '@/stores/credits-store'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2, Music } from 'lucide-react'
 import type { OptimizationResult, PhoneticChange } from '@/types/song'
@@ -400,6 +401,11 @@ export default function Home() {
         genre: selectedGenre.name,
         startedAt: new Date()
       })
+
+      // Update credit balance immediately in UI
+      if (data.data.balanceAfter !== undefined) {
+        useCreditsStore.getState().setBalance(data.data.balanceAfter)
+      }
 
       // Clear pending song data after successful generation start
       try {
