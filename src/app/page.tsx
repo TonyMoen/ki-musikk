@@ -231,7 +231,6 @@ export default function Home() {
 
       toast({
         title: 'Tekst generert!',
-        description: 'Klikk "Optimaliser tekst" for å forbedre uttalen'
       })
     } catch (error) {
       showError(error, {
