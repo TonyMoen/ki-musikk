@@ -1,10 +1,11 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { Loader2, Sparkles } from 'lucide-react'
+import { Sparkles, Music, Guitar, Mic2, Radio, Headphones, Heart, Waves, Drum, Piano } from 'lucide-react'
 import { STANDARD_GENRES } from '@/lib/standard-genres'
 import { FEATURES } from '@/lib/constants'
 import { WizardNavButtons } from './wizard-nav-buttons'
+import type { LucideIcon } from 'lucide-react'
 
 interface Genre {
   id: string
@@ -12,6 +13,42 @@ interface Genre {
   display_name: string
   emoji: string | null
   sort_order: number
+}
+
+// Map genre names (lowercase) to Lucide icons
+const GENRE_ICON_MAP: Record<string, LucideIcon> = {
+  'country': Guitar,
+  'norsk pop': Music,
+  'pop': Music,
+  'rap/hip-hop': Mic2,
+  'rap': Mic2,
+  'hip-hop': Mic2,
+  'dans/elektronisk': Headphones,
+  'elektronisk': Headphones,
+  'edm': Headphones,
+  'rock': Radio,
+  'classic rock': Radio,
+  'jazz': Piano,
+  'jazz smooth': Piano,
+  'folk': Guitar,
+  'indie folk': Guitar,
+  'ballad': Heart,
+  'acoustic ballad': Heart,
+  'chill lofi': Waves,
+  'lofi': Waves,
+  'synthwave': Waves,
+  'epic orchestral': Drum,
+  'r&b': Mic2,
+  'soul': Mic2,
+  'reggae': Drum,
+  'metal': Radio,
+  'punk': Radio,
+  'blues': Guitar,
+  'klassisk': Piano,
+}
+
+function getGenreIcon(genreName: string): LucideIcon {
+  return GENRE_ICON_MAP[genreName.toLowerCase()] || Music
 }
 
 interface StepStyleProps {
@@ -72,6 +109,7 @@ export function StepStyle({
           <div className="grid grid-cols-2 gap-3">
             {genres.map((genre) => {
               const isSelected = selectedGenre?.id === genre.id
+              const Icon = getGenreIcon(genre.name)
               return (
                 <button
                   key={genre.id}
@@ -79,13 +117,16 @@ export function StepStyle({
                   onClick={() => handleGenreClick(genre)}
                   className={cn(
                     'h-[56px] rounded-xl px-4 text-sm font-semibold transition-all duration-200',
-                    'flex items-center justify-center',
+                    'flex items-center justify-center gap-2',
                     isSelected
                       ? 'border-2 border-[#F26522] bg-[#F26522]/10 text-white'
                       : 'border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)] text-gray-300 hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.06)]'
                   )}
                 >
-                  {genre.emoji && <span className="mr-2">{genre.emoji}</span>}
+                  <Icon className={cn(
+                    'h-4 w-4 flex-shrink-0',
+                    isSelected ? 'text-[#F26522]' : 'text-gray-500'
+                  )} />
                   {genre.display_name}
                 </button>
               )

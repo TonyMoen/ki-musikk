@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import { Loader2, Sparkles, RotateCcw } from 'lucide-react'
 import { useTypewriter } from '@/hooks/use-typewriter'
@@ -31,20 +31,7 @@ export function StepLyrics({
 }: StepLyricsProps) {
   const [animationTarget, setAnimationTarget] = useState('')
   const [shouldAnimate, setShouldAnimate] = useState(false)
-  const prevLyricsRef = useRef(lyrics)
-
-  // Detect when lyrics transition from empty to non-empty in AI mode (= just generated)
-  useEffect(() => {
-    const wasEmpty = prevLyricsRef.current.trim().length === 0
-    const isNowFilled = lyrics.trim().length > 0
-
-    if (!isCustomTextMode && wasEmpty && isNowFilled && !isGenerating) {
-      setAnimationTarget(lyrics)
-      setShouldAnimate(true)
-    }
-
-    prevLyricsRef.current = lyrics
-  }, [lyrics, isCustomTextMode, isGenerating])
+  const [pendingAnimation, setPendingAnimation] = useState(false)
 
   const { displayText, isAnimating, skip } = useTypewriter({
     text: animationTarget,
@@ -56,8 +43,18 @@ export function StepLyrics({
   const isConceptValid = concept.length >= 10 && concept.length <= 500
   const showGeneratedLyrics = !isCustomTextMode && hasLyrics
 
-  const handleGenerate = async () => {
+  // Only trigger typewriter when user explicitly clicks generate
+  const handleGenerate = useCallback(async () => {
+    setPendingAnimation(true)
     await onGenerateLyrics()
+    // After generation, lyrics prop will update. We check in render below.
+  }, [onGenerateLyrics])
+
+  // If we have a pending animation and lyrics just appeared, start typewriter
+  if (pendingAnimation && hasLyrics && !isGenerating) {
+    setPendingAnimation(false)
+    setAnimationTarget(lyrics)
+    setShouldAnimate(true)
   }
 
   const handleResetDescription = () => {
@@ -177,7 +174,7 @@ export function StepLyrics({
                 />
                 {isAnimating && (
                   <span className="absolute bottom-2 right-3 text-xs text-gray-500 animate-[blink_1s_infinite]">
-                    Klikk for å hoppe over ▎
+                    Klikk for å hoppe over
                   </span>
                 )}
                 {!isAnimating && (
