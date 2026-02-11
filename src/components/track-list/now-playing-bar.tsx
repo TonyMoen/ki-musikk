@@ -57,7 +57,7 @@ export function NowPlayingBar({
 
   return (
     <div
-      className="fixed left-0 right-0 z-[60] animate-fade-up bottom-16 md:bottom-0"
+      className="fixed left-0 right-0 z-[60] animate-fade-up bottom-0"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       {/* Draggable progress bar */}

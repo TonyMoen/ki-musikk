@@ -16,10 +16,12 @@ interface AudioPlayerContextType {
   // State
   currentSong: Song | null
   isPlaying: boolean
+  isLoading: boolean
   currentTime: number
   duration: number
   queue: Song[]
   volume: number
+  isLooping: boolean
 
   // Audio controls
   playSong: (song: Song, queue?: Song[]) => void
@@ -27,6 +29,7 @@ interface AudioPlayerContextType {
   stopAudio: () => void
   setVolume: (v: number) => void
   seekTo: (time: number) => void
+  setLooping: (loop: boolean) => void
 
   // Full player
   isFullPlayerOpen: boolean
@@ -46,9 +49,11 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   const [currentSong, setCurrentSong] = useState<Song | null>(null)
   const [queue, setQueue] = useState<Song[]>([])
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isFullPlayerOpen, setIsFullPlayerOpen] = useState(false)
+  const [isLooping, setIsLoopingState] = useState(false)
   const [volume, setVolumeState] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('kimusikk-volume')
@@ -60,11 +65,11 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   const howlerRef = useRef<Howl | null>(null)
   const animFrameRef = useRef<number | null>(null)
   const queueRef = useRef<Song[]>([])
+  const isLoopingRef = useRef(false)
 
-  // Keep queueRef in sync
-  useEffect(() => {
-    queueRef.current = queue
-  }, [queue])
+  // Keep refs in sync
+  useEffect(() => { queueRef.current = queue }, [queue])
+  useEffect(() => { isLoopingRef.current = isLooping }, [isLooping])
 
   const updateTime = useCallback(() => {
     if (howlerRef.current && howlerRef.current.playing()) {
@@ -87,6 +92,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       howlerRef.current = null
     }
     setIsPlaying(false)
+    setIsLoading(false)
     setCurrentTime(0)
     setDuration(0)
     setCurrentSong(null)
@@ -97,7 +103,6 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       const audioUrl = song.audio_url || song.stream_audio_url
       if (!audioUrl) return
 
-      // Update queue if provided
       if (newQueue) {
         setQueue(newQueue)
         queueRef.current = newQueue
@@ -111,6 +116,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
 
       setCurrentSong(song)
       setIsPlaying(true)
+      setIsLoading(true)
       setCurrentTime(0)
       setDuration(song.duration_seconds || 0)
 
@@ -118,6 +124,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
         src: [audioUrl],
         html5: true,
         volume: volume / 100,
+        loop: isLoopingRef.current,
         onplay: () => {
           setIsPlaying(true)
           animFrameRef.current = requestAnimationFrame(updateTime)
@@ -127,30 +134,32 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
           stopAnimFrame()
         },
         onend: () => {
-          // Auto-advance to next song in queue
-          const currentQueue = queueRef.current
-          const idx = currentQueue.findIndex((s) => s.id === song.id)
-          if (idx >= 0 && idx < currentQueue.length - 1) {
-            const nextSong = currentQueue[idx + 1]
-            // Recursively play next — queue stays the same
-            playSong(nextSong)
-          } else {
-            setIsPlaying(false)
+          if (!isLoopingRef.current) {
+            // Auto-advance
+            const currentQueue = queueRef.current
+            const idx = currentQueue.findIndex((s) => s.id === song.id)
+            if (idx >= 0 && idx < currentQueue.length - 1) {
+              playSong(currentQueue[idx + 1])
+            } else {
+              setIsPlaying(false)
+            }
           }
         },
         onload: () => {
+          setIsLoading(false)
           const dur = howl.duration()
           if (dur > 0) setDuration(dur)
         },
         onloaderror: () => {
           setIsPlaying(false)
+          setIsLoading(false)
         },
       })
 
       howl.play()
       howlerRef.current = howl
     },
-    [updateTime, stopAnimFrame]
+    [updateTime, stopAnimFrame, volume]
   )
 
   const togglePlayPause = useCallback(() => {
@@ -178,16 +187,18 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const openFullPlayer = useCallback(() => {
-    // Pause inline audio — UnifiedPlayer will create its own Howl
-    stopAnimFrame()
+  const setLooping = useCallback((loop: boolean) => {
+    setIsLoopingState(loop)
+    isLoopingRef.current = loop
     if (howlerRef.current) {
-      howlerRef.current.unload()
-      howlerRef.current = null
+      howlerRef.current.loop(loop)
     }
-    setIsPlaying(false)
+  }, [])
+
+  // Open full player — audio keeps playing
+  const openFullPlayer = useCallback(() => {
     setIsFullPlayerOpen(true)
-  }, [stopAnimFrame])
+  }, [])
 
   const closeFullPlayer = useCallback(() => {
     setIsFullPlayerOpen(false)
@@ -209,15 +220,18 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       value={{
         currentSong,
         isPlaying,
+        isLoading,
         currentTime,
         duration,
         queue,
         volume,
+        isLooping,
         playSong,
         togglePlayPause,
         stopAudio,
         setVolume,
         seekTo,
+        setLooping,
         isFullPlayerOpen,
         openFullPlayer,
         closeFullPlayer,
