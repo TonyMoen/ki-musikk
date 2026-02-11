@@ -6,7 +6,6 @@
  * - openid: Required for OIDC
  * - email: Get user's email
  * - name: Get user's name
- * - phoneNumber: Get user's phone number
  */
 
 import { NextResponse } from 'next/server'
@@ -44,7 +43,7 @@ export async function GET() {
 
     authUrl.searchParams.set('client_id', clientId)
     authUrl.searchParams.set('response_type', 'code')
-    authUrl.searchParams.set('scope', 'openid email name phoneNumber')
+    authUrl.searchParams.set('scope', 'openid email name')
     authUrl.searchParams.set('state', state)
     authUrl.searchParams.set('redirect_uri', `${appUrl}/api/auth/vipps/callback`)
 
