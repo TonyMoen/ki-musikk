@@ -24,25 +24,7 @@ import { toast } from '@/hooks/use-toast'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { ErrorCode } from '@/lib/error-messages'
 import type { Song } from '@/types/song'
-
-interface GradientColors {
-  from: string
-  to: string
-}
-
-// Genre to gradient mapping (fallback colors when no image)
-const GENRE_GRADIENTS: Record<string, GradientColors> = {
-  'country-rock': { from: '#E94560', to: '#FFC93C' },
-  'norwegian-pop': { from: '#0F3460', to: '#E94560' },
-  'folk-ballad': { from: '#06D6A0', to: '#FFC93C' },
-  'party-anthem': { from: '#FFC93C', to: '#E94560' },
-  'rap-hiphop': { from: '#0F3460', to: '#8B5CF6' },
-  'rock-ballad': { from: '#8B5CF6', to: '#E94560' },
-  'electronic-dance': { from: '#06D6A0', to: '#3B82F6' },
-  'singer-songwriter': { from: '#FB923C', to: '#92400E' },
-}
-
-const DEFAULT_GRADIENT: GradientColors = { from: '#E94560', to: '#FFC93C' }
+import { GENRE_GRADIENTS, DEFAULT_GRADIENT } from '@/lib/genre-colors'
 
 export interface UnifiedPlayerProps {
   songs: Song[]
