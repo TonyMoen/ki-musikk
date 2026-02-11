@@ -4,18 +4,16 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants'
 import { useErrorToast } from '@/hooks/use-error-toast'
-import { Loader2, Check, Globe, Download } from 'lucide-react'
+import { Loader2, Globe, Download } from 'lucide-react'
 import { AppLogo } from '@/components/app-logo'
 
 export default function PricingPage() {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
   const [user, setUser] = useState<boolean | null>(null)
-  const [selectedPlan, setSelectedPlan] = useState<string>('pro') // Default to most popular
   const { showError } = useErrorToast()
 
   useEffect(() => {
@@ -28,7 +26,6 @@ export default function PricingPage() {
   }, [])
 
   const handlePurchase = async (pkg: CreditPackage) => {
-    // If not logged in, redirect to login
     if (!user) {
       router.push('/auth/logg-inn')
       return
@@ -63,11 +60,20 @@ export default function PricingPage() {
     }
   }
 
+  // Calculate per-song price
+  const getPerSongPrice = (pkg: CreditPackage) => {
+    const songs = pkg.credits / 10
+    return (pkg.priceNOK / songs).toFixed(2).replace('.', ',')
+  }
+
+  const isPopular = (pkg: CreditPackage) => pkg.id === 'pro'
+  const isBestValue = (pkg: CreditPackage) => pkg.id === 'premium'
+
   return (
     <main className="min-h-screen py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
             Enkel prising
           </h1>
@@ -77,62 +83,77 @@ export default function PricingPage() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           {CREDIT_PACKAGES.map((pkg) => {
-            const isSelected = selectedPlan === pkg.id
+            const popular = isPopular(pkg)
+            const bestValue = isBestValue(pkg)
+
             return (
-              <Card
+              <div
                 key={pkg.id}
-                onClick={() => setSelectedPlan(pkg.id)}
-                className={`relative cursor-pointer transition-all duration-200 ${
-                  isSelected ? 'border-[#FF5B24] border-2 scale-105' : 'hover:border-[rgba(90,140,255,0.13)]'
-                }`}
+                className={`
+                  relative rounded-2xl transition-all duration-200
+                  ${popular
+                    ? 'md:scale-105 md:z-10 border-2 border-[#FF5B24] bg-[rgba(242,101,34,0.06)] shadow-[0_0_30px_rgba(242,101,34,0.12)]'
+                    : 'border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] hover:border-[rgba(90,140,255,0.2)]'
+                  }
+                `}
               >
                 {pkg.badge && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF5B24] text-white px-3 py-1">
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF5B24] text-white px-4 py-1 text-xs font-semibold">
                     {pkg.badge}
                   </Badge>
                 )}
 
-                <CardHeader className="text-center pb-2 pt-6">
-                  <CardTitle className="text-xl text-white">{pkg.name}</CardTitle>
-                  <CardDescription className="mt-2">
-                    <span className="text-3xl font-bold text-[#FF5B24]">
-                      {pkg.priceNOK} kr
+                {bestValue && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-1 text-xs font-semibold">
+                    BEST VERDI
+                  </Badge>
+                )}
+
+                <div className="p-6 pt-8 text-center">
+                  {/* Plan name */}
+                  <h3 className="text-lg font-semibold text-white mb-4">
+                    {pkg.name}
+                  </h3>
+
+                  {/* Price */}
+                  <div className="mb-1">
+                    <span className="text-4xl font-bold text-white">
+                      {pkg.priceNOK}
                     </span>
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="text-center py-6">
-                  <div className="text-2xl font-semibold text-white mb-1">
-                    {pkg.credits.toLocaleString()} kreditter
+                    <span className="text-lg text-[rgba(180,200,240,0.5)] ml-1">
+                      kr
+                    </span>
                   </div>
-                  <p className="text-lg text-[rgba(180,200,240,0.5)] mb-6">{pkg.description}</p>
 
-                  <ul className="text-sm text-[rgba(180,200,240,0.5)] space-y-2 text-left">
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      10 kreditter = 1 sang
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      Kreditter utløper aldri
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      Gratis forhåndsvisning
-                    </li>
-                  </ul>
-                </CardContent>
+                  {/* Per-song price */}
+                  <p className="text-sm text-[rgba(180,200,240,0.5)] mb-6">
+                    {getPerSongPrice(pkg)} kr per sang
+                  </p>
 
-                <CardFooter className="pb-6">
+                  {/* Credits + songs */}
+                  <div className="bg-[rgba(0,0,0,0.2)] rounded-xl py-4 px-3 mb-6">
+                    <div className="text-2xl font-bold text-white">
+                      {pkg.description}
+                    </div>
+                    <div className="text-xs text-[rgba(130,170,240,0.45)] mt-1">
+                      {pkg.credits.toLocaleString()} kreditter
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
                   <Button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handlePurchase(pkg)
-                    }}
+                    onClick={() => handlePurchase(pkg)}
                     disabled={loading !== null}
-                    className="w-full bg-[#FF5B24] hover:bg-[#E54D1C] text-white h-11"
+                    variant={popular ? 'default' : 'outline'}
+                    className={`
+                      w-full h-12 text-sm font-semibold transition-all
+                      ${popular
+                        ? 'bg-[#FF5B24] hover:bg-[#E54D1C] text-white'
+                        : 'border-[rgba(90,140,255,0.2)] text-[rgba(180,200,240,0.7)] hover:bg-[rgba(40,80,160,0.15)] hover:text-white hover:border-[rgba(90,140,255,0.3)]'
+                      }
+                    `}
                   >
                     {loading === pkg.id ? (
                       <>
@@ -145,16 +166,24 @@ export default function PricingPage() {
                       'Logg inn for å kjøpe'
                     )}
                   </Button>
-                </CardFooter>
-              </Card>
+
+                  {/* Vipps secure badge inline */}
+                  <div className="flex items-center justify-center gap-1.5 text-xs text-[rgba(130,170,240,0.35)] mt-3">
+                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    Sikker betaling
+                  </div>
+                </div>
+              </div>
             )
           })}
         </div>
 
         {/* Features Section */}
         <div className="mt-16 text-center">
-          <h2 className="text-xl font-semibold text-white mb-6">Inkludert i alle pakker</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-[rgba(180,200,240,0.5)]">
+          <h2 className="text-xl font-semibold text-white mb-8">Inkludert i alle pakker</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-sm text-[rgba(180,200,240,0.5)]">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
                 <AppLogo size={24} />
@@ -177,14 +206,9 @@ export default function PricingPage() {
               <p>Last ned sangene dine</p>
             </div>
           </div>
-        </div>
-
-        {/* Payment Badge */}
-        <div className="flex items-center justify-center gap-2 text-sm text-[rgba(180,200,240,0.5)] mt-12">
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="#FF5B24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          </svg>
-          Sikker betaling med Vipps
+          <p className="text-xs text-[rgba(130,170,240,0.35)] mt-6">
+            Kreditter utløper aldri
+          </p>
         </div>
       </div>
     </main>
