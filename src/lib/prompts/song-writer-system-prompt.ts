@@ -48,11 +48,14 @@ export const STRUCTURE_OVERRIDE_KEYWORDS = {
  * @param prompt User's concept/prompt text
  * @returns Override configuration or null if no overrides detected
  */
-export function detectStructureOverrides(prompt: string): {
+export interface StructureOverrides {
   structure?: SongStructure
   addIntro: boolean
   addOutro: boolean
-} {
+  addSolo: boolean
+}
+
+export function detectStructureOverrides(prompt: string): StructureOverrides {
   const lowerPrompt = prompt.toLowerCase()
 
   // Detect individual flags
@@ -75,11 +78,17 @@ export function detectStructureOverrides(prompt: string): {
     structure = 'A' // Short, no bridge
   }
 
-  // Check for optional section overrides
-  const addIntro = STRUCTURE_OVERRIDE_KEYWORDS.addIntro.some(kw => lowerPrompt.includes(kw))
-  const addOutro = STRUCTURE_OVERRIDE_KEYWORDS.addOutro.some(kw => lowerPrompt.includes(kw))
+  // Check for explicit user overrides
+  const userWantsIntro = STRUCTURE_OVERRIDE_KEYWORDS.addIntro.some(kw => lowerPrompt.includes(kw))
+  const userWantsOutro = STRUCTURE_OVERRIDE_KEYWORDS.addOutro.some(kw => lowerPrompt.includes(kw))
 
-  return { structure, addIntro, addOutro }
+  // Randomize instrumental sections when not explicitly requested
+  // Intro ~30%, Outro ~25%, Solo ~20%
+  const addIntro = userWantsIntro || Math.random() < 0.30
+  const addOutro = userWantsOutro || Math.random() < 0.25
+  const addSolo = Math.random() < 0.20
+
+  return { structure, addIntro, addOutro, addSolo }
 }
 
 /**
@@ -87,7 +96,7 @@ export function detectStructureOverrides(prompt: string): {
  */
 export function buildStructureInstruction(
   structure: SongStructure,
-  overrides: { addIntro: boolean; addOutro: boolean }
+  overrides: StructureOverrides
 ): string {
   const parts: string[] = []
 
@@ -100,14 +109,25 @@ export function buildStructureInstruction(
       parts.push('[Verse 1]', '[Chorus]', '[Verse 2]', '[Chorus]')
       break
     case 'B':
-      parts.push('[Verse 1]', '[Chorus]', '[Verse 2]', '[Chorus]', '[Bridge]', '[Chorus]')
+      parts.push('[Verse 1]', '[Chorus]', '[Verse 2]', '[Chorus]')
+      if (overrides.addSolo) parts.push('[Solo]')
+      parts.push('[Bridge]', '[Chorus]')
       break
     case 'C':
       parts.push('[Verse 1]', '[Pre-Chorus]', '[Chorus]', '[Verse 2]', '[Pre-Chorus]', '[Chorus]')
       break
     case 'D':
-      parts.push('[Verse 1]', '[Pre-Chorus]', '[Chorus]', '[Verse 2]', '[Pre-Chorus]', '[Chorus]', '[Bridge]', '[Chorus]')
+      parts.push('[Verse 1]', '[Pre-Chorus]', '[Chorus]', '[Verse 2]', '[Pre-Chorus]', '[Chorus]')
+      if (overrides.addSolo) parts.push('[Solo]')
+      parts.push('[Bridge]', '[Chorus]')
       break
+  }
+
+  // For structures without bridge, solo goes before final chorus
+  if (overrides.addSolo && (structure === 'A' || structure === 'C')) {
+    // Insert [Solo] before the last [Chorus]
+    const lastChorusIdx = parts.lastIndexOf('[Chorus]')
+    parts.splice(lastChorusIdx, 0, '[Solo]')
   }
 
   if (overrides.addOutro) {
@@ -154,9 +174,10 @@ Du vil få beskjed om hvilken struktur du skal bruke. Følg den nøyaktig.
 **Struktur D (komplett):**
 [Verse 1] → [Pre-Chorus] → [Chorus] → [Verse 2] → [Pre-Chorus] → [Chorus] → [Bridge] → [Chorus]
 
-**Valgfrie tillegg (hvis forespurt):**
-- [Intro] - Kort innledning som setter stemningen
-- [Outro] - Avsluttende linjer som runder av sangen
+**Instrumentale seksjoner (inkludert i strukturen når angitt):**
+- [Intro] - Kort instrumental innledning som setter stemningen (ingen tekst, bare taggen)
+- [Outro] - Instrumental avslutning som runder av sangen (ingen tekst, bare taggen)
+- [Solo] - Instrumental solo-seksjon, f.eks. gitar- eller synth-solo (ingen tekst, bare taggen)
 
 ## TITTEL (OBLIGATORISK)
 
@@ -173,7 +194,9 @@ Bruk ALLTID disse taggene i outputen:
 - [Pre-Chorus] - Oppbygging mot refrenget, skaper spenning (2-3 korte linjer)
 - [Chorus] - Refrenget (samme tekst hver gang det gjentas)
 - [Bridge] - Bro-seksjonen (ny vinkel eller twist)
-- [Intro], [Outro] - Hvis forespurt
+- [Intro] - Instrumental innledning (skriv kun taggen, ingen tekst under)
+- [Outro] - Instrumental avslutning (skriv kun taggen, ingen tekst under)
+- [Solo] - Instrumental solo (skriv kun taggen, ingen tekst under)
 
 ## REFRENG OG HOOK (VIKTIGST)
 
@@ -284,7 +307,7 @@ export function buildUserMessage(
   concept: string,
   genre: string,
   structure: SongStructure,
-  overrides: { addIntro: boolean; addOutro: boolean }
+  overrides: StructureOverrides
 ): string {
   const structureInstruction = buildStructureInstruction(structure, overrides)
   const structureName = getStructureName(structure)
