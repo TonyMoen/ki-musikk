@@ -70,9 +70,7 @@ export type TooltipKey = keyof typeof TOOLTIPS
  */
 export const FEATURES = {
   ENABLE_PHONETIC_OPTIMIZATION: false, // Disabled for simplified UX per customer feedback
-  // Future flags can be added here:
-  // ENABLE_GENRE_LIBRARY: false,
-  // ENABLE_EDIT_MODE: false,
+  ENABLE_AI_GENRE_ASSISTANT: false, // AI genre creation wizard (inactive)
 } as const
 
 export type FeatureFlags = typeof FEATURES

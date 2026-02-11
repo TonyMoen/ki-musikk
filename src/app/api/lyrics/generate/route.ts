@@ -53,17 +53,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
       )
     }
 
-    if (!genre || typeof genre !== 'string') {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'INVALID_GENRE',
-            message: 'Sjanger er påkrevd'
-          }
-        },
-        { status: 400 }
-      )
-    }
+    // Genre is optional — lyrics may be generated in Step 1 before genre is selected
+    const validGenre = (genre && typeof genre === 'string') ? genre : ''
 
     // Detect structure overrides from user prompt
     const overrides = detectStructureOverrides(concept)
@@ -72,7 +63,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
     const structure = overrides.structure ?? getRandomStructure()
 
     // Build user message with structure instructions
-    const userMessage = buildUserMessage(concept, genre, structure, overrides)
+    const userMessage = buildUserMessage(concept, validGenre, structure, overrides)
 
     // Generate lyrics with GPT-4 using comprehensive song writer prompt
     const completion = await openai.chat.completions.create({
