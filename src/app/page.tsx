@@ -504,10 +504,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center p-8 md:p-24">
       <div className="z-10 w-full max-w-3xl">
-        <h1 className="text-4xl font-bold mb-2 text-center md:text-left text-primary">
-          KI MUSIKK
-        </h1>
-        <p className="text-lg mb-8 text-center md:text-left text-gray-600">
+        <p className="text-lg mb-8 text-center text-gray-300">
           Lag den perfekte festsangen med KI - autentisk norsk uttale!
         </p>
 
@@ -515,9 +512,6 @@ export default function Home() {
         <div className={`mb-8 rounded-lg transition-all duration-500 ${
           showGenreSpotlight ? 'ring-4 ring-[#E94560] ring-opacity-60 animate-pulse p-4 bg-pink-50/30' : ''
         }`}>
-          <h2 className="text-2xl font-semibold mb-4 text-center md:text-left">
-            Velg sjanger
-          </h2>
           <GenreSelection onGenreSelect={handleGenreSelect} selectedGenreId={selectedGenre?.id} />
         </div>
 
