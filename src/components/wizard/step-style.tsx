@@ -13,38 +13,29 @@ interface Genre {
   display_name: string
   emoji: string | null
   sort_order: number
+  suno_prompt_template?: string
 }
 
 // Map genre names (lowercase) to Lucide icons
 const GENRE_ICON_MAP: Record<string, LucideIcon> = {
-  'country': Guitar,
-  'norsk pop': Radio,
-  'pop': Radio,
+  'elektronisk': Headphones,
+  'festlåt': Drum,
   'rap/hip-hop': Mic2,
+  'russelåt': Headphones,
+  'pop': Radio,
+  'rock': Guitar,
+  'country': Guitar,
+  'akustisk': Heart,
+  // Legacy / fallback mappings
   'rap': Mic2,
   'hip-hop': Mic2,
-  'dans/elektronisk': Headphones,
-  'elektronisk': Headphones,
   'edm': Headphones,
-  'rock': Radio,
-  'classic rock': Radio,
   'jazz': Piano,
-  'jazz smooth': Piano,
   'folk': Guitar,
-  'indie folk': Guitar,
   'ballad': Heart,
-  'acoustic ballad': Heart,
-  'chill lofi': Waves,
-  'lofi': Waves,
-  'synthwave': Waves,
-  'epic orchestral': Drum,
-  'r&b': Mic2,
-  'soul': Mic2,
-  'reggae': Drum,
-  'metal': Radio,
-  'punk': Radio,
-  'blues': Guitar,
   'klassisk': Piano,
+  'metal': Radio,
+  'blues': Guitar,
 }
 
 function getGenreIcon(genreName: string): LucideIcon {
@@ -75,16 +66,16 @@ export function StepStyle({
   const handleGenreClick = (genre: Genre) => {
     onGenreSelect(genre.id, genre.name)
 
-    // Auto-fill style text with matching STANDARD_GENRES prompt or fallback
-    const match = STANDARD_GENRES.find(
-      (sg) =>
-        sg.name.toLowerCase() === genre.name.toLowerCase() ||
-        sg.display_name.toLowerCase() === genre.display_name.toLowerCase()
-    )
-    if (match) {
-      onStyleTextChange(match.sunoPrompt)
+    // Use the Suno prompt from DB first, then fall back to STANDARD_GENRES match
+    if (genre.suno_prompt_template) {
+      onStyleTextChange(genre.suno_prompt_template)
     } else {
-      onStyleTextChange(`${genre.display_name.toLowerCase()}, melodisk, norsk`)
+      const match = STANDARD_GENRES.find(
+        (sg) =>
+          sg.name.toLowerCase() === genre.name.toLowerCase() ||
+          sg.display_name.toLowerCase() === genre.display_name.toLowerCase()
+      )
+      onStyleTextChange(match?.sunoPrompt || `${genre.display_name.toLowerCase()}, melodisk, norsk`)
     }
   }
 
@@ -109,7 +100,7 @@ export function StepStyle({
           <div className="grid grid-cols-2 gap-3">
             {genres.map((genre) => {
               const isSelected = selectedGenre?.id === genre.id
-              const Icon = getGenreIcon(genre.name)
+              const Icon = getGenreIcon(genre.display_name)
               return (
                 <button
                   key={genre.id}

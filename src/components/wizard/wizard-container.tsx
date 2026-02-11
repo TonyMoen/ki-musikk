@@ -23,6 +23,7 @@ interface Genre {
   display_name: string
   emoji: string | null
   sort_order: number
+  suno_prompt_template?: string
 }
 
 export function WizardContainer() {
@@ -141,7 +142,7 @@ export function WizardContainer() {
         const supabase = createClient()
         const { data, error } = await supabase
           .from('genre')
-          .select('id, name, display_name, emoji, sort_order')
+          .select('id, name, display_name, emoji, sort_order, suno_prompt_template')
           .eq('is_active', true)
           .order('sort_order', { ascending: true })
 

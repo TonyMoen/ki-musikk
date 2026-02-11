@@ -67,7 +67,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
 
     // Generate lyrics with GPT-4 using comprehensive song writer prompt
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4o',
       temperature: 0.7,
       messages: [
         {
@@ -122,8 +122,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
 
     const lyrics = lines.slice(lyricsStartIndex).join('\n').trim()
 
-    // Truncate title to max 20 characters
-    const truncatedTitle = title.length > 20 ? title.substring(0, 20).trim() : title
+    // Truncate title to max 40 characters
+    const truncatedTitle = title.length > 40 ? title.substring(0, 40).trim() : title
 
     return NextResponse.json({
       data: { lyrics, title: truncatedTitle }

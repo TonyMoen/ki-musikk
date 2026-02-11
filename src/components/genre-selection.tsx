@@ -10,7 +10,8 @@ import { AIAssistantModal } from '@/components/ai-assistant/modal'
 import { Sparkles } from 'lucide-react'
 
 // Default genres to display in 2x2 grid (reduces decision paralysis)
-const DEFAULT_GENRES = ['Country', 'Norsk pop', 'Rap/Hip-Hop', 'Dans/Elektronisk']
+// These match display_name values in the genre DB table
+const DEFAULT_GENRES = ['Pop', 'Rap/Hip-Hop', 'Festlåt', 'Rock']
 
 interface GradientColors {
   from: string
@@ -75,7 +76,7 @@ export function GenreSelection({
         const supabase = createClient()
         const { data, error } = await supabase
           .from('genre')
-          .select('id, name, display_name, emoji, sort_order, gradient_colors')
+          .select('id, name, display_name, emoji, sort_order, gradient_colors, suno_prompt_template')
           .eq('is_active', true)
           .order('sort_order', { ascending: true })
 
@@ -91,14 +92,15 @@ export function GenreSelection({
         // Convert Supabase data to Genre type
         const convertedGenres: Genre[] = (data || []).map(row => ({
           ...row,
-          gradient_colors: isGradientColors(row.gradient_colors) ? row.gradient_colors : null
+          gradient_colors: isGradientColors(row.gradient_colors) ? row.gradient_colors : null,
+          sunoPrompt: (row as Record<string, unknown>).suno_prompt_template as string | undefined
         }))
 
         setGenres(convertedGenres)
         setIsLoading(false)
 
         // Auto-select first DEFAULT genre if none selected
-        const defaultGenresList = convertedGenres.filter(g => DEFAULT_GENRES.includes(g.name)).slice(0, 4)
+        const defaultGenresList = convertedGenres.filter(g => DEFAULT_GENRES.includes(g.display_name)).slice(0, 4)
         if (!selectedId && defaultGenresList.length > 0) {
           const firstGenre = defaultGenresList[0]
           setSelectedId(firstGenre.id)
@@ -191,7 +193,7 @@ export function GenreSelection({
   }
 
   // Filter to show only 4 default genres (2x2 grid)
-  const displayGenres = genres.filter(g => DEFAULT_GENRES.includes(g.name)).slice(0, 4)
+  const displayGenres = genres.filter(g => DEFAULT_GENRES.includes(g.display_name)).slice(0, 4)
 
   return (
     <div role="radiogroup" aria-label="Velg sjanger" className={`w-full ${className}`}>

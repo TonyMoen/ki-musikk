@@ -1,8 +1,9 @@
 /**
  * Standard Genre Templates
  *
- * Pre-made genre templates that users can add to their active genres.
- * These are hardcoded and always available in the Standard tab of the library.
+ * Norwegian-optimized genre templates with Suno prompts.
+ * Each prompt includes "Norwegian" twice for vocal optimization.
+ * Used by the wizard step-style to auto-fill the style textarea.
  */
 
 export interface LibraryGenre {
@@ -18,59 +19,59 @@ export interface LibraryGenre {
 
 export const STANDARD_GENRES: LibraryGenre[] = [
   {
-    id: 'std-classic-rock',
-    name: 'Classic Rock',
-    display_name: 'Classic Rock',
-    sunoPrompt: 'classic rock, electric guitar, drums, bass, powerful vocals, 70s style',
+    id: 'std-elektronisk',
+    name: 'elektronisk',
+    display_name: 'Elektronisk',
+    sunoPrompt: 'Norwegian elektronisk, energetic synth drops, driving four-on-the-floor beat, festival EDM, euphoric build-ups, powerful Norwegian vocals, modern production',
     isStandard: true
   },
   {
-    id: 'std-chill-lofi',
-    name: 'Chill Lofi',
-    display_name: 'Chill Lofi',
-    sunoPrompt: 'lofi hip hop, chill beats, mellow piano, vinyl crackle, relaxed atmosphere',
+    id: 'std-festlaat',
+    name: 'festlaat',
+    display_name: 'Festlåt',
+    sunoPrompt: 'Norwegian festlåt, sing-along party anthem, catchy hook, upbeat tempo, allsang-vennlig, brass hits, clap-along rhythm, energetic Norwegian group vocals, feel-good celebration',
     isStandard: true
   },
   {
-    id: 'std-epic-orchestral',
-    name: 'Epic Orchestral',
-    display_name: 'Epic Orchestral',
-    sunoPrompt: 'cinematic orchestral, strings, brass, epic drums, dramatic, movie soundtrack',
+    id: 'std-rap-hiphop',
+    name: 'rap-hiphop',
+    display_name: 'Rap/Hip-Hop',
+    sunoPrompt: 'Norwegian rap, hard-hitting 808 bass, trap drums, aggressive flow, dark atmospheric synths, modern hip-hop production, confident Norwegian rap vocals',
     isStandard: true
   },
   {
-    id: 'std-indie-folk',
-    name: 'Indie Folk',
-    display_name: 'Indie Folk',
-    sunoPrompt: 'indie folk, acoustic guitar, soft vocals, organic sound, intimate atmosphere',
+    id: 'std-russelaat',
+    name: 'russelaat',
+    display_name: 'Russelåt',
+    sunoPrompt: 'Norwegian russelåt, high-energy party, heavy bass drops, EDM-trap fusion, anthemic chants, festival production, youthful Norwegian vocals, celebratory',
     isStandard: true
   },
   {
-    id: 'std-synthwave',
-    name: 'Synthwave',
-    display_name: 'Synthwave',
-    sunoPrompt: '80s synthwave, retro synthesizers, electronic drums, neon atmosphere, nostalgic',
+    id: 'std-pop',
+    name: 'pop',
+    display_name: 'Pop',
+    sunoPrompt: 'Norwegian pop, polished studio production, catchy melodic hooks, warm synth pads, tight drums, radio-friendly, emotional Norwegian vocals, uplifting, modern Scandinavian sound',
     isStandard: true
   },
   {
-    id: 'std-jazz-smooth',
-    name: 'Jazz Smooth',
-    display_name: 'Jazz Smooth',
-    sunoPrompt: 'smooth jazz, saxophone, piano, upright bass, sophisticated, lounge atmosphere',
+    id: 'std-rock',
+    name: 'rock',
+    display_name: 'Rock',
+    sunoPrompt: 'Norwegian rock, driving electric guitar riffs, punchy live drums, distorted power chords, anthemic chorus, arena energy, raw Norwegian vocals',
     isStandard: true
   },
   {
-    id: 'std-edm-banger',
-    name: 'EDM Banger',
-    display_name: 'EDM Banger',
-    sunoPrompt: 'edm, heavy bass drops, synth leads, high energy, festival anthem, 128 bpm',
+    id: 'std-country',
+    name: 'country',
+    display_name: 'Country',
+    sunoPrompt: 'Norwegian country, acoustic steel-string guitar, fiddle, warm storytelling, steady backbeat, Americana-inspired, heartfelt Norwegian vocals, rustic and authentic',
     isStandard: true
   },
   {
-    id: 'std-acoustic-ballad',
-    name: 'Acoustic Ballad',
-    display_name: 'Acoustic Ballad',
-    sunoPrompt: 'acoustic ballad, fingerstyle guitar, emotional vocals, intimate, slow tempo',
+    id: 'std-akustisk',
+    name: 'akustisk',
+    display_name: 'Akustisk',
+    sunoPrompt: 'Norwegian akustisk, fingerpicked acoustic guitar, intimate and warm, soft percussion, gentle piano, singer-songwriter, vulnerable breathy Norwegian vocals, stripped-back production',
     isStandard: true
   }
 ]

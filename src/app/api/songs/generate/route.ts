@@ -53,6 +53,7 @@ interface SongGenerationRequest {
   previewMode?: boolean // generate 30-second free preview (no credit cost)
   vocalGender?: 'm' | 'f' | null // voice gender selection ('m' = male, 'f' = female, null = let Suno decide)
   customGenrePrompt?: string // Suno prompt for custom genres (required if genre starts with "custom-")
+  sunoPrompt?: string // User-edited style text from the wizard (overrides DB suno_prompt_template when provided)
 }
 
 /**
@@ -329,10 +330,13 @@ export async function POST(request: NextRequest) {
         ? `${finalLyrics}\n\nCreated with KI MUSIKK`
         : finalLyrics
 
+      // Use user-edited style text if provided, otherwise fall back to DB prompt
+      const stylePrompt = body.sunoPrompt?.trim() || genreData.suno_prompt_template
+
       const sunoResult = await generateSong({
         title: title || 'Untitled Song',
         lyrics: finalLyricsWithWatermark,
-        style: genreData.suno_prompt_template,
+        style: stylePrompt,
         model: 'V5',
         callBackUrl: `${(process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/$/, '')}/api/webhooks/suno`,
         duration: previewMode ? 30 : undefined, // 30 seconds for preview, default for full song

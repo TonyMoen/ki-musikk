@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 /**
- * Update genres with Norwegian-optimized prompts and gradient colors
- * Story 3.10: Add Genre Prompt Templates to Database
+ * Update genres with Norwegian-optimized Suno prompts and gradient colors
  *
  * This script:
- * 1. Adds gradient_colors column if it doesn't exist
- * 2. Updates all genres with Norwegian-optimized Suno prompts
- * 3. Updates display names to Norwegian where appropriate
+ * 1. Deactivates all old genres
+ * 2. Upserts 8 Norwegian-optimized genres with Suno prompts
+ * 3. Each prompt includes "Norwegian" twice for vocal optimization
  * 4. Adds gradient color schemes matching Playful Nordic theme
  */
 
@@ -29,84 +28,86 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   }
 })
 
-// Norwegian-optimized genre configurations based on founder's 80k listener expertise
+// Norwegian-optimized genre configurations
+// Each prompt includes "Norwegian" twice for Suno vocal optimization
+// All prompts are under 200 characters for Suno compatibility
 const genreUpdates = [
   {
-    name: 'country-rock',
-    display_name: 'Countryrock',
-    description: 'Upbeat country with rock energy',
-    emoji: '🎸',
-    suno_prompt_template: 'Country, rock, anthem, twangy guitar, catchy fiddle, drum, bass, Norwegian vocals',
-    gradient_colors: { from: '#E94560', to: '#FFC93C' },
+    name: 'elektronisk',
+    display_name: 'Elektronisk',
+    description: 'Energetic electronic dance music with synth drops',
+    emoji: '💃',
+    suno_prompt_template: 'Norwegian elektronisk, energetic synth drops, driving four-on-the-floor beat, festival EDM, euphoric build-ups, powerful Norwegian vocals, modern production',
+    gradient_colors: { from: '#06D6A0', to: '#3B82F6' },
     sort_order: 1,
     is_active: true
   },
   {
-    name: 'norwegian-pop',
-    display_name: 'Norsk pop',
-    description: 'Modern Norwegian pop music',
-    emoji: '🎤',
-    suno_prompt_template: 'Pop, Norwegian, catchy melody, electronic, upbeat, modern production',
-    gradient_colors: { from: '#0F3460', to: '#E94560' },
-    sort_order: 2,
-    is_active: true
-  },
-  {
-    name: 'folk-ballad',
-    display_name: 'Folkeballade',
-    description: 'Acoustic folk with Norwegian tradition',
-    emoji: '🪕',
-    suno_prompt_template: 'Folk, acoustic, Norwegian traditional, heartfelt, storytelling',
-    gradient_colors: { from: '#06D6A0', to: '#FFC93C' },
-    sort_order: 3,
-    is_active: true
-  },
-  {
-    name: 'party-anthem',
+    name: 'festlaat',
     display_name: 'Festlåt',
-    description: 'Energetic party songs for celebrations',
+    description: 'Sing-along party anthems for celebrations',
     emoji: '🎉',
-    suno_prompt_template: 'Dance, party, energetic, sing-along, festive, Norwegian celebration',
+    suno_prompt_template: 'Norwegian festlåt, sing-along party anthem, catchy hook, upbeat tempo, allsang-vennlig, brass hits, clap-along rhythm, energetic Norwegian group vocals, feel-good celebration',
     gradient_colors: { from: '#FFC93C', to: '#E94560' },
-    sort_order: 4,
+    sort_order: 2,
     is_active: true
   },
   {
     name: 'rap-hiphop',
     display_name: 'Rap/Hip-Hop',
-    description: 'Norwegian rap with urban rhythmic flow',
+    description: 'Norwegian rap with hard-hitting beats',
     emoji: '🎤',
-    suno_prompt_template: 'Hip-hop, rap, Norwegian flow, urban, rhythmic, modern beats',
+    suno_prompt_template: 'Norwegian rap, hard-hitting 808 bass, trap drums, aggressive flow, dark atmospheric synths, modern hip-hop production, confident Norwegian rap vocals',
     gradient_colors: { from: '#0F3460', to: '#8B5CF6' },
+    sort_order: 3,
+    is_active: true
+  },
+  {
+    name: 'russelaat',
+    display_name: 'Russelåt',
+    description: 'High-energy party anthem for russ celebrations',
+    emoji: '🚌',
+    suno_prompt_template: 'Norwegian russelåt, high-energy party, heavy bass drops, EDM-trap fusion, anthemic chants, festival production, youthful Norwegian vocals, celebratory',
+    gradient_colors: { from: '#E94560', to: '#8B5CF6' },
+    sort_order: 4,
+    is_active: true
+  },
+  {
+    name: 'pop',
+    display_name: 'Pop',
+    description: 'Modern Norwegian pop with polished production',
+    emoji: '🎵',
+    suno_prompt_template: 'Norwegian pop, polished studio production, catchy melodic hooks, warm synth pads, tight drums, radio-friendly, emotional Norwegian vocals, uplifting, modern Scandinavian sound',
+    gradient_colors: { from: '#0F3460', to: '#E94560' },
     sort_order: 5,
     is_active: true
   },
   {
-    name: 'rock-ballad',
-    display_name: 'Rockballade',
-    description: 'Emotional rock with powerful vocals',
+    name: 'rock',
+    display_name: 'Rock',
+    description: 'Driving rock with electric guitar riffs',
     emoji: '🎸',
-    suno_prompt_template: 'Rock, ballad, emotional, guitar solo, powerful vocals, Norwegian',
+    suno_prompt_template: 'Norwegian rock, driving electric guitar riffs, punchy live drums, distorted power chords, anthemic chorus, arena energy, raw Norwegian vocals',
     gradient_colors: { from: '#8B5CF6', to: '#E94560' },
     sort_order: 6,
     is_active: true
   },
   {
-    name: 'electronic-dance',
-    display_name: 'Dans/Elektronisk',
-    description: 'High-energy electronic dance music',
-    emoji: '💃',
-    suno_prompt_template: 'Electronic, dance, EDM, synth, energetic, club, Norwegian vocals',
-    gradient_colors: { from: '#06D6A0', to: '#3B82F6' },
+    name: 'country',
+    display_name: 'Country',
+    description: 'Acoustic country with Norwegian warmth',
+    emoji: '🤠',
+    suno_prompt_template: 'Norwegian country, acoustic steel-string guitar, fiddle, warm storytelling, steady backbeat, Americana-inspired, heartfelt Norwegian vocals, rustic and authentic',
+    gradient_colors: { from: '#E94560', to: '#FFC93C' },
     sort_order: 7,
     is_active: true
   },
   {
-    name: 'singer-songwriter',
-    display_name: 'Singer-Songwriter',
-    description: 'Intimate acoustic storytelling',
+    name: 'akustisk',
+    display_name: 'Akustisk',
+    description: 'Intimate acoustic singer-songwriter',
     emoji: '🎹',
-    suno_prompt_template: 'Acoustic, intimate, storytelling, piano, guitar, heartfelt, Norwegian',
+    suno_prompt_template: 'Norwegian akustisk, fingerpicked acoustic guitar, intimate and warm, soft percussion, gentle piano, singer-songwriter, vulnerable breathy Norwegian vocals, stripped-back production',
     gradient_colors: { from: '#FB923C', to: '#92400E' },
     sort_order: 8,
     is_active: true
@@ -144,7 +145,20 @@ async function updateGenresWithGradients() {
 
     console.log('✅ Database schema is up to date\n')
 
-    // Update each genre
+    // Deactivate ALL existing genres first
+    console.log('🧹 Deactivating all existing genres...')
+    const { error: deactivateError } = await supabase
+      .from('genre')
+      .update({ is_active: false })
+      .neq('name', '___placeholder___') // Match all rows
+
+    if (deactivateError) {
+      console.error('❌ Error deactivating genres:', deactivateError)
+    } else {
+      console.log('   ✅ All existing genres deactivated\n')
+    }
+
+    // Upsert each new genre
     let updatedCount = 0
     let insertedCount = 0
 
@@ -184,29 +198,6 @@ async function updateGenresWithGradients() {
           insertedCount++
         }
       }
-    }
-
-    // Clean up old genres that don't match the Norwegian-optimized list
-    console.log('\n🧹 Cleaning up old genres...')
-    const genreNames = genreUpdates.map(g => g.name)
-
-    const { data: allGenres } = await supabase
-      .from('genre')
-      .select('name, display_name')
-
-    const oldGenres = allGenres?.filter(g => !genreNames.includes(g.name)) || []
-
-    if (oldGenres.length > 0) {
-      console.log(`   Found ${oldGenres.length} old genres to deactivate:`)
-      oldGenres.forEach(g => console.log(`   - ${g.display_name}`))
-
-      for (const oldGenre of oldGenres) {
-        await supabase
-          .from('genre')
-          .update({ is_active: false })
-          .eq('name', oldGenre.name)
-      }
-      console.log(`   ✅ Deactivated ${oldGenres.length} old genres`)
     }
 
     // Fetch and display all active genres

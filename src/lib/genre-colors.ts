@@ -4,11 +4,19 @@ export interface GradientColors {
 }
 
 export const GENRE_GRADIENTS: Record<string, GradientColors> = {
+  'elektronisk': { from: '#06D6A0', to: '#3B82F6' },
+  'festlaat': { from: '#FFC93C', to: '#E94560' },
+  'rap-hiphop': { from: '#0F3460', to: '#8B5CF6' },
+  'russelaat': { from: '#E94560', to: '#8B5CF6' },
+  'pop': { from: '#0F3460', to: '#E94560' },
+  'rock': { from: '#8B5CF6', to: '#E94560' },
+  'country': { from: '#E94560', to: '#FFC93C' },
+  'akustisk': { from: '#FB923C', to: '#92400E' },
+  // Legacy keys for existing songs in DB
   'country-rock': { from: '#E94560', to: '#FFC93C' },
   'norwegian-pop': { from: '#0F3460', to: '#E94560' },
   'folk-ballad': { from: '#06D6A0', to: '#FFC93C' },
   'party-anthem': { from: '#FFC93C', to: '#E94560' },
-  'rap-hiphop': { from: '#0F3460', to: '#8B5CF6' },
   'rock-ballad': { from: '#8B5CF6', to: '#E94560' },
   'electronic-dance': { from: '#06D6A0', to: '#3B82F6' },
   'singer-songwriter': { from: '#FB923C', to: '#92400E' },

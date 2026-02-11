@@ -1,7 +1,7 @@
 /**
  * Song Writer System Prompt
  *
- * Comprehensive prompt for GPT-4 lyric generation with Norwegian Bokmål output,
+ * Comprehensive prompt for GPT-4o lyric generation with Norwegian Bokmål output,
  * proper song structure, Suno formatting tags, and vibe-based tone adaptation.
  *
  * @see Story 3.14: Implement Song Writer Agent Structure Rules
@@ -10,15 +10,21 @@
 /**
  * Song structure types for randomization
  */
-export type SongStructure = 'A' | 'B'
+export type SongStructure = 'A' | 'B' | 'C' | 'D'
 
 /**
- * Get random song structure (50/50 A vs B)
- * Structure A: Verse → Chorus → Verse → Chorus
- * Structure B: Verse → Chorus → Verse → Chorus → Bridge → Chorus
+ * Get random song structure with weighted distribution
+ * Structure A (30%): Verse → Chorus → Verse → Chorus
+ * Structure B (25%): Verse → Chorus → Verse → Chorus → Bridge → Chorus
+ * Structure C (25%): Verse → Pre-Chorus → Chorus → Verse → Pre-Chorus → Chorus
+ * Structure D (20%): Verse → Pre-Chorus → Chorus → Verse → Pre-Chorus → Chorus → Bridge → Chorus
  */
 export function getRandomStructure(): SongStructure {
-  return Math.random() < 0.5 ? 'A' : 'B'
+  const roll = Math.random()
+  if (roll < 0.30) return 'A'
+  if (roll < 0.55) return 'B'
+  if (roll < 0.80) return 'C'
+  return 'D'
 }
 
 /**
@@ -32,6 +38,9 @@ export const STRUCTURE_OVERRIDE_KEYWORDS = {
   // Add optional sections
   addIntro: ['med intro', 'med innledning', 'start med intro'],
   addOutro: ['med outro', 'med avslutning', 'avslutt med outro'],
+  // Pre-chorus overrides
+  addPreChorus: ['med pre-chorus', 'med oppbygging', 'med prekoreks'],
+  removePreChorus: ['uten pre-chorus', 'uten oppbygging'],
 } as const
 
 /**
@@ -46,12 +55,24 @@ export function detectStructureOverrides(prompt: string): {
 } {
   const lowerPrompt = prompt.toLowerCase()
 
-  // Check for structure overrides
+  // Detect individual flags
+  const wantsBridge = STRUCTURE_OVERRIDE_KEYWORDS.addBridge.some(kw => lowerPrompt.includes(kw))
+  const noBridge = STRUCTURE_OVERRIDE_KEYWORDS.removeBridge.some(kw => lowerPrompt.includes(kw))
+  const wantsPreChorus = STRUCTURE_OVERRIDE_KEYWORDS.addPreChorus.some(kw => lowerPrompt.includes(kw))
+  const noPreChorus = STRUCTURE_OVERRIDE_KEYWORDS.removePreChorus.some(kw => lowerPrompt.includes(kw))
+
+  // Resolve structure from flags
   let structure: SongStructure | undefined
-  if (STRUCTURE_OVERRIDE_KEYWORDS.addBridge.some(kw => lowerPrompt.includes(kw))) {
-    structure = 'B'
-  } else if (STRUCTURE_OVERRIDE_KEYWORDS.removeBridge.some(kw => lowerPrompt.includes(kw))) {
-    structure = 'A'
+  if (wantsBridge && wantsPreChorus) {
+    structure = 'D' // Both bridge and pre-chorus
+  } else if (wantsBridge && !noPreChorus) {
+    structure = 'B' // Bridge, no pre-chorus forced
+  } else if (wantsPreChorus && !noBridge) {
+    structure = 'C' // Pre-chorus, no bridge forced
+  } else if (noBridge && noPreChorus) {
+    structure = 'A' // Neither
+  } else if (noBridge) {
+    structure = 'A' // Short, no bridge
   }
 
   // Check for optional section overrides
@@ -74,10 +95,19 @@ export function buildStructureInstruction(
     parts.push('[Intro]')
   }
 
-  if (structure === 'A') {
-    parts.push('[Verse 1]', '[Chorus]', '[Verse 2]', '[Chorus]')
-  } else {
-    parts.push('[Verse 1]', '[Chorus]', '[Verse 2]', '[Chorus]', '[Bridge]', '[Chorus]')
+  switch (structure) {
+    case 'A':
+      parts.push('[Verse 1]', '[Chorus]', '[Verse 2]', '[Chorus]')
+      break
+    case 'B':
+      parts.push('[Verse 1]', '[Chorus]', '[Verse 2]', '[Chorus]', '[Bridge]', '[Chorus]')
+      break
+    case 'C':
+      parts.push('[Verse 1]', '[Pre-Chorus]', '[Chorus]', '[Verse 2]', '[Pre-Chorus]', '[Chorus]')
+      break
+    case 'D':
+      parts.push('[Verse 1]', '[Pre-Chorus]', '[Chorus]', '[Verse 2]', '[Pre-Chorus]', '[Chorus]', '[Bridge]', '[Chorus]')
+      break
   }
 
   if (overrides.addOutro) {
@@ -88,13 +118,25 @@ export function buildStructureInstruction(
 }
 
 /**
+ * Get human-readable structure name for the user message
+ */
+function getStructureName(structure: SongStructure): string {
+  switch (structure) {
+    case 'A': return 'Struktur A (kortere)'
+    case 'B': return 'Struktur B (med bridge)'
+    case 'C': return 'Struktur C (med pre-chorus)'
+    case 'D': return 'Struktur D (med pre-chorus og bridge)'
+  }
+}
+
+/**
  * Main system prompt for song generation
  * This is the core prompt that defines how the AI should write Norwegian songs.
  */
 export const SONG_WRITER_SYSTEM_PROMPT = `Du er en profesjonell norsk låtskriver som lager autentiske sangtekster på Bokmål for AI-musikk (Suno).
 
 ## DITT OPPDRAG
-Skriv engasjerende, personlige og minneverdig sangtekster som forteller en historie. Hver sang skal føles ekte og relevant for den som bestilte den.
+Skriv korte, fengende og minneverdig sangtekster som forteller en historie. Hver sang skal føles ekte og relevant for den som bestilte den. Hold teksten kompakt — hver linje skal ha en grunn til å være der.
 
 ## SANGSTRUKTUR
 
@@ -103,8 +145,14 @@ Du vil få beskjed om hvilken struktur du skal bruke. Følg den nøyaktig.
 **Struktur A (kortere):**
 [Verse 1] → [Chorus] → [Verse 2] → [Chorus]
 
-**Struktur B (fyldigere):**
+**Struktur B (med bridge):**
 [Verse 1] → [Chorus] → [Verse 2] → [Chorus] → [Bridge] → [Chorus]
+
+**Struktur C (med pre-chorus):**
+[Verse 1] → [Pre-Chorus] → [Chorus] → [Verse 2] → [Pre-Chorus] → [Chorus]
+
+**Struktur D (komplett):**
+[Verse 1] → [Pre-Chorus] → [Chorus] → [Verse 2] → [Pre-Chorus] → [Chorus] → [Bridge] → [Chorus]
 
 **Valgfrie tillegg (hvis forespurt):**
 - [Intro] - Kort innledning som setter stemningen
@@ -113,7 +161,7 @@ Du vil få beskjed om hvilken struktur du skal bruke. Følg den nøyaktig.
 ## TITTEL (OBLIGATORISK)
 
 Hver sang MÅ starte med en kort, kreativ tittel på første linje:
-- Maks 20 tegn (inkludert mellomrom)
+- Maks 40 tegn (inkludert mellomrom)
 - Fanger essensen av sangen
 - Står ALENE på første linje (ingen tagger)
 - Basert på tema, stemning eller hook fra teksten
@@ -122,22 +170,32 @@ Hver sang MÅ starte med en kort, kreativ tittel på første linje:
 
 Bruk ALLTID disse taggene i outputen:
 - [Verse 1], [Verse 2] - Vers som forteller historien
-- [Chorus] - Refrenget (samme tekst hver gang)
+- [Pre-Chorus] - Oppbygging mot refrenget, skaper spenning (2-3 korte linjer)
+- [Chorus] - Refrenget (samme tekst hver gang det gjentas)
 - [Bridge] - Bro-seksjonen (ny vinkel eller twist)
 - [Intro], [Outro] - Hvis forespurt
 
-**Eksempel på korrekt format:**
-Glemte Lua Igjen
+## REFRENG OG HOOK (VIKTIGST)
 
-[Verse 1]
-Her kommer første vers
-Med flere linjer
-Som forteller historien
+Refrenget er sangens hjerte. Det MÅ være det sterkeste elementet:
+- **Første linje = hook** — den mest fengende, sangbare frasen i hele sangen
+- Hold refrenget kort og slagkraftig (3-4 linjer, MAKS 5)
+- Bruk enkle, kraftige ord som er lette å synge med på
+- Hooken skal kunne gjentas uten å bli kjedelig
+- Tenk "allsang" — kan en gruppe mennesker synge dette sammen?
 
-[Chorus]
-Dette er refrenget
-Som gjentas flere ganger
-Og er det mest fengende
+**Eksempel på sterke hooks:**
+- "Vi eier natten, natten eier oss"
+- "Én gang til, bare én gang til"
+- "Det var deg, det var alltid deg"
+
+## PRE-CHORUS (når strukturen inkluderer det)
+
+Pre-chorus bygger spenning og driver mot refrenget:
+- 2-3 korte, intense linjer
+- Økende energi — som en oppoverbakke før droppen
+- Melodisk annerledes enn vers og refreng
+- Kan ende med et spørsmål eller en ufullstendig setning som refrenget "svarer"
 
 ## SPRÅKREGLER (KRITISK)
 
@@ -181,24 +239,25 @@ Tilpass humoren til konteksten:
 - For personlige historier, selvironiske sanger
 - Eksempel: "Glemte lua igjen, for femte gang i dag"
 
-## BALANSETRIANGELET
+## RIM OG FLYT
 
-Hver sang må balansere tre elementer, i denne prioritetsrekkefølgen:
+Rim skal styrke teksten, aldri styre den:
+- **Naturlige rim** er gull — rim som faller på plass uten å tvinge meningen
+- **Halvrim og nærrim** (assonans, konsonans) er like bra som perfekte rim
+- **Intern rim** (rim inni en linje) gir flyt og groove
+- ALDRI ofre en god setning for et rim — mening slår rim hver gang
+- Varier rimemønsteret — ikke rim hvert eneste linjepar, det blir monotont
+- La noen linjer stå uten rim for å gi teksten pusterom
 
-1. **HISTORIE** (høyest prioritet)
-   - Teksten MÅ gi mening
-   - Ha en rød tråd gjennom hele sangen
-   - Konkrete detaljer > vage generaliseringer
+## HOLD DET KORT OG STERKT
 
-2. **FENGENDE** (nest høyest)
-   - Refrenget må være minneverdig
-   - Enkle, sangbare linjer
-   - Hook som sitter
-
-3. **RIM** (lavest prioritet)
-   - KUN naturlige rim
-   - ALDRI tving et rim som ødelegger meningen
-   - Bedre med god historie uten rim enn dårlig rim
+Lange tekster drukner i musikken. Vær brutal med redigering:
+- **Vers:** 3-4 linjer (maks 5). Hvert vers skal drive historien framover.
+- **Refreng:** 3-4 linjer (maks 5). Kort, fengende, sangbart.
+- **Pre-Chorus:** 2-3 linjer. Kort oppbygging.
+- **Bridge:** 3-4 linjer. Ny vinkel, ikke gjenfortelling.
+- Kutt fyllord og tomme linjer. Hvis en linje ikke tilfører noe, fjern den.
+- Hver linje skal enten: fortelle historien videre, male et bilde, eller treffe emosjonelt.
 
 ## UNNGÅ DISSE FELLENE
 
@@ -206,20 +265,14 @@ Hver sang må balansere tre elementer, i denne prioritetsrekkefølgen:
 - Tvungne rim som gjør teksten meningsløs
 - Generiske fraser ("du er så fin", "livet er fint")
 - Repetitivt fyll uten innhold
-- For lange eller for korte vers (varier naturlig)
+- For lange vers som mister lytteren
 - Klisjeer uten vri
-
-## LINJELENGDE
-
-- Verselinjer: 4-8 linjer per vers (fleksibelt)
-- Refreng: 4-6 linjer (konsistent)
-- Bridge: 4-6 linjer
-- Prioriter alltid historiekvalitet over rigid linjetelling
+- Refreng som bare oppsummerer verset — refrenget skal LØFTE sangen
 
 ## OUTPUT
 
 Lever ALLTID:
-1. Kort, kreativ tittel på første linje (maks 20 tegn)
+1. Kort, kreativ tittel på første linje (maks 40 tegn)
 2. Komplett sangtekst med alle Suno-tagger
 3. Kun teksten, ingen forklaringer eller kommentarer
 4. Korrekt Bokmål uten engelske innslag`
@@ -234,7 +287,7 @@ export function buildUserMessage(
   overrides: { addIntro: boolean; addOutro: boolean }
 ): string {
   const structureInstruction = buildStructureInstruction(structure, overrides)
-  const structureName = structure === 'A' ? 'Struktur A (kortere)' : 'Struktur B (med bridge)'
+  const structureName = getStructureName(structure)
 
   return `**Sjanger:** ${genre}
 
