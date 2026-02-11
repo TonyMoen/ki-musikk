@@ -75,7 +75,7 @@ export default function PricingPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-            Enkel prising
+            Velg din pakke
           </h1>
           <p className="text-lg text-[rgba(180,200,240,0.5)]">
             Kjøp kreditter og lag norske sanger med KI
@@ -107,7 +107,7 @@ export default function PricingPage() {
                 )}
 
                 {bestValue && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-1 text-xs font-semibold">
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF5B24] text-white px-4 py-1 text-xs font-semibold">
                     BEST VERDI
                   </Badge>
                 )}
@@ -134,7 +134,7 @@ export default function PricingPage() {
                   </p>
 
                   {/* Credits + songs */}
-                  <div className="bg-[rgba(0,0,0,0.2)] rounded-xl py-4 px-3 mb-6">
+                  <div className="py-4 px-3 mb-6">
                     <div className="text-2xl font-bold text-white">
                       {pkg.description}
                     </div>
@@ -155,7 +155,9 @@ export default function PricingPage() {
                       w-full h-12 text-sm font-semibold transition-all
                       ${isSelected
                         ? 'bg-[#FF5B24] hover:bg-[#E54D1C] text-white'
-                        : 'border-[rgba(90,140,255,0.2)] text-[rgba(180,200,240,0.7)] hover:bg-[rgba(40,80,160,0.15)] hover:text-white hover:border-[rgba(90,140,255,0.3)]'
+                        : pkg.id === 'premium'
+                          ? 'border-[#FF5B24]/40 text-[#FF5B24] hover:bg-[rgba(242,101,34,0.1)] hover:border-[#FF5B24]/60'
+                          : 'border-[rgba(90,140,255,0.2)] text-[rgba(180,200,240,0.7)] hover:bg-[rgba(40,80,160,0.15)] hover:text-white hover:border-[rgba(90,140,255,0.3)]'
                       }
                     `}
                   >
@@ -165,29 +167,26 @@ export default function PricingPage() {
                         {user ? 'Kobler til Vipps...' : 'Laster...'}
                       </>
                     ) : user ? (
-                      'Betal med Vipps'
+                      '\uD83D\uDD12 Betal med Vipps'
                     ) : (
                       'Logg inn for å kjøpe'
                     )}
                   </Button>
-
-                  {/* Vipps secure badge inline */}
-                  <div className="flex items-center justify-center gap-1.5 text-xs text-[rgba(130,170,240,0.35)] mt-3">
-                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
-                    Sikker betaling
-                  </div>
                 </div>
               </div>
             )
           })}
         </div>
 
+        {/* Secure payment note */}
+        <p className="text-center text-xs text-[rgba(130,170,240,0.35)] mt-6">
+          Sikker betaling med Vipps
+        </p>
+
         {/* Features Section */}
         <div className="mt-16 text-center">
           <h2 className="text-xl font-semibold text-white mb-8">Inkludert i alle pakker</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-sm text-[rgba(180,200,240,0.5)]">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-sm text-[rgba(180,200,240,0.5)]">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
                 <AppLogo size={24} />
@@ -209,10 +208,17 @@ export default function PricingPage() {
               <p className="font-medium text-white">MP3 nedlasting</p>
               <p>Last ned sangene dine</p>
             </div>
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <svg className="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+              <p className="font-medium text-white">Utløper aldri</p>
+              <p>Kredittene dine varer for alltid</p>
+            </div>
           </div>
-          <p className="text-xs text-[rgba(130,170,240,0.35)] mt-6">
-            Kreditter utløper aldri
-          </p>
         </div>
       </div>
     </main>

@@ -76,7 +76,7 @@ export function LyricsInputSection({
               "data-[state=active]:bg-surface data-[state=active]:text-text-primary data-[state=active]:shadow-sm"
             )}
           >
-            AI Genererer
+            Skriv med KI
           </TabsTrigger>
           <TabsTrigger
             value="own"
@@ -86,7 +86,7 @@ export function LyricsInputSection({
               "data-[state=active]:bg-surface data-[state=active]:text-text-primary data-[state=active]:shadow-sm"
             )}
           >
-            Egen tekst
+            Skriv selv
           </TabsTrigger>
         </TabsList>
 

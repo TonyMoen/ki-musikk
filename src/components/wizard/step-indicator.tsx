@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 const STEPS = [
   { number: 1, label: 'Sangtekst' },
   { number: 2, label: 'Stil & sjanger' },
-  { number: 3, label: 'Generer' },
+  { number: 3, label: 'Oppsummering' },
 ]
 
 interface StepIndicatorProps {

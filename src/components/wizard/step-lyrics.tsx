@@ -85,7 +85,7 @@ export function StepLyrics({
               : 'text-[rgba(130,170,240,0.45)] hover:text-white'
           )}
         >
-          KI genererer
+          Skriv med KI
         </button>
         <button
           type="button"
@@ -98,7 +98,7 @@ export function StepLyrics({
               : 'text-[rgba(130,170,240,0.45)] hover:text-white'
           )}
         >
-          Egen tekst
+          Skriv selv
         </button>
       </div>
 
