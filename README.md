@@ -1,197 +1,87 @@
-# Musikkfabrikken
+# KI Musikk
 
-AI-powered Norwegian song creation platform - Create authentic-sounding Norwegian songs with AI-generated lyrics and Suno music production.
+Norwegian AI-powered song creation platform. Create authentic-sounding Norwegian songs — from lyrics to finished track — in minutes.
 
-## Prerequisites
+**[kimusikk.no](https://www.kimusikk.no)**
 
-- **Node.js**: 18.17+ or 20.x LTS
-- **npm**: 9.x+ or pnpm 8.x+
-- **Git**: 2.x+
+## The Problem
 
-## Getting Started
+AI music tools produce Norwegian vocals that sound American and fake. Phonetic mispronunciations make the output unusable for anyone who cares about authenticity. Manual workarounds require expert-level knowledge that mainstream creators don't have.
 
-### 1. Installation
+## The Solution
 
-Clone the repository and install dependencies:
+KI Musikk is the only platform built specifically for Norwegian music creation. It applies intelligent pronunciation optimization to produce vocals that actually sound Norwegian — not retrofitted from English.
 
-```bash
-git clone <repository-url>
-cd SG-Tony
-npm install
-```
+**Three steps:**
+1. **Skriv tekst** — Write lyrics manually or generate them from a concept with AI
+2. **Velg sjanger** — Pick a genre and style from a curated library
+3. **Lag sang** — Generate a full, production-ready track
 
-### 2. Environment Setup
+## Features
 
-Copy the environment template and configure your API keys:
+- AI-powered Norwegian lyric generation from simple concepts
+- Norwegian pronunciation optimization for authentic-sounding vocals
+- Curated genre library with custom genre support
+- Built-in audio player with full playback controls
+- Personal song library with download support
+- Credit-based pricing in NOK via Vipps
 
-```bash
-cp .env.example .env.local
-```
+## Tech Stack
 
-Edit `.env.local` with your actual API credentials:
-- **Supabase**: Database, authentication, and storage
-- **Stripe**: Payment processing for credit purchases
-- **OpenAI**: GPT-4 for Norwegian lyric generation
-- **Suno API**: Music generation
-- **Google AI**: Canvas generation (optional)
-
-See `.env.example` for detailed instructions on obtaining each API key.
-
-### 3. Development
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-The development server uses Turbopack for fast hot module replacement.
-
-### 4. Build
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-### 5. Start Production Server
-
-Run the production build locally:
-
-```bash
-npm start
-```
-
-## Technology Stack
-
-- **Framework**: Next.js 14.2+ with App Router
-- **Language**: TypeScript 5.3+
-- **Styling**: Tailwind CSS 3.4+
-- **UI Components**: shadcn/ui (Radix UI + Tailwind)
-- **Backend**: Supabase (PostgreSQL 17, Auth, Storage)
-- **Payment**: Stripe
-- **AI Services**: OpenAI GPT-4, Suno API, Google Gemini/Video
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Next.js 14 (App Router, Turbopack) |
+| **Language** | TypeScript (strict mode) |
+| **Styling** | Tailwind CSS + shadcn/ui |
+| **State** | Zustand |
+| **Audio** | Howler.js |
+| **Database** | Supabase (PostgreSQL + Auth + Storage + RLS) |
+| **Auth** | Vipps OAuth 2.0 + Google OAuth |
+| **Payments** | Vipps ePayment |
+| **Hosting** | Vercel (Edge + Serverless) |
 
 ## Project Structure
 
 ```
-SG-Tony/
-├── .next/                    # Next.js build output (gitignored)
-├── docs/                     # Documentation
-│   ├── architecture.md       # Architecture decisions and patterns
-│   ├── prd.md                # Product requirements
-│   ├── ux-design-specification.md  # UX design system
-│   └── epics/                # Epic and story documentation
-├── node_modules/             # Dependencies (gitignored)
-├── public/                   # Static assets
-├── src/
-│   ├── app/                  # Next.js App Router
-│   │   ├── layout.tsx        # Root layout
-│   │   ├── page.tsx          # Home page
-│   │   └── globals.css       # Global styles + Tailwind imports
-│   ├── components/           # React components (to be added)
-│   ├── lib/                  # Utility libraries (to be added)
-│   └── types/                # TypeScript type definitions (to be added)
-├── .env.example              # Environment variable template
-├── .env.local                # Your local environment variables (gitignored)
-├── .eslintrc.json            # ESLint configuration
-├── .gitignore                # Git exclusions
-├── next.config.js            # Next.js configuration
-├── package.json              # Project dependencies and scripts
-├── postcss.config.js         # PostCSS configuration for Tailwind
-├── README.md                 # This file
-├── tailwind.config.ts        # Tailwind CSS configuration
-└── tsconfig.json             # TypeScript configuration
+src/
+├── app/                              # Next.js App Router
+│   ├── page.tsx                      # Home — song creation wizard
+│   ├── auth/                         # Login flows (Vipps, Google)
+│   ├── sanger/                       # Song library
+│   ├── innstillinger/                # User settings + credits
+│   ├── priser/                       # Pricing
+│   ├── hjelp/                        # Help / FAQ
+│   ├── om-oss/                       # About
+│   ├── kontakt/                      # Contact
+│   ├── personvern/                   # Privacy policy
+│   ├── vilkaar/                      # Terms of service
+│   └── api/
+│       ├── auth/                     # OAuth flows + session management
+│       ├── lyrics/                   # AI lyric generation + optimization
+│       ├── songs/                    # Song CRUD + generation pipeline
+│       ├── credits/                  # Balance + purchase endpoints
+│       └── webhooks/                 # Async callbacks (payment, generation)
+├── components/
+│   ├── wizard/                       # 3-step song creation flow
+│   ├── ui/                           # shadcn/ui primitives
+│   └── ...                           # Player, library, layout components
+├── lib/                              # API clients, utilities, constants
+└── types/                            # TypeScript definitions
 ```
 
-## Import Aliases
+## Technical Highlights
 
-The project uses the `@/*` import alias pattern for cleaner imports:
+- **Full-stack Next.js** — Server-side API routes handling OAuth, payment processing, and webhook ingestion alongside a React client
+- **Atomic credit transactions** — Database-level transactional deductions with automatic rollback on generation failure
+- **Dual OAuth integration** — Vipps (Norwegian national identity) and Google, unified through Supabase Auth
+- **Async generation pipeline** — Song creation kicks off via API, completes via webhook callbacks with early-playback support for partial results
+- **Row-Level Security** — All user data isolated at the database layer via Supabase RLS policies
+- **Norwegian-first localization** — Full Bokmål UI with `lang="nb"` and `nb_NO` locale throughout
 
-```typescript
-// Instead of: import { Button } from '../../../components/ui/button'
-import { Button } from '@/components/ui/button'
-```
+## Status
 
-## Available Scripts
-
-- `npm run dev` - Start development server with Turbopack
-- `npm run build` - Create production build
-- `npm start` - Run production server
-- `npm run lint` - Run ESLint code quality checks
-
-## Documentation
-
-- **[Development Guidelines](./DEVELOPMENT_GUIDELINES.md)** - ⚠️ READ FIRST: Norwegian language requirements & coding standards
-- [Architecture Document](./docs/architecture.md) - Technical architecture and design decisions
-- [Product Requirements](./docs/prd.md) - Functional requirements and specifications
-- [UX Design](./docs/ux-design-specification.md) - User experience and design system
-- [Next.js Documentation](https://nextjs.org/docs) - Next.js framework guide
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs) - Styling framework guide
-
-## Development Guidelines
-
-⚠️ **CRITICAL: All user-facing content and SEO MUST be in Norwegian (Bokmål)**
-
-See [DEVELOPMENT_GUIDELINES.md](./DEVELOPMENT_GUIDELINES.md) for complete guidelines including:
-- 🇳🇴 Norwegian language requirements (UI, SEO, metadata)
-- TypeScript strict mode and code style
-- Component structure and naming conventions
-- Git commit message format
-
-**Quick Reference:**
-- **Language**: All UI text in Norwegian, code/docs in English
-- **HTML lang**: `lang="nb"` (Norwegian Bokmål)
-- **Locale**: `nb_NO`
-- **TypeScript Strict Mode**: Enabled for type safety
-- **Code Style**: ESLint with Next.js recommended rules
-- **Commit Messages**: Use conventional commit format (e.g., `feat:`, `fix:`, `docs:`)
-- **Branch Strategy**: Feature branches merged to `main` via pull requests
-
-## Deployment
-
-### Production
-
-The application is deployed on **Vercel** with automatic deployments from the `main` branch.
-
-- **Production URL**: https://sg-tony-v2.vercel.app
-- **Platform**: Vercel (optimized for Next.js)
-- **Region**: Automatic (Edge + Serverless)
-
-### Vercel Environment Variables
-
-The following environment variables must be configured in Vercel Dashboard → Project Settings → Environment Variables:
-
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (safe for client) |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-only) |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key |
-| `STRIPE_SECRET_KEY` | Stripe secret key |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
-| `OPENAI_API_KEY` | OpenAI API key for lyric generation |
-| `SUNO_API_KEY` | Suno API key for music generation |
-| `SUNO_WEBHOOK_SECRET` | Suno webhook signing secret |
-| `NEXT_PUBLIC_APP_URL` | Production URL (https://sg-tony-v2.vercel.app) |
-
-### Deployment Process
-
-1. Push to `main` branch triggers automatic deployment
-2. Vercel builds with `npm run build`
-3. Preview deployments created for pull requests
-4. Rollback available via Vercel Dashboard
-
-## Support
-
-For questions or issues:
-1. Check the [Architecture Document](./docs/architecture.md)
-2. Review the [PRD](./docs/prd.md) for feature specifications
-3. Contact the project maintainer
+Live in production at [kimusikk.no](https://www.kimusikk.no).
 
 ---
 
-Built with ❤️ for Norwegian music creators
+Made in Norway. All rights reserved.
