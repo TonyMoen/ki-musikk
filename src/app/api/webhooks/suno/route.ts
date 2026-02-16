@@ -440,7 +440,8 @@ export async function POST(request: Request) {
     const completeSongData = sunoData?.[0]
     // Support both snake_case and camelCase field names
     const audioUrl = completeSongData?.audio_url || completeSongData?.audioUrl
-    const imageUrl = completeSongData?.image_url || completeSongData?.imageUrl
+    const imageUrl = completeSongData?.image_url || completeSongData?.source_image_url || completeSongData?.imageUrl
+    const sourceImageUrl = completeSongData?.source_image_url
     const duration = completeSongData?.duration
 
     if (!audioUrl) {
@@ -535,7 +536,7 @@ export async function POST(request: Request) {
       .update({
         status: 'completed',
         audio_url: storagePath,
-        image_url: imageUrl || null, // Store Suno's cover image URL
+        canvas_url: imageUrl || null, // Suno cover image URL
         duration_seconds: duration ? Math.round(duration) : null, // Round to nearest integer
         updated_at: new Date().toISOString(),
       })

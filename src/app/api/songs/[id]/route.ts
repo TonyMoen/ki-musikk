@@ -266,8 +266,8 @@ export async function GET(
                 .update({
                   status: 'completed',
                   audio_url: audioStored ? storagePath : firstSong.audioUrl,
+                  canvas_url: firstSong.imageUrl || firstSong.sourceImageUrl || null,
                   duration_seconds: firstSong.duration ? Math.round(firstSong.duration) : null,
-                  canvas_url: firstSong.imageUrl || null,
                   updated_at: new Date().toISOString()
                 })
                 .eq('id', songId)
@@ -407,8 +407,8 @@ export async function GET(
                 .update({
                   status: 'completed',
                   audio_url: audioStored ? storagePath : firstSong.audioUrl,
+                  canvas_url: firstSong.imageUrl || firstSong.sourceImageUrl || null,
                   duration_seconds: firstSong.duration ? Math.round(firstSong.duration) : song.duration_seconds,
-                  canvas_url: firstSong.imageUrl || null,
                   updated_at: new Date().toISOString()
                 })
                 .eq('id', songId)

@@ -74,10 +74,13 @@ export async function GET(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Generate signed URLs for songs stored in Supabase Storage
+    // Generate signed URLs and map canvas_url → image_url for frontend
     const songsWithSignedUrls = await Promise.all(
       (songs || []).map(async (song) => {
-        if (!song.audio_url) return song
+        // Map DB canvas_url to frontend image_url
+        const mapped = { ...song, image_url: song.canvas_url }
+
+        if (!song.audio_url) return mapped
 
         // Storage path format: songs/{userId}/{songId}.mp3
         if (song.audio_url.startsWith('songs/')) {
@@ -86,7 +89,7 @@ export async function GET(request: Request) {
             .createSignedUrl(song.audio_url.replace('songs/', ''), 86400)
 
           if (urlData?.signedUrl) {
-            return { ...song, audio_url: urlData.signedUrl }
+            return { ...mapped, audio_url: urlData.signedUrl }
           }
         }
 
@@ -99,12 +102,12 @@ export async function GET(request: Request) {
               .createSignedUrl(pathMatch[1], 86400)
 
             if (urlData?.signedUrl) {
-              return { ...song, audio_url: urlData.signedUrl }
+              return { ...mapped, audio_url: urlData.signedUrl }
             }
           }
         }
 
-        return song
+        return mapped
       })
     )
 
