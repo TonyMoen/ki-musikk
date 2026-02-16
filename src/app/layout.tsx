@@ -31,10 +31,9 @@ export const metadata: Metadata = {
     locale: "nb_NO",
     type: "website",
     url: "https://kimusikk.no",
-    images: [{ url: "/ki-musikk.png" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "KI MUSIKK - Lag norske sanger med KI",
     description: "Lag morsomme og personlige norske sanger med KI og autentisk norsk uttale",
   },

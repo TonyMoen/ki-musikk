@@ -8,7 +8,7 @@ import type { CreditPackage } from '@/lib/constants'
 
 export const BASE_URL = 'https://kimusikk.no'
 export const SITE_NAME = 'KI MUSIKK'
-export const DEFAULT_OG_IMAGE = '/ki-musikk.png'
+export const DEFAULT_OG_IMAGE = '/opengraph-image'
 
 export function getOrganizationJsonLd() {
   return {
