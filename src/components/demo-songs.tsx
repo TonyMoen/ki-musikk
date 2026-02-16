@@ -12,7 +12,9 @@ interface DemoTrack {
 
 // ── Add new demo songs here ──────────────────────────────────
 const DEMO_TRACKS: DemoTrack[] = [
-  { title: 'Vinden danser', filename: 'Vinden danser.mp3', genre: 'Pop' },
+  { title: 'Vinden danser', filename: 'Vinden danser.mp3', genre: 'Country' },
+  { title: 'Drikker til sola', filename: 'Drikker til sola.mp3', genre: 'Festlåt' },
+  { title: 'Nattens puls', filename: 'Nattens puls.mp3', genre: 'Elektronisk' },
 ]
 // ─────────────────────────────────────────────────────────────
 

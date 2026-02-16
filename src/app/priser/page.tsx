@@ -1,17 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants'
 import { useErrorToast } from '@/hooks/use-error-toast'
-import { Loader2, Globe, Download, Sparkles } from 'lucide-react'
+import { Loader2, Globe, Download, Sparkles, Info } from 'lucide-react'
 import { AppLogo } from '@/components/app-logo'
 
 export default function PricingPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const fromDownload = searchParams.get('from') === 'download'
   const [loading, setLoading] = useState<string | null>(null)
   const [user, setUser] = useState<boolean | null>(null)
   const [selectedPlan, setSelectedPlan] = useState<string>('pro')
@@ -81,6 +83,16 @@ export default function PricingPage() {
             Engangskjøp, ingen abonnement
           </p>
         </div>
+
+        {/* Download context banner */}
+        {fromDownload && (
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[#F26522]/20 bg-[#F26522]/5 mb-8 max-w-xl mx-auto">
+            <Info className="h-5 w-5 text-[#F26522] flex-shrink-0" />
+            <p className="text-sm text-[rgba(180,200,240,0.7)]">
+              For å laste ned sanger må du kjøpe en kredittpakke. Etter første kjøp kan du laste ned alle sangene dine.
+            </p>
+          </div>
+        )}
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">

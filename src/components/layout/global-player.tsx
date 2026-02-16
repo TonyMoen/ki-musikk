@@ -33,11 +33,8 @@ export function GlobalPlayer() {
       if (result.success) {
         toast({ title: 'Nedlasting startet', description: currentSong.title })
       } else if (result.errorCode === 'PURCHASE_REQUIRED') {
-        toast({
-          title: 'Kjøp kreves',
-          description: 'Du må kjøpe kreditter for å laste ned sanger.',
-          variant: 'destructive',
-        })
+        window.location.href = '/priser?from=download'
+        return
       } else {
         toast({ title: 'Nedlasting feilet', variant: 'destructive' })
       }

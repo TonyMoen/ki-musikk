@@ -64,9 +64,8 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
         title: 'Sangen ble lastet ned!'
       })
     } else if (result.errorCode === 'PURCHASE_REQUIRED') {
-      showError(ErrorCode.PURCHASE_REQUIRED, {
-        context: 'song-card-download'
-      })
+      window.location.href = '/priser?from=download'
+      return
     } else {
       showError(ErrorCode.SONG_DOWNLOAD_FAILED, {
         context: 'song-card-download'

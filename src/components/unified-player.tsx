@@ -160,7 +160,8 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
     if (result.success) {
       toast({ title: 'Sangen ble lastet ned!' })
     } else if (result.errorCode === 'PURCHASE_REQUIRED') {
-      showError(ErrorCode.PURCHASE_REQUIRED, { context: 'unified-player-download' })
+      window.location.href = '/priser?from=download'
+      return
     } else {
       showError(ErrorCode.SONG_DOWNLOAD_FAILED, { context: 'unified-player-download' })
     }

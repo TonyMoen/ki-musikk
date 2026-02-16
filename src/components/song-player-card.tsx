@@ -283,9 +283,8 @@ export function SongPlayerCard({
         title: 'Sangen ble lastet ned!'
       })
     } else if (result.errorCode === 'PURCHASE_REQUIRED') {
-      showError(ErrorCode.PURCHASE_REQUIRED, {
-        context: 'song-download'
-      })
+      window.location.href = '/priser?from=download'
+      return
     } else {
       showError(ErrorCode.SONG_DOWNLOAD_FAILED, {
         context: 'song-download',
