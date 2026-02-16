@@ -28,6 +28,10 @@ export enum ErrorCode {
   // Validation Errors
   VALIDATION_ERROR = 'VALIDATION_ERROR',
 
+  // Rate Limit Errors
+  LYRICS_RATE_LIMIT = 'LYRICS_RATE_LIMIT',
+  LYRICS_RATE_LIMIT_ANON = 'LYRICS_RATE_LIMIT_ANON',
+
   // Song Errors
   SONG_NOT_FOUND = 'SONG_NOT_FOUND',
   SONG_DOWNLOAD_FAILED = 'SONG_DOWNLOAD_FAILED',
@@ -143,6 +147,23 @@ export const ERROR_MESSAGES: Record<ErrorCode, ErrorMessage> = {
     description: 'Vennligst fyll ut alle pakrevde felt.',
     recoveryAction: { label: 'OK', action: 'dismiss' },
     severity: 'info'
+  },
+
+  // Rate Limit Errors (Warning - Yellow)
+  [ErrorCode.LYRICS_RATE_LIMIT]: {
+    code: ErrorCode.LYRICS_RATE_LIMIT,
+    title: 'For mange foresporsler',
+    description: 'Du har nådd grensen for tekstgenerering. Prov igjen om litt.',
+    recoveryAction: { label: 'OK', action: 'dismiss' },
+    severity: 'warning'
+  },
+
+  [ErrorCode.LYRICS_RATE_LIMIT_ANON]: {
+    code: ErrorCode.LYRICS_RATE_LIMIT_ANON,
+    title: 'Gratis genereringer brukt opp',
+    description: 'Logg inn for a fortsette a generere tekster.',
+    recoveryAction: { label: 'Logg inn', action: 'login' },
+    severity: 'warning'
   },
 
   // Song Errors

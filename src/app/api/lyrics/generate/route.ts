@@ -7,6 +7,8 @@ import {
   detectStructureOverrides,
   buildUserMessage,
 } from '@/lib/prompts/song-writer-system-prompt'
+import { createClient } from '@/lib/supabase/server'
+import { checkLyricsRateLimit, recordLyricsUsage, getClientIp } from '@/lib/lyrics-rate-limit'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -50,6 +52,24 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
           }
         },
         { status: 400 }
+      )
+    }
+
+    // Rate limiting
+    const ip = getClientIp(request)
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const rateLimit = await checkLyricsRateLimit(user?.id ?? null, ip)
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: {
+            code: rateLimit.requiresLogin ? 'LYRICS_RATE_LIMIT_ANON' : 'LYRICS_RATE_LIMIT',
+            message: rateLimit.message || 'For mange forespørsler. Prøv igjen senere.'
+          }
+        },
+        { status: 429 }
       )
     }
 
@@ -124,6 +144,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
 
     // Truncate title to max 40 characters
     const truncatedTitle = title.length > 40 ? title.substring(0, 40).trim() : title
+
+    // Record usage for rate limiting
+    await recordLyricsUsage(user?.id ?? null, ip, 'generate')
 
     return NextResponse.json({
       data: { lyrics, title: truncatedTitle }

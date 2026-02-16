@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { optimizeLyrics, validateOptimization } from '@/lib/phonetic/optimizer'
 import type { OptimizationResult } from '@/lib/phonetic/optimizer'
+import { createClient } from '@/lib/supabase/server'
+import { checkLyricsRateLimit, recordLyricsUsage, getClientIp } from '@/lib/lyrics-rate-limit'
 
 export interface OptimizationRequest {
   lyrics: string
@@ -58,6 +60,24 @@ export async function POST(
       )
     }
 
+    // Rate limiting
+    const ip = getClientIp(request)
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const rateLimit = await checkLyricsRateLimit(user?.id ?? null, ip)
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: {
+            code: rateLimit.requiresLogin ? 'LYRICS_RATE_LIMIT_ANON' : 'LYRICS_RATE_LIMIT',
+            message: rateLimit.message || 'For mange forespørsler. Prøv igjen senere.'
+          }
+        },
+        { status: 429 }
+      )
+    }
+
     // Set timeout for optimization (5 seconds for GPT-4 API)
     const timeoutPromise = new Promise<never>((_, reject) => {
       setTimeout(() => {
@@ -88,6 +108,9 @@ export async function POST(
         }
       })
     }
+
+    // Record usage for rate limiting
+    await recordLyricsUsage(user?.id ?? null, ip, 'optimize')
 
     // Success - return optimized lyrics
     return NextResponse.json({

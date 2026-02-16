@@ -235,6 +235,10 @@ export function WizardContainer() {
       const data = await response.json()
 
       if (!response.ok || data.error) {
+        if (response.status === 429) {
+          showError(data, { context: 'lyric-generation' })
+          return
+        }
         throw new Error(data.error?.message || 'Kunne ikke generere tekst')
       }
 
