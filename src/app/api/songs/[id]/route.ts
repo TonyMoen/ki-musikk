@@ -272,10 +272,19 @@ export async function GET(
                 })
                 .eq('id', songId)
 
+              // Generate signed URL for the response
+              let responseAudioUrl: string = storagePath
+              if (audioStored) {
+                const { data: urlData } = await adminClient.storage
+                  .from('songs')
+                  .createSignedUrl(filePath, 86400)
+                if (urlData?.signedUrl) responseAudioUrl = urlData.signedUrl
+              }
+
               // Return completed status immediately
               response.status = 'completed'
               response.progress = 100
-              response.audioUrl = storagePath
+              response.audioUrl = responseAudioUrl
               response.duration = firstSong.duration
 
               logInfo('Song generation completed (via polling fallback)', {
@@ -404,10 +413,19 @@ export async function GET(
                 })
                 .eq('id', songId)
 
+              // Generate signed URL for the response
+              let responseAudioUrl2: string = storagePath
+              if (audioStored) {
+                const { data: urlData } = await adminClient.storage
+                  .from('songs')
+                  .createSignedUrl(filePath, 86400)
+                if (urlData?.signedUrl) responseAudioUrl2 = urlData.signedUrl
+              }
+
               // Return completed status
               response.status = 'completed'
               response.progress = 100
-              response.audioUrl = storagePath
+              response.audioUrl = responseAudioUrl2
               response.duration = firstSong.duration || song.duration_seconds
 
               logInfo('Song completed (partial→completed via polling)', {
