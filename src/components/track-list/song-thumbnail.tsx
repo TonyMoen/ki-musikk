@@ -47,6 +47,7 @@ export function SongThumbnail({ song, size = 40, className = '' }: SongThumbnail
           height={size}
           className="object-cover w-full h-full"
           onError={() => setImageError(true)}
+          unoptimized
         />
       ) : (
         <>
