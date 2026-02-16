@@ -9,7 +9,7 @@
  * 1. Google redirects to /auth/callback?code=<oauth_code>
  * 2. Exchange code for session using Supabase Auth
  * 3. Check if user_profile exists for this user
- * 4. If not exists: Create user_profile with credit_balance=24 (2 free songs)
+ * 4. If not exists: Create user_profile with credit_balance=20 (2 free songs)
  * 5. Record signup_bonus transaction in credit_transaction table
  * 6. Redirect to home page (/) or next parameter if provided
  *
@@ -19,8 +19,8 @@
  * - Profile creation failure: Log error, proceed with redirect (profile can be created later)
  */
 
-// Welcome bonus: 24 credits = 2 free songs (12 credits per song)
-const WELCOME_BONUS_CREDITS = 24;
+// Welcome bonus: 20 credits = 2 free songs (10 credits per song)
+const WELCOME_BONUS_CREDITS = 20;
 
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';

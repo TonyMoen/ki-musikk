@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { WizardContainer } from '@/components/wizard/wizard-container'
 import { HomepageSongs } from '@/components/homepage-songs'
 import { DemoSongs } from '@/components/demo-songs'
-import { Music, Mic, Sparkles } from 'lucide-react'
+import { Music, Mic, Sparkles, LogIn } from 'lucide-react'
+import Link from 'next/link'
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -73,7 +74,28 @@ export default function Home() {
         <h2 className="text-2xl font-semibold mb-6 text-center">
           Mine sanger
         </h2>
-        <HomepageSongs />
+        {isLoggedIn ? (
+          <HomepageSongs />
+        ) : (
+          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+            <div className="w-16 h-16 rounded-full bg-[#F26522]/10 flex items-center justify-center mb-4">
+              <Music className="h-8 w-8 text-[#F26522]" />
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2">
+              Lagre sangene dine
+            </h3>
+            <p className="text-[rgba(180,200,240,0.5)] text-sm mb-6 max-w-xs">
+              Logg inn for å lage, lagre og laste ned sanger. Du får 2 gratis sanger ved registrering!
+            </p>
+            <Link
+              href="/auth/logg-inn"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#F26522] hover:bg-[#E54D1C] text-white font-medium transition-colors"
+            >
+              <LogIn className="h-4 w-4" />
+              Logg inn / Registrer deg
+            </Link>
+          </div>
+        )}
       </div>
     </main>
   )

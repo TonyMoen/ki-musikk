@@ -123,7 +123,7 @@ function LoginContent() {
           <div className="flex items-center gap-3 bg-[rgba(242,101,34,0.06)] border-l-[3px] border-l-[#FF5B24] rounded-r-lg px-4 py-3">
             <Sparkles className="h-5 w-5 text-[#FF5B24] flex-shrink-0" />
             <span className="text-sm font-medium text-[rgba(180,200,240,0.7)]">
-              <strong className="text-white">5 gratis sanger</strong> ved registrering
+              <strong className="text-white">2 gratis sanger</strong> ved registrering
             </span>
           </div>
 

@@ -17,8 +17,8 @@ import { createServerClient } from '@supabase/ssr'
 
 export const dynamic = 'force-dynamic'
 
-// Welcome bonus: 24 credits = 2 free songs (12 credits per song)
-const WELCOME_BONUS_CREDITS = 24
+// Welcome bonus: 20 credits = 2 free songs (10 credits per song)
+const WELCOME_BONUS_CREDITS = 20
 
 interface VippsTokenResponse {
   access_token: string
