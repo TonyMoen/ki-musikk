@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { SongsPageClient } from './songs-page-client'
 import { Song } from '@/types/song'
@@ -53,6 +54,12 @@ export default async function SongsPage() {
     )
   }
 
+  // Use admin client for storage operations (anon key can't sign private bucket URLs)
+  const adminClient = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
   // Generate signed URLs for songs stored in Supabase Storage
   const songsWithUrls = await Promise.all(
     (initialSongs || []).map(async (song) => {
@@ -60,7 +67,7 @@ export default async function SongsPage() {
 
       // Storage path format: songs/{userId}/{songId}.mp3
       if (song.audio_url.startsWith('songs/')) {
-        const { data: urlData } = await supabase.storage
+        const { data: urlData } = await adminClient.storage
           .from('songs')
           .createSignedUrl(song.audio_url.replace('songs/', ''), 86400)
 
@@ -73,7 +80,7 @@ export default async function SongsPage() {
       if (song.audio_url.includes('.supabase.co/storage/')) {
         const pathMatch = song.audio_url.match(/\/songs\/([^?]+)/)
         if (pathMatch) {
-          const { data: urlData } = await supabase.storage
+          const { data: urlData } = await adminClient.storage
             .from('songs')
             .createSignedUrl(pathMatch[1], 86400)
 

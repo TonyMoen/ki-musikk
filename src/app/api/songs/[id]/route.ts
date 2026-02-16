@@ -451,12 +451,13 @@ export async function GET(
         break
 
       case 'completed':
-        // Generate signed URL for audio file (24-hour expiration)
+        // Generate signed URL for audio file (use admin client for private bucket)
         let signedUrl = song.audio_url
+        const adminClientForSign = getAdminClient()
 
         if (song.audio_url && song.audio_url.startsWith('songs/')) {
           // Audio is in Supabase Storage - generate signed URL
-          const { data: urlData } = await supabase.storage
+          const { data: urlData } = await adminClientForSign.storage
             .from('songs')
             .createSignedUrl(song.audio_url.replace('songs/', ''), 86400)
 
@@ -467,7 +468,7 @@ export async function GET(
           // Legacy: expired signed URL — try to derive the storage path
           const pathMatch = song.audio_url.match(/\/songs\/([^?]+)/)
           if (pathMatch) {
-            const { data: urlData } = await supabase.storage
+            const { data: urlData } = await adminClientForSign.storage
               .from('songs')
               .createSignedUrl(pathMatch[1], 86400)
 
