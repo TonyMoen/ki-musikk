@@ -106,7 +106,6 @@ export function HomepageSongs() {
       } else if (song.status === 'completed') {
         removeGeneratingSong(songId)
         pollingAttemptsRef.current.delete(songId)
-        toast({ title: `"${generatingSong.title}" er klar!`, description: 'Sangen er ferdig generert' })
         fetchSongs(false)
       } else if (song.status === 'failed') {
         removeGeneratingSong(songId)
@@ -114,7 +113,6 @@ export function HomepageSongs() {
       } else if (song.status === 'cancelled') {
         removeGeneratingSong(songId)
         pollingAttemptsRef.current.delete(songId)
-        toast({ title: 'Generering avbrutt', description: `"${generatingSong.title}" ble avbrutt` })
       } else {
         pollingAttemptsRef.current.set(songId, attempts + 1)
       }

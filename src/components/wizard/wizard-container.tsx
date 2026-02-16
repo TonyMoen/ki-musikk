@@ -376,10 +376,6 @@ export function WizardContainer() {
         // Ignore localStorage errors
       }
 
-      toast({
-        title: 'Sangen lages!',
-        description: 'Dette tar 2–5 min. Du kan gjøre andre ting i mellomtiden.',
-      })
     } catch (error) {
       showError(error, {
         context: 'song-generation',

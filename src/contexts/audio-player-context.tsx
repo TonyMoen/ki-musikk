@@ -74,10 +74,13 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   useEffect(() => { isLoopingRef.current = isLooping }, [isLooping])
 
   const updateTime = useCallback(() => {
-    if (howlerRef.current && howlerRef.current.playing()) {
-      setCurrentTime(howlerRef.current.seek() as number)
-      animFrameRef.current = requestAnimationFrame(updateTime)
+    if (howlerRef.current) {
+      const seek = howlerRef.current.seek()
+      if (typeof seek === 'number' && !isNaN(seek)) {
+        setCurrentTime(seek)
+      }
     }
+    animFrameRef.current = requestAnimationFrame(updateTime)
   }, [])
 
   const stopAnimFrame = useCallback(() => {
