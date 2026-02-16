@@ -145,7 +145,7 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
             </span>
             {isGenerating && !isPartial ? (
               <span className="text-xs text-[#FF6B35] font-medium">
-                Genererer...
+                Skaper sang...
               </span>
             ) : isPartial ? (
               <span className="text-xs text-[#FFC93C] font-medium">
@@ -161,7 +161,7 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
           </div>
           <p className="text-xs text-[rgba(180,200,240,0.5)] mt-1">
             {isGenerating && !isPartial
-              ? 'Tar vanligvis 2–4 minutter'
+              ? '2–5 min. Du kan gjøre andre ting i mellomtiden'
               : isPartial
               ? 'Ferdigstilles i bakgrunnen...'
               : formatRelativeDate(song.created_at)}

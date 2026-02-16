@@ -31,7 +31,7 @@ export function HomepageSongs() {
   const { currentSong, isPlaying, playSong, togglePlayPause, stopAudio } = useAudioPlayer()
 
   // Generating songs store
-  const { generatingSongs, updateGeneratingSong, removeGeneratingSong } = useGeneratingSongStore()
+  const { generatingSongs, updateGeneratingSong, removeGeneratingSong, _hasHydrated } = useGeneratingSongStore()
   const pollingAttemptsRef = useRef<Map<string, number>>(new Map())
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -226,8 +226,8 @@ export function HomepageSongs() {
     )
   }
 
-  // Empty state
-  if (!isLoading && songs.length === 0 && currentPage === 0 && generatingSongs.length === 0) {
+  // Empty state (wait for store hydration to avoid flash)
+  if (!isLoading && _hasHydrated && songs.length === 0 && currentPage === 0 && generatingSongs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
@@ -259,7 +259,7 @@ export function HomepageSongs() {
               />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">{genSong.title}</p>
-                <p className="text-xs text-[rgba(130,170,240,0.45)]">Genererer...</p>
+                <p className="text-xs text-[rgba(130,170,240,0.45)]">Skaper sang – 2–5 min. Du kan gjøre andre ting i mellomtiden</p>
               </div>
               <Loader2 className="h-4 w-4 animate-spin text-[#F26522] flex-shrink-0" />
             </div>

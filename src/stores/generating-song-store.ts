@@ -18,6 +18,7 @@ export interface GeneratingSong {
 
 interface GeneratingSongStore {
   generatingSongs: GeneratingSong[]
+  _hasHydrated: boolean
   addGeneratingSong: (song: GeneratingSong) => boolean // Returns false if at max capacity
   updateGeneratingSong: (songId: string, updates: Partial<GeneratingSong>) => void
   removeGeneratingSong: (songId: string) => void
@@ -30,6 +31,7 @@ export const useGeneratingSongStore = create<GeneratingSongStore>()(
   persist(
     (set, get) => ({
       generatingSongs: [],
+      _hasHydrated: false,
 
       addGeneratingSong: (song) => {
         const current = get().generatingSongs
@@ -62,6 +64,9 @@ export const useGeneratingSongStore = create<GeneratingSongStore>()(
     }),
     {
       name: 'generating-songs',
+      onRehydrateStorage: () => () => {
+        useGeneratingSongStore.setState({ _hasHydrated: true })
+      },
       // Convert Date strings back to Date objects on rehydration
       // and filter out stale entries
       merge: (persistedState, currentState) => {

@@ -55,7 +55,7 @@ export function WizardContainer() {
   const router = useRouter()
   const { toast } = useToast()
   const { showError } = useErrorToast()
-  const { addGeneratingSong, generatingSongs, canAddMoreSongs } = useGeneratingSongStore()
+  const { addGeneratingSong, canAddMoreSongs } = useGeneratingSongStore()
 
   // ------- localStorage persistence -------
 
@@ -372,13 +372,9 @@ export function WizardContainer() {
         // Ignore localStorage errors
       }
 
-      const currentCount = generatingSongs.length + 1
       toast({
-        title: 'Generering startet!',
-        description:
-          currentCount < MAX_CONCURRENT_SONGS
-            ? `Sang ${currentCount} av maks ${MAX_CONCURRENT_SONGS} genererer`
-            : 'Sangen vil vises i listen nedenfor når den er ferdig',
+        title: 'Sangen lages!',
+        description: 'Dette tar 2–5 min. Du kan gjøre andre ting i mellomtiden.',
       })
     } catch (error) {
       showError(error, {
