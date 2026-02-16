@@ -142,7 +142,7 @@ async function downloadAudioFile(audioUrl: string): Promise<ArrayBuffer> {
 
 /**
  * Upload audio buffer to Supabase Storage
- * Returns signed URL with 24-hour expiration
+ * Returns the permanent storage path (not a signed URL)
  */
 async function uploadToSupabaseStorage(
   supabase: any,
@@ -151,7 +151,7 @@ async function uploadToSupabaseStorage(
   audioBuffer: ArrayBuffer
 ): Promise<string> {
   const startTime = Date.now()
-  const filePath = `songs/${userId}/${songId}.mp3`
+  const filePath = `${userId}/${songId}.mp3`
 
   logInfo('Uploading to Supabase Storage', { filePath, userId, songId })
 
@@ -173,27 +173,15 @@ async function uploadToSupabaseStorage(
       throw new Error(`Storage upload failed: ${uploadError.message}`)
     }
 
-    // Generate signed URL with 24-hour expiration
-    const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-      .from('songs')
-      .createSignedUrl(filePath, 86400) // 24 hours = 86400 seconds
-
-    if (signedUrlError || !signedUrlData?.signedUrl) {
-      logError('Signed URL generation failed', signedUrlError as unknown as Error, {
-        filePath,
-      })
-      throw new Error('Failed to generate signed URL')
-    }
-
     const uploadTime = Date.now() - startTime
 
     logInfo('Storage upload complete', {
       filePath,
-      signedUrl: signedUrlData.signedUrl,
       uploadTimeMs: uploadTime,
     })
 
-    return signedUrlData.signedUrl
+    // Return the storage path (prefixed with songs/ for the bucket)
+    return `songs/${filePath}`
   } catch (error) {
     throw error
   }
@@ -505,9 +493,9 @@ export async function POST(request: Request) {
     }
 
     // 10. Upload to Supabase Storage
-    let signedUrl: string
+    let storagePath: string
     try {
-      signedUrl = await uploadToSupabaseStorage(
+      storagePath = await uploadToSupabaseStorage(
         supabase,
         song.user_id,
         song.id,
@@ -546,7 +534,7 @@ export async function POST(request: Request) {
       .from('song')
       .update({
         status: 'completed',
-        audio_url: signedUrl,
+        audio_url: storagePath,
         image_url: imageUrl || null, // Store Suno's cover image URL
         duration_seconds: duration ? Math.round(duration) : null, // Round to nearest integer
         updated_at: new Date().toISOString(),

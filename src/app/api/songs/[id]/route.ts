@@ -228,14 +228,15 @@ export async function GET(
               const adminClient = getAdminClient()
 
               // Download audio from Suno and upload to Supabase Storage
-              let finalAudioUrl = firstSong.audioUrl
+              const filePath = `${user.id}/${songId}.mp3`
+              const storagePath = `songs/${filePath}`
+              let audioStored = false
               try {
                 const audioResponse = await fetch(firstSong.audioUrl, {
                   signal: AbortSignal.timeout(30000)
                 })
                 if (audioResponse.ok) {
                   const audioBuffer = await audioResponse.arrayBuffer()
-                  const filePath = `${user.id}/${songId}.mp3`
 
                   const { error: uploadError } = await adminClient.storage
                     .from('songs')
@@ -245,33 +246,26 @@ export async function GET(
                     })
 
                   if (!uploadError) {
-                    // Generate signed URL
-                    const { data: signedUrlData } = await adminClient.storage
-                      .from('songs')
-                      .createSignedUrl(filePath, 86400)
-
-                    if (signedUrlData?.signedUrl) {
-                      finalAudioUrl = signedUrlData.signedUrl
-                      logInfo('Audio uploaded to Supabase Storage (polling fallback)', {
-                        songId,
-                        filePath
-                      })
-                    }
+                    audioStored = true
+                    logInfo('Audio uploaded to Supabase Storage (polling fallback)', {
+                      songId,
+                      filePath
+                    })
                   } else {
                     logError('Storage upload failed (polling fallback)', uploadError as unknown as Error, { songId })
                   }
                 }
               } catch (downloadError) {
-                logError('Audio download failed (polling fallback), using Suno URL', downloadError as Error, { songId })
-                // Continue with Suno's URL as fallback
+                logError('Audio download failed (polling fallback)', downloadError as Error, { songId })
               }
 
               // Update database with completed status using admin client
+              // Store the permanent storage path, not a signed URL
               await adminClient
                 .from('song')
                 .update({
                   status: 'completed',
-                  audio_url: finalAudioUrl,
+                  audio_url: audioStored ? storagePath : firstSong.audioUrl,
                   duration_seconds: firstSong.duration ? Math.round(firstSong.duration) : null,
                   canvas_url: firstSong.imageUrl || null,
                   updated_at: new Date().toISOString()
@@ -281,13 +275,13 @@ export async function GET(
               // Return completed status immediately
               response.status = 'completed'
               response.progress = 100
-              response.audioUrl = finalAudioUrl
+              response.audioUrl = storagePath
               response.duration = firstSong.duration
 
               logInfo('Song generation completed (via polling fallback)', {
                 userId: user.id,
                 songId,
-                audioUrl: finalAudioUrl
+                storagePath
               })
               break
             }
@@ -369,14 +363,15 @@ export async function GET(
               // SUCCESS! Download final audio to storage
               const adminClient = getAdminClient()
 
-              let finalAudioUrl = firstSong.audioUrl
+              const filePath = `${user.id}/${songId}.mp3`
+              const storagePath = `songs/${filePath}`
+              let audioStored = false
               try {
                 const audioResponse = await fetch(firstSong.audioUrl, {
                   signal: AbortSignal.timeout(30000)
                 })
                 if (audioResponse.ok) {
                   const audioBuffer = await audioResponse.arrayBuffer()
-                  const filePath = `${user.id}/${songId}.mp3`
 
                   const { error: uploadError } = await adminClient.storage
                     .from('songs')
@@ -386,29 +381,23 @@ export async function GET(
                     })
 
                   if (!uploadError) {
-                    const { data: signedUrlData } = await adminClient.storage
-                      .from('songs')
-                      .createSignedUrl(filePath, 86400)
-
-                    if (signedUrlData?.signedUrl) {
-                      finalAudioUrl = signedUrlData.signedUrl
-                      logInfo('Audio uploaded to storage (partial→completed)', {
-                        songId,
-                        filePath
-                      })
-                    }
+                    audioStored = true
+                    logInfo('Audio uploaded to storage (partial→completed)', {
+                      songId,
+                      filePath
+                    })
                   }
                 }
               } catch (downloadError) {
                 logError('Audio download failed, using Suno URL', downloadError as Error, { songId })
               }
 
-              // Update database to completed
+              // Update database to completed - store permanent path
               await adminClient
                 .from('song')
                 .update({
                   status: 'completed',
-                  audio_url: finalAudioUrl,
+                  audio_url: audioStored ? storagePath : firstSong.audioUrl,
                   duration_seconds: firstSong.duration ? Math.round(firstSong.duration) : song.duration_seconds,
                   canvas_url: firstSong.imageUrl || null,
                   updated_at: new Date().toISOString()
@@ -418,7 +407,7 @@ export async function GET(
               // Return completed status
               response.status = 'completed'
               response.progress = 100
-              response.audioUrl = finalAudioUrl
+              response.audioUrl = storagePath
               response.duration = firstSong.duration || song.duration_seconds
 
               logInfo('Song completed (partial→completed via polling)', {
@@ -451,10 +440,22 @@ export async function GET(
           // Audio is in Supabase Storage - generate signed URL
           const { data: urlData } = await supabase.storage
             .from('songs')
-            .createSignedUrl(song.audio_url.replace('songs/', ''), 86400) // 24 hours
+            .createSignedUrl(song.audio_url.replace('songs/', ''), 86400)
 
           if (urlData?.signedUrl) {
             signedUrl = urlData.signedUrl
+          }
+        } else if (song.audio_url && song.audio_url.includes('.supabase.co/storage/')) {
+          // Legacy: expired signed URL — try to derive the storage path
+          const pathMatch = song.audio_url.match(/\/songs\/([^?]+)/)
+          if (pathMatch) {
+            const { data: urlData } = await supabase.storage
+              .from('songs')
+              .createSignedUrl(pathMatch[1], 86400)
+
+            if (urlData?.signedUrl) {
+              signedUrl = urlData.signedUrl
+            }
           }
         }
 

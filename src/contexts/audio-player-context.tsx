@@ -11,6 +11,7 @@ import {
 } from 'react'
 import { Howl } from 'howler'
 import type { Song } from '@/types/song'
+import { useToast } from '@/hooks/use-toast'
 
 interface AudioPlayerContextType {
   // State
@@ -46,6 +47,7 @@ export function useAudioPlayer() {
 }
 
 export function AudioPlayerProvider({ children }: { children: ReactNode }) {
+  const { toast } = useToast()
   const [currentSong, setCurrentSong] = useState<Song | null>(null)
   const [queue, setQueue] = useState<Song[]>([])
   const [isPlaying, setIsPlaying] = useState(false)
@@ -153,6 +155,11 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
         onloaderror: () => {
           setIsPlaying(false)
           setIsLoading(false)
+          toast({
+            variant: 'destructive',
+            title: 'Kunne ikke spille av',
+            description: 'Lydfilen er ikke tilgjengelig. Prøv å laste siden på nytt.',
+          })
         },
       })
 

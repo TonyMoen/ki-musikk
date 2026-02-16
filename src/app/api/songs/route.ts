@@ -70,16 +70,33 @@ export async function GET(request: Request) {
     // Generate signed URLs for songs stored in Supabase Storage
     const songsWithSignedUrls = await Promise.all(
       (songs || []).map(async (song) => {
-        // If audio_url is a Supabase Storage path, generate a signed URL
-        if (song.audio_url && song.audio_url.startsWith('songs/')) {
+        if (!song.audio_url) return song
+
+        // Storage path format: songs/{userId}/{songId}.mp3
+        if (song.audio_url.startsWith('songs/')) {
           const { data: urlData } = await supabase.storage
             .from('songs')
-            .createSignedUrl(song.audio_url.replace('songs/', ''), 86400) // 24 hours
+            .createSignedUrl(song.audio_url.replace('songs/', ''), 86400)
 
           if (urlData?.signedUrl) {
             return { ...song, audio_url: urlData.signedUrl }
           }
         }
+
+        // Legacy: expired signed URL — try to derive the storage path
+        if (song.audio_url.includes('.supabase.co/storage/')) {
+          const pathMatch = song.audio_url.match(/\/songs\/([^?]+)/)
+          if (pathMatch) {
+            const { data: urlData } = await supabase.storage
+              .from('songs')
+              .createSignedUrl(pathMatch[1], 86400)
+
+            if (urlData?.signedUrl) {
+              return { ...song, audio_url: urlData.signedUrl }
+            }
+          }
+        }
+
         return song
       })
     )

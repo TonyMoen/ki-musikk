@@ -75,7 +75,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'storage-duration',
         question: 'Hvor lenge lagres sangene mine?',
-        answer: 'Sangene dine lagres i 14 dager fra genereringstidspunktet. Husk å laste ned sangene du vil beholde før de slettes automatisk.'
+        answer: 'Sangene dine lagres i 30 dager fra genereringstidspunktet. Husk å laste ned sangene du vil beholde før de slettes automatisk.'
       },
       {
         id: 'how-to-download',
@@ -91,6 +91,27 @@ export const FAQ_DATA: FAQCategory[] = [
         id: 'share-songs',
         question: 'Kan jeg dele sangene mine på sosiale medier?',
         answer: 'Ja! Last ned sangen og del den hvor du vil. Sangene du lager er dine å bruke - del gjerne på TikTok, Instagram, YouTube eller andre plattformer.'
+      }
+    ]
+  },
+  {
+    id: 'technology',
+    title: 'Teknologi og kvalitet',
+    items: [
+      {
+        id: 'what-technology',
+        question: 'Hvilken teknologi bruker KiMusikk?',
+        answer: 'Vi bruker den nyeste Suno-modellen for musikkgenerering, kombinert med en spesialisert KI-tekstforfatter som er trent på norsk låtstruktur. Alle musikkprompter er norsk-optimaliserte for å gi best mulig resultat.'
+      },
+      {
+        id: 'why-norwegian',
+        question: 'Hvorfor er KiMusikk bedre på norsk enn andre tjenester?',
+        answer: 'De fleste KI-musikktjenester er laget for engelsk. KiMusikk bruker en egen KI-modul som forstår norsk fonetikk, rim og låtstruktur (vers, refreng, bro). Dette gir langt mer naturlig norsk uttale og bedre sangbare tekster.'
+      },
+      {
+        id: 'song-quality',
+        question: 'Hvor god er kvaliteten på sangene?',
+        answer: 'Sangene genereres i høy kvalitet med profesjonell lyd. Resultatet avhenger av konseptet og sjangeren du velger. Vi anbefaler å prøve ulike sjangre og konsepter for å finne det som fungerer best.'
       }
     ]
   },

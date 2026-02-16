@@ -174,13 +174,19 @@ export async function GET(
     }
 
     // Step 8: Generate signed URL for download
-    // Audio URL could be a full URL (from Suno) or a storage path
+    // Audio URL could be a storage path or a legacy signed URL
     let downloadUrl = song.audio_url
+    let storagePath: string | null = null
 
-    // If audio is stored in Supabase Storage (path starts with 'songs/')
     if (song.audio_url.startsWith('songs/')) {
-      const storagePath = song.audio_url.replace('songs/', '')
+      storagePath = song.audio_url.replace('songs/', '')
+    } else if (song.audio_url.includes('.supabase.co/storage/')) {
+      // Legacy: expired signed URL — derive the storage path
+      const pathMatch = song.audio_url.match(/\/songs\/([^?]+)/)
+      if (pathMatch) storagePath = pathMatch[1]
+    }
 
+    if (storagePath) {
       const { data: signedUrlData, error: signedUrlError } = await supabase.storage
         .from('songs')
         .createSignedUrl(storagePath, 300, {

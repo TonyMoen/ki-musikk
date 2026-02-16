@@ -85,7 +85,7 @@ export default function VilkaarPage() {
           <p className="text-muted-foreground">
             KI MUSIKK er en digital tjeneste. Levering skjer ved at kreditter blir tilgjengelige
             på kjøperens brukerkonto umiddelbart etter bekreftet betaling. Sanger som genereres
-            ved bruk av kreditter leveres digitalt og er tilgjengelige for nedlasting i 14 dager.
+            ved bruk av kreditter leveres digitalt og er tilgjengelige for nedlasting i 30 dager.
           </p>
         </section>
 
@@ -104,7 +104,7 @@ export default function VilkaarPage() {
             henhold til angrerettloven.
           </p>
           <p className="text-muted-foreground mt-4">
-            Kjøperen må gi selger melding om bruk av angreretten innen 14 dager fra fristen
+            Kjøperen må gi selger melding om bruk av angreretten innen 30 dager fra fristen
             begynner å løpe. I fristen inkluderes alle kalenderdager. Fristen begynner å løpe
             dagen etter at kjøpet er gjennomført.
           </p>
@@ -256,9 +256,9 @@ export default function VilkaarPage() {
 
           <h3 className="text-xl font-semibold mt-6 mb-3">Lagring og sletting</h3>
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-            <li>Genererte sanger lagres i 14 dager fra opprettelse</li>
+            <li>Genererte sanger lagres i 30 dager fra opprettelse</li>
             <li>Du er ansvarlig for å laste ned sanger du ønsker å beholde</li>
-            <li>Etter 14 dager slettes sanger automatisk og permanent</li>
+            <li>Etter 30 dager slettes sanger automatisk og permanent</li>
             <li>Kjøpte kreditter utløper ikke og er knyttet til din konto</li>
           </ul>
         </section>

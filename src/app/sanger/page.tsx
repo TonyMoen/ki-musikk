@@ -53,6 +53,40 @@ export default async function SongsPage() {
     )
   }
 
-  const songs: Song[] = (initialSongs || []).map(convertToSong)
+  // Generate signed URLs for songs stored in Supabase Storage
+  const songsWithUrls = await Promise.all(
+    (initialSongs || []).map(async (song) => {
+      if (!song.audio_url) return song
+
+      // Storage path format: songs/{userId}/{songId}.mp3
+      if (song.audio_url.startsWith('songs/')) {
+        const { data: urlData } = await supabase.storage
+          .from('songs')
+          .createSignedUrl(song.audio_url.replace('songs/', ''), 86400)
+
+        if (urlData?.signedUrl) {
+          return { ...song, audio_url: urlData.signedUrl }
+        }
+      }
+
+      // Legacy: expired signed URL — try to derive the storage path
+      if (song.audio_url.includes('.supabase.co/storage/')) {
+        const pathMatch = song.audio_url.match(/\/songs\/([^?]+)/)
+        if (pathMatch) {
+          const { data: urlData } = await supabase.storage
+            .from('songs')
+            .createSignedUrl(pathMatch[1], 86400)
+
+          if (urlData?.signedUrl) {
+            return { ...song, audio_url: urlData.signedUrl }
+          }
+        }
+      }
+
+      return song
+    })
+  )
+
+  const songs: Song[] = songsWithUrls.map(convertToSong)
   return <SongsPageClient initialSongs={songs} userId={user.id} />
 }

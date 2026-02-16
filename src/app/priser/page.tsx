@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants'
 import { useErrorToast } from '@/hooks/use-error-toast'
-import { Loader2, Globe, Download } from 'lucide-react'
+import { Loader2, Globe, Download, Sparkles } from 'lucide-react'
 import { AppLogo } from '@/components/app-logo'
 
 export default function PricingPage() {
@@ -188,7 +188,7 @@ export default function PricingPage() {
         {/* Features Section */}
         <div className="mt-16 text-center">
           <h2 className="text-xl font-semibold text-white mb-8">Inkludert i alle pakker</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-sm text-[rgba(180,200,240,0.5)]">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-8 text-sm text-[rgba(180,200,240,0.5)]">
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
                 <AppLogo size={24} />
@@ -209,6 +209,13 @@ export default function PricingPage() {
               </div>
               <p className="font-medium text-white">MP3 nedlasting</p>
               <p>Last ned sangene dine</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <Sparkles className="h-6 w-6 text-primary" />
+              </div>
+              <p className="font-medium text-white">Nyeste KI-modell</p>
+              <p>Drevet av siste Suno-teknologi</p>
             </div>
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
