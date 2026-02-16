@@ -20,8 +20,8 @@
     --secondary-foreground: 0 0% 100%;
     --muted: 220 50% 10%;
     --muted-foreground: 220 40% 55%;
-    /* Accent: Hot Pink #FF006E */
-    --accent: 333 100% 51%;
+    /* Accent: Subtle warm navy for hover states */
+    --accent: 220 50% 12%;
     --accent-foreground: 0 0% 100%;
     /* Destructive/Error: Keep standard red */
     --destructive: 0 84% 60%;
@@ -63,7 +63,7 @@
     --secondary-foreground: 0 0% 100%;
     --muted: 220 50% 10%;
     --muted-foreground: 220 40% 55%;
-    --accent: 333 100% 51%;
+    --accent: 220 50% 12%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
