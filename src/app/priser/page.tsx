@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -12,14 +12,16 @@ import { AppLogo } from '@/components/app-logo'
 
 export default function PricingPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const fromDownload = searchParams.get('from') === 'download'
+  const [fromDownload, setFromDownload] = useState(false)
   const [loading, setLoading] = useState<string | null>(null)
   const [user, setUser] = useState<boolean | null>(null)
   const [selectedPlan, setSelectedPlan] = useState<string>('pro')
   const { showError } = useErrorToast()
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setFromDownload(params.get('from') === 'download')
+
     async function checkAuth() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
