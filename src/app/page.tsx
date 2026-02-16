@@ -2,6 +2,7 @@
 
 import { WizardContainer } from '@/components/wizard/wizard-container'
 import { HomepageSongs } from '@/components/homepage-songs'
+import { DemoSongs } from '@/components/demo-songs'
 import { Music, Mic, Sparkles } from 'lucide-react'
 
 export default function Home() {
@@ -43,6 +44,14 @@ export default function Home() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Demo Songs Section */}
+      <div className="w-full max-w-[640px] mx-auto px-5 mt-12 pt-8 border-t border-[rgba(90,140,255,0.1)]">
+        <h2 className="text-xl font-semibold text-center text-white mb-6">
+          Hør hva andre har laget
+        </h2>
+        <DemoSongs />
       </div>
 
       {/* My Songs Section */}
