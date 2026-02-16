@@ -20,20 +20,30 @@ const nextConfig = {
       },
     ],
   },
-  // Prevent caching issues with viewport-dependent layouts
   async headers() {
     return [
+      // Public pages: allow caching
       {
-        source: '/((?!_next/static|_next/image|favicon.ico).*)',
+        source: '/(priser|om-oss|hjelp|kontakt|personvern|vilkaar)',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'no-store, must-revalidate',
-          },
-          {
-            key: 'Vary',
-            value: 'Accept, Accept-Encoding',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=3600, stale-while-revalidate=86400' },
+          { key: 'Vary', value: 'Accept, Accept-Encoding' },
+        ],
+      },
+      // Homepage: shorter cache
+      {
+        source: '/',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=1800, stale-while-revalidate=3600' },
+          { key: 'Vary', value: 'Accept, Accept-Encoding' },
+        ],
+      },
+      // Private/dynamic routes: no cache
+      {
+        source: '/(api|auth|sanger|innstillinger|test-player)(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, must-revalidate' },
+          { key: 'Vary', value: 'Accept, Accept-Encoding' },
         ],
       },
     ]

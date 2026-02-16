@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { AudioPlayerProvider } from "@/contexts/audio-player-context";
 import { GlobalPlayer } from "@/components/layout/global-player";
+import { getOrganizationJsonLd } from "@/lib/seo";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -14,6 +15,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://kimusikk.no"),
   title: "KI MUSIKK - Lag norske sanger med KI",
   description: "KI-drevet norsk sanggenerator. Lag morsomme og personlige norske sanger med autentisk norsk uttale. Perfekt til fester, bursdager og sosiale medier.",
   keywords: "norsk musikk, KI sanggenerator, norske sanger, festsanger, personlige sanger, norsk uttale",
@@ -25,8 +27,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: "KI MUSIKK - Lag norske sanger med KI",
     description: "Lag morsomme og personlige norske sanger med KI og autentisk norsk uttale",
+    siteName: "KI MUSIKK",
     locale: "nb_NO",
     type: "website",
+    url: "https://kimusikk.no",
+    images: [{ url: "/ki-musikk.png" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "KI MUSIKK - Lag norske sanger med KI",
+    description: "Lag morsomme og personlige norske sanger med KI og autentisk norsk uttale",
   },
 };
 
@@ -38,6 +48,10 @@ export default function RootLayout({
   return (
     <html lang="nb">
       <body className="min-h-screen flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(getOrganizationJsonLd()) }}
+        />
         <TooltipProvider delayDuration={400}>
           <AudioPlayerProvider>
             <Header />

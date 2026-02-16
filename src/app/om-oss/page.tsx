@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import { Sparkles, Heart, Globe } from 'lucide-react'
 import { AppLogo } from '@/components/app-logo'
+
+export const metadata: Metadata = {
+  title: 'Om oss - KI MUSIKK',
+  description: 'KI MUSIKK er Norges første AI-drevne plattform for personlige sanger med autentisk norsk uttale. Les om vår visjon og teknologi.',
+}
 
 export default function AboutPage() {
   return (

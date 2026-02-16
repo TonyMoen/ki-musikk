@@ -1,3 +1,10 @@
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Vilkår og betingelser - KI MUSIKK',
+  description: 'Salgsbetingelser og vilkår for bruk av KI MUSIKK. Les om angrerett, kreditter, opphavsrett og bruksvilkår.',
+}
+
 export default function VilkaarPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">

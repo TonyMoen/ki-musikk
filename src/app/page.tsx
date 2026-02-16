@@ -20,6 +20,9 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center">
+      <h1 className="text-2xl sm:text-3xl font-bold text-white text-center pt-8 pb-2 px-4">
+        Lag norske sanger med KI
+      </h1>
       <WizardContainer />
 
       {/* Why KiMusikk + Demo Songs — visitors only */}

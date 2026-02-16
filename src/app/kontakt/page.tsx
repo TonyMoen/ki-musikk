@@ -1,8 +1,19 @@
+import type { Metadata } from 'next'
 import { Mail, MessageCircle, Clock, Building2 } from 'lucide-react'
+import { getLocalBusinessJsonLd } from '@/lib/seo'
+
+export const metadata: Metadata = {
+  title: 'Kontakt oss - KI MUSIKK',
+  description: 'Ta kontakt med KI MUSIKK for spørsmål eller hjelp. Send e-post til hei@kimusikk.no. Vi svarer vanligvis innen 24 timer.',
+}
 
 export default function ContactPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getLocalBusinessJsonLd()) }}
+      />
       <h1 className="text-4xl font-bold mb-6">Kontakt oss</h1>
 
       <p className="text-xl text-muted-foreground mb-12">

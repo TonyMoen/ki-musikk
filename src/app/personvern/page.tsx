@@ -1,3 +1,10 @@
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Personvernerklæring - KI MUSIKK',
+  description: 'Les KI MUSIKKs personvernerklæring. Vi forklarer hvordan vi samler inn, bruker og beskytter dine personopplysninger.',
+}
+
 export default function PrivacyPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
