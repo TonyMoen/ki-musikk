@@ -26,7 +26,7 @@ export default function PrivacyPage() {
             <li>Moen Studio</li>
             <li>Organisasjonsnummer: 931 659 685</li>
             <li>Heddalsvegen 11, 3674 Notodden</li>
-            <li>E-post: <a href="mailto:groftefyllband@gmail.com" className="text-primary hover:underline">groftefyllband@gmail.com</a></li>
+            <li>E-post: <a href="mailto:hei@kimusikk.no" className="text-primary hover:underline">hei@kimusikk.no</a></li>
           </ul>
         </section>
 
@@ -125,8 +125,8 @@ export default function PrivacyPage() {
           </ul>
           <p className="text-muted-foreground mt-4">
             For å utøve dine rettigheter, kontakt oss på{' '}
-            <a href="mailto:groftefyllband@gmail.com" className="text-primary hover:underline">
-              groftefyllband@gmail.com
+            <a href="mailto:hei@kimusikk.no" className="text-primary hover:underline">
+              hei@kimusikk.no
             </a>.
           </p>
         </section>

@@ -31,7 +31,7 @@ export default function VilkaarPage() {
             <li>Moen Studio</li>
             <li>Organisasjonsnummer: 931 659 685</li>
             <li>Heddalsvegen 11, 3674 Notodden</li>
-            <li>E-post: <a href="mailto:groftefyllband@gmail.com" className="text-primary hover:underline">groftefyllband@gmail.com</a></li>
+            <li>E-post: <a href="mailto:hei@kimusikk.no" className="text-primary hover:underline">hei@kimusikk.no</a></li>
           </ul>
           <p className="text-muted-foreground">
             <strong>Kjøper:</strong> Den forbrukeren som foretar bestillingen.
@@ -110,8 +110,8 @@ export default function VilkaarPage() {
           </p>
           <p className="text-muted-foreground mt-4">
             For å benytte angreretten, kontakt oss på{' '}
-            <a href="mailto:groftefyllband@gmail.com" className="text-primary hover:underline">
-              groftefyllband@gmail.com
+            <a href="mailto:hei@kimusikk.no" className="text-primary hover:underline">
+              hei@kimusikk.no
             </a>{' '}
             med informasjon om at du ønsker å benytte angreretten.
           </p>

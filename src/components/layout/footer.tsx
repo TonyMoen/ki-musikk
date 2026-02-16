@@ -63,8 +63,8 @@ export function Footer() {
               <p><span className="font-medium">Moen Studio</span></p>
               <p>Org.nr: 931 659 685</p>
               <p>
-                <a href="mailto:groftefyllband@gmail.com" className="hover:text-foreground transition-colors">
-                  groftefyllband@gmail.com
+                <a href="mailto:hei@kimusikk.no" className="hover:text-foreground transition-colors">
+                  hei@kimusikk.no
                 </a>
               </p>
             </div>

@@ -64,7 +64,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'refunds',
         question: 'Får jeg pengene tilbake hvis noe går galt?',
-        answer: 'Hvis sanggenereringen feiler, vil kredittene automatisk bli refundert til kontoen din. Du har også 14 dagers angrerett på ubrukte kreditter. Kontakt oss på groftefyllband@gmail.com ved spørsmål.'
+        answer: 'Hvis sanggenereringen feiler, vil kredittene automatisk bli refundert til kontoen din. Du har også 14 dagers angrerett på ubrukte kreditter. Kontakt oss på hei@kimusikk.no ved spørsmål.'
       }
     ]
   },
@@ -116,7 +116,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'contact-support',
         question: 'Hvordan kontakter jeg support?',
-        answer: 'Send en e-post til groftefyllband@gmail.com. Beskriv problemet så detaljert som mulig, og inkluder gjerne skjermbilder. Vi svarer vanligvis innen 24 timer.'
+        answer: 'Send en e-post til hei@kimusikk.no. Beskriv problemet så detaljert som mulig, og inkluder gjerne skjermbilder. Vi svarer vanligvis innen 24 timer.'
       }
     ]
   }

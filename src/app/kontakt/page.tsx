@@ -21,10 +21,10 @@ export default function ContactPage() {
             Send oss en e-post, så svarer vi så fort vi kan.
           </p>
           <a
-            href="mailto:groftefyllband@gmail.com"
+            href="mailto:hei@kimusikk.no"
             className="text-primary hover:underline font-medium"
           >
-            groftefyllband@gmail.com
+            hei@kimusikk.no
           </a>
         </div>
 
@@ -67,10 +67,10 @@ export default function ContactPage() {
           <div>
             <p className="text-sm text-muted-foreground">E-post</p>
             <a
-              href="mailto:groftefyllband@gmail.com"
+              href="mailto:hei@kimusikk.no"
               className="font-medium text-primary hover:underline"
             >
-              groftefyllband@gmail.com
+              hei@kimusikk.no
             </a>
           </div>
         </div>

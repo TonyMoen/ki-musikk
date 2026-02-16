@@ -16,6 +16,7 @@ import { StepStyle } from './step-style'
 import { StepReview } from './step-review'
 
 const PENDING_SONG_KEY = 'kimusikk_pending_song'
+const PENDING_SONG_TTL_MS = 30 * 60 * 1000 // 30 minutes
 
 interface Genre {
   id: string
@@ -48,6 +49,7 @@ export function WizardContainer() {
   const [isLoadingGenres, setIsLoadingGenres] = useState(true)
 
   // Step 3 state
+  const [songTitle, setSongTitle] = useState('')
   const [isGeneratingSong, setIsGeneratingSong] = useState(false)
 
   const router = useRouter()
@@ -71,6 +73,8 @@ export function WizardContainer() {
         originalLyrics,
         currentStep,
         styleText,
+        songTitle,
+        savedAt: Date.now(),
       }
       localStorage.setItem(PENDING_SONG_KEY, JSON.stringify(dataToSave))
     } catch (e) {
@@ -78,12 +82,19 @@ export function WizardContainer() {
     }
   }
 
-  // Restore on mount
+  // Restore on mount (only if within TTL)
   useEffect(() => {
     try {
       const saved = localStorage.getItem(PENDING_SONG_KEY)
       if (saved) {
         const data = JSON.parse(saved)
+
+        // Discard if older than TTL
+        if (data.savedAt && Date.now() - data.savedAt > PENDING_SONG_TTL_MS) {
+          localStorage.removeItem(PENDING_SONG_KEY)
+          return
+        }
+
         if (data.genre) setSelectedGenre(data.genre)
         if (data.concept) setConcept(data.concept)
         if (data.lyrics) setLyrics(data.lyrics)
@@ -94,7 +105,7 @@ export function WizardContainer() {
           setCurrentStep(data.currentStep as 1 | 2 | 3)
         }
         if (data.styleText) setStyleText(data.styleText)
-        localStorage.removeItem(PENDING_SONG_KEY)
+        if (data.songTitle) setSongTitle(data.songTitle)
       }
     } catch (e) {
       console.warn('Could not restore pending song data:', e)
@@ -116,12 +127,14 @@ export function WizardContainer() {
         originalLyrics,
         currentStep,
         styleText,
+        songTitle,
+        savedAt: Date.now(),
       }
       localStorage.setItem(PENDING_SONG_KEY, JSON.stringify(dataToSave))
     } catch (e) {
       console.warn('Could not auto-save pending song data:', e)
     }
-  }, [selectedGenre, concept, lyrics, isCustomTextMode, generatedTitle, originalLyrics, currentStep, styleText])
+  }, [selectedGenre, concept, lyrics, isCustomTextMode, generatedTitle, originalLyrics, currentStep, styleText, songTitle])
 
   // Save on unload
   useEffect(() => {
@@ -131,6 +144,23 @@ export function WizardContainer() {
     window.addEventListener('beforeunload', handleBeforeUnload)
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   })
+
+  const resetWizard = () => {
+    setCurrentStep(1)
+    setIsCustomTextMode(false)
+    setConcept('')
+    setLyrics('')
+    setOriginalLyrics('')
+    setGeneratedTitle('')
+    setSongTitle('')
+    setSelectedGenre(null)
+    setStyleText('')
+    try {
+      localStorage.removeItem(PENDING_SONG_KEY)
+    } catch (e) {
+      // Ignore
+    }
+  }
 
   // ------- Genre fetch -------
 
@@ -282,9 +312,10 @@ export function WizardContainer() {
     setIsGeneratingSong(true)
 
     const firstLine = lyrics.split('\n')[0]?.trim() || ''
-    const songTitle = isCustomTextMode
-      ? firstLine.substring(0, 50) || 'Min egen sang'
-      : generatedTitle || concept || 'Min sang'
+    const finalTitle = songTitle.trim()
+      || (isCustomTextMode
+        ? firstLine.substring(0, 50) || 'Min egen sang'
+        : generatedTitle || concept || 'Min sang')
 
     const songConcept = isCustomTextMode
       ? lyrics
@@ -306,7 +337,7 @@ export function WizardContainer() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: songTitle,
+          title: finalTitle,
           genre: isCustomGenre(selectedGenre.id) ? selectedGenre.id : selectedGenre.name,
           concept: songConcept,
           lyrics: baseLyrics,
@@ -326,7 +357,7 @@ export function WizardContainer() {
 
       addGeneratingSong({
         id: data.data.songId,
-        title: songTitle,
+        title: finalTitle,
         genre: selectedGenre.name,
         startedAt: new Date(),
       })
@@ -362,6 +393,14 @@ export function WizardContainer() {
   // ------- Navigation -------
 
   const goToStep = (step: 1 | 2 | 3) => {
+    // Pre-fill title when entering review step if empty
+    if (step === 3 && !songTitle.trim()) {
+      const firstLine = lyrics.split('\n')[0]?.trim() || ''
+      const defaultTitle = isCustomTextMode
+        ? firstLine.substring(0, 50) || ''
+        : generatedTitle || concept || ''
+      setSongTitle(defaultTitle)
+    }
     setCurrentStep(step)
   }
 
@@ -369,7 +408,20 @@ export function WizardContainer() {
     <div className="max-w-[640px] mx-auto pt-12 px-5">
       <div className="space-y-8">
         <WizardHeader />
-        <StepIndicator currentStep={currentStep} onStepClick={goToStep} />
+        <div className="space-y-2">
+          <StepIndicator currentStep={currentStep} onStepClick={goToStep} />
+          {(currentStep > 1 || concept || lyrics || isCustomTextMode) && (
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={resetWizard}
+                className="text-xs text-[rgba(180,200,240,0.4)] hover:text-[rgba(180,200,240,0.7)] transition-colors"
+              >
+                Start på nytt
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Step content with fade-up animation */}
         <div key={currentStep} className="animate-fade-up">
@@ -405,6 +457,8 @@ export function WizardContainer() {
               lyrics={lyrics}
               selectedGenre={selectedGenre}
               styleText={styleText}
+              songTitle={songTitle}
+              onSongTitleChange={setSongTitle}
               isGeneratingSong={isGeneratingSong}
               onGoToStep={goToStep}
               onBack={() => goToStep(2)}

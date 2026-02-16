@@ -8,6 +8,8 @@ interface StepReviewProps {
   lyrics: string
   selectedGenre: { id: string; name: string } | null
   styleText: string
+  songTitle: string
+  onSongTitleChange: (title: string) => void
   isGeneratingSong: boolean
   onGoToStep: (step: 1 | 2 | 3) => void
   onBack: () => void
@@ -18,6 +20,8 @@ export function StepReview({
   lyrics,
   selectedGenre,
   styleText,
+  songTitle,
+  onSongTitleChange,
   isGeneratingSong,
   onGoToStep,
   onBack,
@@ -29,6 +33,21 @@ export function StepReview({
 
   return (
     <div className="space-y-5">
+      {/* Title field */}
+      <div className="rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] p-4 space-y-2">
+        <p className="text-xs font-semibold text-[rgba(130,170,240,0.45)] uppercase tracking-wider">
+          Tittel
+        </p>
+        <input
+          type="text"
+          value={songTitle}
+          onChange={(e) => onSongTitleChange(e.target.value)}
+          placeholder="Gi sangen din en tittel"
+          maxLength={80}
+          className="w-full bg-transparent text-sm text-white placeholder:text-[rgba(180,200,240,0.3)] border-b border-[rgba(90,140,255,0.15)] focus:border-[#F26522]/50 outline-none pb-1 transition-colors"
+        />
+      </div>
+
       {/* Lyrics summary card */}
       <div className="rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] p-4 space-y-2">
         <div className="flex items-center justify-between">

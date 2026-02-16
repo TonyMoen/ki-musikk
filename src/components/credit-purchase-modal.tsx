@@ -57,7 +57,7 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
         context: 'credit-purchase',
         onRetry: () => handlePurchase(pkg),
         onContactSupport: () => {
-          window.location.href = 'mailto:groftefyllband@gmail.com'
+          window.location.href = 'mailto:hei@kimusikk.no'
         }
       })
       setLoading(null)
