@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
     const headers: HeadersInit = {
       'Content-Type': contentType,
       'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_APP_URL || 'https://kimusikk.no',
     }
 
     if (contentLength) {

@@ -58,7 +58,7 @@ export async function checkLyricsRateLimit(
 
       if (error) {
         console.error('[Lyrics Rate Limit] DB error (auth):', error)
-        return { allowed: true }
+        return { allowed: false, message: 'Kunne ikke sjekke grense. Prøv igjen om litt.' }
       }
 
       const used = count || 0
@@ -86,7 +86,7 @@ export async function checkLyricsRateLimit(
 
     if (error) {
       console.error('[Lyrics Rate Limit] DB error (anon):', error)
-      return { allowed: true }
+      return { allowed: false, message: 'Kunne ikke sjekke grense. Prøv igjen om litt.' }
     }
 
     const used = count || 0
@@ -102,7 +102,7 @@ export async function checkLyricsRateLimit(
     return { allowed: true, remaining: ANON_MAX - used }
   } catch (error) {
     console.error('[Lyrics Rate Limit] Unexpected error:', error)
-    return { allowed: true }
+    return { allowed: false, message: 'Kunne ikke sjekke grense. Prøv igjen om litt.' }
   }
 }
 

@@ -33,7 +33,7 @@ export async function GET() {
     cookieStore.set('vipps_oauth_state', state, {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
+      sameSite: 'lax',
       maxAge: 60 * 10, // 10 minutes
       path: '/',
     })

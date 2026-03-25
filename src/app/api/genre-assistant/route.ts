@@ -5,6 +5,8 @@ import {
   extractSunoPrompt,
   isFinalPrompt,
 } from '@/lib/prompts/genre-assistant-system-prompt'
+import { getClientIp } from '@/lib/lyrics-rate-limit'
+import { createClient } from '@/lib/supabase/server'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -35,6 +37,33 @@ export async function POST(
   request: NextRequest
 ): Promise<NextResponse<GenreAssistantResponse>> {
   try {
+    // Rate limit: 10 requests per hour per IP for anonymous, 60 for authenticated
+    const ipAddress = getClientIp(request)
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const maxRequests = user ? 60 : 10
+    const windowMs = 60 * 60 * 1000 // 1 hour
+
+    const rateLimitKey = `genre-assistant:${user?.id || ipAddress}`
+    const now = Date.now()
+
+    // Simple in-memory rate limiting (resets on deploy, which is acceptable)
+    const g = globalThis as Record<string, unknown>
+    if (!g._genreRateLimits) g._genreRateLimits = new Map()
+    const limits = g._genreRateLimits as Map<string, number[]>
+    const timestamps = (limits.get(rateLimitKey) || []).filter(t => t > now - windowMs)
+
+    if (timestamps.length >= maxRequests) {
+      return NextResponse.json(
+        { error: { code: 'RATE_LIMIT', message: 'For mange forespørsler. Prøv igjen senere.' } },
+        { status: 429 }
+      )
+    }
+
+    timestamps.push(now)
+    limits.set(rateLimitKey, timestamps)
+
     const { messages } = (await request.json()) as GenreAssistantRequest
 
     // Validate messages
@@ -46,6 +75,22 @@ export async function POST(
             message: 'Meldinger er påkrevd',
           },
         },
+        { status: 400 }
+      )
+    }
+
+    // Limit message count and size to prevent abuse
+    if (messages.length > 20) {
+      return NextResponse.json(
+        { error: { code: 'TOO_MANY_MESSAGES', message: 'For mange meldinger.' } },
+        { status: 400 }
+      )
+    }
+
+    const totalChars = messages.reduce((sum, m) => sum + (m.content?.length || 0), 0)
+    if (totalChars > 10000) {
+      return NextResponse.json(
+        { error: { code: 'PAYLOAD_TOO_LARGE', message: 'Meldingene er for lange.' } },
         { status: 400 }
       )
     }

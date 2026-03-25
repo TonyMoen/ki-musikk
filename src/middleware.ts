@@ -20,7 +20,7 @@ import { updateSession } from '@/lib/supabase/middleware';
 
 // Maintenance mode configuration
 const MAINTENANCE_MODE = process.env.MAINTENANCE_MODE === 'true';
-const MAINTENANCE_BYPASS_SECRET = process.env.MAINTENANCE_BYPASS_SECRET || 'letmein123';
+const MAINTENANCE_BYPASS_SECRET = process.env.MAINTENANCE_BYPASS_SECRET;
 
 export async function middleware(request: NextRequest) {
   // Check maintenance mode
@@ -29,8 +29,8 @@ export async function middleware(request: NextRequest) {
     const bypassParam = url.searchParams.get('bypass');
     const bypassCookie = request.cookies.get('maintenance_bypass')?.value;
 
-    // Allow bypass with secret param or cookie
-    if (bypassParam === MAINTENANCE_BYPASS_SECRET) {
+    // Allow bypass with secret param or cookie (only if secret is configured)
+    if (MAINTENANCE_BYPASS_SECRET && bypassParam === MAINTENANCE_BYPASS_SECRET) {
       // Set cookie for persistent bypass and redirect to remove param from URL
       const response = NextResponse.redirect(new URL(url.pathname, request.url));
       response.cookies.set('maintenance_bypass', MAINTENANCE_BYPASS_SECRET, {
@@ -42,7 +42,7 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    if (bypassCookie === MAINTENANCE_BYPASS_SECRET) {
+    if (MAINTENANCE_BYPASS_SECRET && bypassCookie === MAINTENANCE_BYPASS_SECRET) {
       // User has bypass cookie, allow through
       return await updateSession(request);
     }

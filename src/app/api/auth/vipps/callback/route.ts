@@ -154,11 +154,14 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL('/auth/logg-inn?error=no_email', appUrl))
     }
 
-    // Try to find existing user by email
-    const { data: existingUsers } = await supabase.auth.admin.listUsers()
+    // Try to find existing user by email (paginated, not loading all users)
+    const { data: existingUsers } = await supabase.auth.admin.listUsers({
+      page: 1,
+      perPage: 50,
+    })
     const existingUser = existingUsers?.users?.find(
       (u) => u.email?.toLowerCase() === email.toLowerCase()
-    )
+    ) || null
 
     let userId: string
     let isNewUser = false

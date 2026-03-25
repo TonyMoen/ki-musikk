@@ -199,29 +199,15 @@ export async function POST(request: Request) {
     const headersList = await headers()
     const signature = headersList.get('x-suno-signature') // Adjust header name based on Suno docs
 
-    // 🐛 DEBUG: Log ALL headers to see what Suno sends
-    const allHeaders: Record<string, string> = {}
-    headersList.forEach((value, key) => {
-      allHeaders[key] = value
-    })
-
     logInfo('Webhook received', {
       hasSignature: !!signature,
       bodyLength: body.length,
-      allHeaders, // 🐛 DEBUG: See all headers
-      bodyPreview: body.substring(0, 200), // 🐛 DEBUG: See payload structure
     })
 
     // 2. Verify webhook signature
     const webhookSecret = process.env.SUNO_WEBHOOK_SECRET
-    const skipSignatureVerification = process.env.SKIP_WEBHOOK_SIGNATURE === 'true'
 
-    // 🐛 DEBUG MODE: Skip signature verification for initial testing
-    if (skipSignatureVerification) {
-      logInfo('⚠️ Signature verification DISABLED (debug mode)', {
-        reason: 'SKIP_WEBHOOK_SIGNATURE=true'
-      })
-    } else if (!webhookSecret) {
+    if (!webhookSecret) {
       logError(
         'SUNO_WEBHOOK_SECRET not configured',
         new Error('Missing environment variable')
@@ -230,26 +216,31 @@ export async function POST(request: Request) {
         { error: { code: 'CONFIG_ERROR', message: 'Webhook secret not configured' } },
         { status: 500 }
       )
-    } else if (signature) {
-      // Only verify if signature is present AND not in debug mode
-      if (!verifyWebhookSignature(body, signature, webhookSecret)) {
-        logError('Webhook signature verification failed', new Error('Invalid signature'), {
-          signature,
-        })
-        return NextResponse.json(
-          {
-            error: {
-              code: 'INVALID_SIGNATURE',
-              message: 'Webhook signature verification failed',
-            },
-          },
-          { status: 401 }
-        )
-      }
-      logInfo('✅ Signature verified successfully')
-    } else {
-      logInfo('⚠️ No signature provided by Suno (this may be normal)')
     }
+
+    if (!signature) {
+      logError('No signature provided', new Error('Missing signature header'))
+      return NextResponse.json(
+        { error: { code: 'MISSING_SIGNATURE', message: 'Webhook signature required' } },
+        { status: 401 }
+      )
+    }
+
+    if (!verifyWebhookSignature(body, signature, webhookSecret)) {
+      logError('Webhook signature verification failed', new Error('Invalid signature'), {
+        signature,
+      })
+      return NextResponse.json(
+        {
+          error: {
+            code: 'INVALID_SIGNATURE',
+            message: 'Webhook signature verification failed',
+          },
+        },
+        { status: 401 }
+      )
+    }
+    logInfo('✅ Signature verified successfully')
 
     // 3. Parse webhook payload
     let payload: SunoWebhookPayload
