@@ -45,6 +45,9 @@ export function Footer() {
               <Link href="/priser" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Priser
               </Link>
+              <Link href="/blogg" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Blogg
+              </Link>
             </nav>
           </div>
 

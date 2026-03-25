@@ -58,6 +58,43 @@ export function getProductJsonLd(packages: CreditPackage[]) {
   }
 }
 
+export function getSoftwareApplicationJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'KI MUSIKK',
+    description: 'Norges eneste AI-sanggenerator med autentisk norsk uttale, Vipps-betaling og engangskjøp uten abonnement.',
+    url: BASE_URL,
+    applicationCategory: 'MultimediaApplication',
+    operatingSystem: 'Web',
+    availableLanguage: {
+      '@type': 'Language',
+      name: 'Norwegian Bokmål',
+      alternateName: 'nb',
+    },
+    offers: {
+      '@type': 'AggregateOffer',
+      lowPrice: '99',
+      highPrice: '499',
+      priceCurrency: 'NOK',
+      offerCount: 3,
+    },
+    featureList: [
+      'Autentisk norsk uttale-optimalisering',
+      'Vipps-betaling',
+      'Engangskjøp uten abonnement',
+      'Norsk grensesnitt',
+      'AI-generert musikk med vokal',
+      'Flere sjangere: pop, rock, vise, rap, EDM, country',
+    ],
+    creator: {
+      '@type': 'Organization',
+      name: 'Moen Studio',
+      url: BASE_URL,
+    },
+  }
+}
+
 export function getLocalBusinessJsonLd() {
   return {
     '@context': 'https://schema.org',

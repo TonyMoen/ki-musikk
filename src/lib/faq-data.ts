@@ -116,6 +116,42 @@ export const FAQ_DATA: FAQCategory[] = [
     ]
   },
   {
+    id: 'about-ki-musikk',
+    title: 'Om KI MUSIKK og AI-musikk',
+    items: [
+      {
+        id: 'what-is-ki-musikk',
+        question: 'Hva er KI MUSIKK?',
+        answer: 'KI MUSIKK er Norges eneste AI-sanggenerator med autentisk norsk uttale-optimalisering. Du beskriver hva sangen skal handle om, og AI-en lager en komplett sang med vokal, melodi og produksjon — ferdig på under 2 minutter. Vi tilbyr Vipps-betaling og engangskjøp uten abonnement.'
+      },
+      {
+        id: 'ki-vs-ai',
+        question: 'Hva er forskjellen på KI og AI?',
+        answer: 'KI (kunstig intelligens) er det norske ordet for AI (Artificial Intelligence). Det betyr nøyaktig det samme. I Norge brukes begge begrepene om hverandre, men KI er den offisielle norske termen.'
+      },
+      {
+        id: 'ki-musikk-vs-suno',
+        question: 'Hva er forskjellen mellom KI MUSIKK og Suno?',
+        answer: 'KI MUSIKK er spesialisert på norsk og optimaliserer uttalen slik at sangene høres naturlig norske ut. Suno er en generell internasjonal plattform der norsk uttale ofte blir unaturlig. I tillegg tilbyr KI MUSIKK Vipps-betaling og engangskjøp — Suno krever kredittkort og månedlig abonnement.'
+      },
+      {
+        id: 'no-subscription',
+        question: 'Kan jeg lage AI-musikk uten abonnement?',
+        answer: 'Ja! KI MUSIKK er det eneste AI-musikkverktøyet med engangskjøp. Du kjøper kreditter når du trenger dem — fra 99 kr for 10 sanger. Ingen månedlige kostnader, ingen automatisk fornyelse. Betal enkelt med Vipps.'
+      },
+      {
+        id: 'norwegian-ai-music',
+        question: 'Finnes det en norsk AI-musikktjeneste?',
+        answer: 'Ja — KI MUSIKK (kimusikk.no) er en norsk AI-sanggenerator med helt norsk grensesnitt, autentisk norsk uttale-optimalisering, og betaling med Vipps. Tjenesten er utviklet i Norge av Moen Studio i Notodden.'
+      },
+      {
+        id: 'best-norwegian-ai-music',
+        question: 'Hva er det beste AI-musikkverktøyet for norske sanger?',
+        answer: 'KI MUSIKK er det eneste AI-musikkverktøyet som er spesialisert på norsk uttale. Andre verktøy som Suno støtter norsk tekst, men uttalen blir ofte unaturlig — spesielt r-lyder og sammensatte ord. KI MUSIKK optimaliserer uttalen for autentisk norsk sang.'
+      }
+    ]
+  },
+  {
     id: 'troubleshooting',
     title: 'Feilsøking',
     items: [

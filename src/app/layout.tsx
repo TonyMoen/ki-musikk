@@ -8,7 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { AudioPlayerProvider } from "@/contexts/audio-player-context";
 import { GlobalPlayer } from "@/components/layout/global-player";
-import { getOrganizationJsonLd } from "@/lib/seo";
+import { getOrganizationJsonLd, getSoftwareApplicationJsonLd } from "@/lib/seo";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -19,8 +19,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://kimusikk.no"),
   title: "KI MUSIKK - Lag norske sanger med KI",
-  description: "KI-drevet norsk sanggenerator. Lag morsomme og personlige norske sanger med autentisk norsk uttale. Perfekt til fester, bursdager og sosiale medier.",
-  keywords: "norsk musikk, KI sanggenerator, norske sanger, festsanger, personlige sanger, norsk uttale",
+  description: "Norges beste AI-sanggenerator. Lag personlige norske sanger med autentisk norsk uttale — perfekt til bursdager, bryllup, russefeiring og fester. Betal enkelt med Vipps, ingen abonnement.",
+  keywords: "AI sanggenerator norsk, KI musikk, lag sang med AI, norsk AI musikkgenerator, personlig bursdagssang AI, russelåt AI, kunstig intelligens musikk, suno alternativ norsk, KI sanggenerator, Vipps betaling, ingen abonnement",
   authors: [{ name: "KI MUSIKK" }],
   icons: {
     icon: "/ki-musikk.png",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "KI MUSIKK - Lag norske sanger med KI",
-    description: "Lag morsomme og personlige norske sanger med KI og autentisk norsk uttale",
+    description: "Lag personlige norske sanger med KI og autentisk norsk uttale. Betal med Vipps — ingen abonnement.",
     siteName: "KI MUSIKK",
     locale: "nb_NO",
     type: "website",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "KI MUSIKK - Lag norske sanger med KI",
-    description: "Lag morsomme og personlige norske sanger med KI og autentisk norsk uttale",
+    description: "Lag personlige norske sanger med KI og autentisk norsk uttale. Betal med Vipps — ingen abonnement.",
   },
 };
 
@@ -52,6 +52,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(getOrganizationJsonLd()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(getSoftwareApplicationJsonLd()) }}
         />
         <TooltipProvider delayDuration={400}>
           <AudioPlayerProvider>

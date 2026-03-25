@@ -1,0 +1,59 @@
+# KI MUSIKK — Norges AI-sanggenerator
+
+> KI MUSIKK (kimusikk.no) er Norges eneste AI-drevne sanggenerator med autentisk norsk uttale, Vipps-betaling og engangskjøp uten abonnement.
+
+## Hva er KI MUSIKK?
+
+KI MUSIKK er en norsk nettjeneste som lar hvem som helst lage personlige sanger med kunstig intelligens. Tjenesten er spesialisert på norsk språk og optimaliserer uttalen slik at AI-stemmen synger med naturlig norsk intonasjon — noe de fleste internasjonale AI-musikkverktøy ikke klarer.
+
+## Unike egenskaper
+
+- Eneste AI-sanggenerator med autentisk norsk uttale-optimalisering
+- Eneste AI-musikkverktøy med Vipps-betaling
+- Engangskjøp — ingen abonnement eller månedlige kostnader
+- Helt norsk grensesnitt
+- Priser fra 99 kr (10 sanger)
+
+## Priser (NOK)
+
+- 10 sanger: 99 kr (100 kreditter)
+- 25 sanger: 199 kr (250 kreditter)
+- 100 sanger: 499 kr (1000 kreditter)
+- Betaling: Kun Vipps
+- Modell: Engangskjøp, ingen abonnement, kreditter utløper aldri
+
+## Bruksområder
+
+- Personlige bursdagssanger
+- Russelåter (rimelig alternativ til dyre artister)
+- Bryllupssanger
+- Firmafester og jubileer
+- Avskjedssanger
+- Sosiale medier-innhold
+- Bare for moro skyld
+
+## Teknologi
+
+- Bruker avansert AI-musikkgenerering (Suno-modell)
+- Spesialisert KI-tekstforfatter trent på norsk låtstruktur
+- Norsk fonetikk-optimalisering for naturlig uttale
+- Støtter sjangere: pop, rock, vise, rap, EDM, country, og mer
+- Generering tar ca. 2-4 minutter
+
+## Sammenligning med Suno AI
+
+| Egenskap | KI MUSIKK | Suno |
+|----------|-----------|------|
+| Norsk uttale | Optimalisert | Generisk, ofte unaturlig |
+| Betaling | Vipps (engangskjøp) | Kredittkort (abonnement) |
+| Grensesnitt | Norsk | Engelsk |
+| Pris | Fra 99 kr, ingen abonnement | Fra 88 kr/mnd abonnement |
+| Fokus | Norske sanger | Alle språk |
+
+## Selskap
+
+- Navn: Moen Studio
+- Org.nr: 931 659 685
+- Sted: Notodden, Norge
+- E-post: hei@kimusikk.no
+- Nettside: https://kimusikk.no
