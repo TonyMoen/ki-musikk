@@ -1,7 +1,7 @@
 /**
  * Supabase Database Types
  * Auto-generated types based on database schema
- * Tables: user_profile, song, credit_transaction, genre, mastering_request
+ * Tables: user_profile, song, credit_transaction, genre
  */
 
 export type Json =
@@ -206,52 +206,6 @@ export interface Database {
         }
         Relationships: []
       }
-      mastering_request: {
-        Row: {
-          id: string
-          user_id: string
-          song_id: string
-          status: 'pending' | 'in_progress' | 'completed' | 'cancelled'
-          mastered_audio_url: string | null
-          notes: string | null
-          requested_at: string
-          completed_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          song_id: string
-          status: 'pending' | 'in_progress' | 'completed' | 'cancelled'
-          mastered_audio_url?: string | null
-          notes?: string | null
-          requested_at?: string
-          completed_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          song_id?: string
-          status?: 'pending' | 'in_progress' | 'completed' | 'cancelled'
-          mastered_audio_url?: string | null
-          notes?: string | null
-          requested_at?: string
-          completed_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mastering_request_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "user_profile"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "mastering_request_song_id_fkey"
-            columns: ["song_id"]
-            referencedRelation: "song"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
     }
     Views: {
       [_ in never]: never
@@ -305,4 +259,3 @@ export type DbUserProfile = Tables<'user_profile'>
 export type DbSong = Tables<'song'>
 export type DbCreditTransaction = Tables<'credit_transaction'>
 export type DbGenre = Tables<'genre'>
-export type DbMasteringRequest = Tables<'mastering_request'>

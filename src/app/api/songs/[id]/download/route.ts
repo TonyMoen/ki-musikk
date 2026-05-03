@@ -124,6 +124,7 @@ export async function GET(
       .from('song')
       .select('id, title, audio_url, user_id, status')
       .eq('id', songId)
+      .is('deleted_at', null)
       .single()
 
     // Step 6: Handle errors

@@ -111,11 +111,12 @@ export async function GET(
         updated_at
       `)
       .eq('id', songId)
+      .is('deleted_at', null)
       .single()
 
     // Step 4: Handle errors
     if (songError) {
-      // Check if song doesn't exist or user doesn't have access (RLS)
+      // Check if song doesn't exist, was soft-deleted, or user doesn't have access (RLS)
       if (songError.code === 'PGRST116') {
         return errorResponse(
           'NOT_FOUND',
@@ -261,7 +262,7 @@ export async function GET(
 
               // Update database with completed status using admin client
               // Store the permanent storage path, not a signed URL
-              await adminClient
+              const { error: dbUpdateError } = await adminClient
                 .from('song')
                 .update({
                   status: 'completed',
@@ -271,6 +272,22 @@ export async function GET(
                   updated_at: new Date().toISOString()
                 })
                 .eq('id', songId)
+
+              if (dbUpdateError) {
+                logError('DB update failed after storage upload (polling fallback)',
+                  dbUpdateError as unknown as Error, { songId })
+                // Rollback orphaned storage file
+                if (audioStored) {
+                  const { error: rollbackError } = await adminClient.storage
+                    .from('songs')
+                    .remove([filePath])
+                  if (rollbackError) {
+                    logError('Storage rollback failed (polling fallback)',
+                      rollbackError as unknown as Error, { songId, filePath })
+                  }
+                }
+                break
+              }
 
               // Generate signed URL for the response
               let responseAudioUrl: string = storagePath
@@ -402,7 +419,7 @@ export async function GET(
               }
 
               // Update database to completed - store permanent path
-              await adminClient
+              const { error: dbUpdateError2 } = await adminClient
                 .from('song')
                 .update({
                   status: 'completed',
@@ -412,6 +429,22 @@ export async function GET(
                   updated_at: new Date().toISOString()
                 })
                 .eq('id', songId)
+
+              if (dbUpdateError2) {
+                logError('DB update failed after storage upload (partial→completed)',
+                  dbUpdateError2 as unknown as Error, { songId })
+                // Rollback orphaned storage file
+                if (audioStored) {
+                  const { error: rollbackError } = await adminClient.storage
+                    .from('songs')
+                    .remove([filePath])
+                  if (rollbackError) {
+                    logError('Storage rollback failed (partial→completed)',
+                      rollbackError as unknown as Error, { songId, filePath })
+                  }
+                }
+                break
+              }
 
               // Generate signed URL for the response
               let responseAudioUrl2: string = storagePath

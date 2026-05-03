@@ -157,11 +157,13 @@ async function uploadToSupabaseStorage(
 
   try {
     // Upload audio file to Supabase Storage
+    // upsert: true — Suno may deliver the webhook more than once. Failing on a
+    // pre-existing file would orphan the prior upload and stall the song row.
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('songs')
       .upload(filePath, audioBuffer, {
         contentType: 'audio/mpeg',
-        upsert: false, // Prevent overwriting (should not happen if idempotent)
+        upsert: true,
       })
 
     if (uploadError) {
@@ -538,6 +540,18 @@ export async function POST(request: Request) {
         songId: song.id,
         taskId,
       })
+
+      // Rollback: remove the orphaned storage file we just uploaded.
+      // Without this the file lives forever with no DB row pointing at it.
+      const orphanPath = `${song.user_id}/${song.id}.mp3`
+      const { error: rollbackError } = await supabase.storage
+        .from('songs')
+        .remove([orphanPath])
+      if (rollbackError) {
+        logError('Storage rollback failed after DB update failure',
+          rollbackError as unknown as Error,
+          { songId: song.id, taskId, orphanPath })
+      }
 
       return NextResponse.json(
         { error: { code: 'UPDATE_FAILED', message: 'Database update failed' } },

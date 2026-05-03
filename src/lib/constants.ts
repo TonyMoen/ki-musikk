@@ -43,8 +43,6 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
 
 export const CREDIT_COSTS = {
   SONG_GENERATION: 10, // 10 credits per song
-  CANVAS_GENERATION: 5, // Future feature
-  MASTERING_SERVICE: 20, // Future feature
   FREE_PREVIEW: 0, // 30-second previews are free
 } as const
 
