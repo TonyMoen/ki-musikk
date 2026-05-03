@@ -337,7 +337,7 @@ export async function POST(request: NextRequest) {
         title: title || 'Untitled Song',
         lyrics: finalLyricsWithWatermark,
         style: stylePrompt,
-        model: 'V5',
+        model: 'V5_5',
         callBackUrl: `${(process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/$/, '')}/api/webhooks/suno`,
         duration: previewMode ? 30 : undefined, // 30 seconds for preview, default for full song
         vocalGender: vocalGender || undefined // Only pass if user made a selection

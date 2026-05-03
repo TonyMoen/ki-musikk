@@ -19,7 +19,7 @@ const SUNO_API_TIMEOUT = 30000 // 30 seconds
 /**
  * Suno API Model Versions
  */
-export type SunoModel = 'V3_5' | 'V4' | 'V4_5' | 'V4_5PLUS' | 'V5'
+export type SunoModel = 'V3_5' | 'V4' | 'V4_5' | 'V4_5PLUS' | 'V5' | 'V5_5'
 
 /**
  * Suno API Request Parameters
@@ -120,7 +120,7 @@ export async function generateSong(
     title,
     lyrics,
     style,
-    model = 'V5',
+    model = 'V5_5',
     callBackUrl,
     instrumental = false,
     duration,
