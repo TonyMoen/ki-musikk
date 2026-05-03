@@ -3,13 +3,20 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { WizardContainer } from '@/components/wizard/wizard-container'
+import { WizardHeader } from '@/components/wizard/wizard-header'
+import { ModeSwitcher, type WizardMode } from '@/components/mode-switcher'
+import { SmartMode } from '@/components/smart/smart-mode'
 import { HomepageSongs } from '@/components/homepage-songs'
 import { DemoSongs } from '@/components/demo-songs'
 import { Music, Mic, CreditCard, LogIn } from 'lucide-react'
 import Link from 'next/link'
 
+const PENDING_SONG_KEY = 'kimusikk_pending_song'
+
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [mode, setMode] = useState<WizardMode>('smart')
+  const [modeReady, setModeReady] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -18,12 +25,39 @@ export default function Home() {
     })
   }, [])
 
+  // Default to Tilpass on mount if the wizard has pending in-flight data,
+  // so returning users don't lose work behind the Smart UI.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(PENDING_SONG_KEY)
+      if (saved) {
+        const data = JSON.parse(saved)
+        const TTL_MS = 30 * 60 * 1000
+        if (data.savedAt && Date.now() - data.savedAt <= TTL_MS) {
+          setMode('tilpass')
+        }
+      }
+    } catch {
+      // ignore localStorage errors — default Smart stands
+    }
+    setModeReady(true)
+  }, [])
+
   return (
     <main className="flex min-h-screen flex-col items-center">
       <h1 className="text-2xl sm:text-3xl font-bold text-white text-center pt-8 pb-2 px-4">
         Lag norske sanger med KI
       </h1>
-      <WizardContainer />
+      <div className="w-full max-w-[640px] mx-auto pt-12 px-5">
+        <div className="space-y-8">
+          <WizardHeader />
+          <ModeSwitcher mode={mode} onChange={setMode} />
+          {modeReady && mode === 'smart' && (
+            <SmartMode onHandoffToTilpass={() => setMode('tilpass')} />
+          )}
+          {modeReady && mode === 'tilpass' && <WizardContainer />}
+        </div>
+      </div>
 
       {/* Why KiMusikk + Demo Songs — visitors only */}
       {!isLoggedIn && (

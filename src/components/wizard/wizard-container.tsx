@@ -9,7 +9,6 @@ import { useGeneratingSongStore, MAX_CONCURRENT_SONGS } from '@/stores/generatin
 import { useCreditsStore } from '@/stores/credits-store'
 import { isCustomGenre, getGenreSunoPrompt } from '@/lib/custom-genres-storage'
 import { STANDARD_GENRES } from '@/lib/standard-genres'
-import { WizardHeader } from './wizard-header'
 import { StepIndicator } from './step-indicator'
 import { StepLyrics } from './step-lyrics'
 import { StepStyle } from './step-style'
@@ -401,10 +400,8 @@ export function WizardContainer() {
   }
 
   return (
-    <div className="max-w-[640px] mx-auto pt-12 px-5">
-      <div className="space-y-8">
-        <WizardHeader />
-        <div className="space-y-2">
+    <div className="space-y-8">
+      <div className="space-y-2">
           <StepIndicator currentStep={currentStep} onStepClick={goToStep} />
           {(currentStep > 1 || concept || lyrics || isCustomTextMode) && (
             <div className="text-center">
@@ -463,6 +460,5 @@ export function WizardContainer() {
           )}
         </div>
       </div>
-    </div>
   )
 }
