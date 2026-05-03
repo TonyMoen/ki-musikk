@@ -13,7 +13,6 @@ import { useCreditsStore } from '@/stores/credits-store'
 import { SmartInput } from './smart-input'
 import { SmartReview } from './smart-review'
 import type {
-  Occasion,
   SmartGenerateData,
   SmartGenerateResponse,
 } from '@/types/smart'
@@ -42,7 +41,6 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
 
   // Input stage state
   const [concept, setConcept] = useState('')
-  const [occasion, setOccasion] = useState<Occasion | undefined>(undefined)
 
   // Review stage state (populated by /api/songs/smart-generate)
   const [lyrics, setLyrics] = useState('')
@@ -71,7 +69,7 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
     const response = await fetch('/api/songs/smart-generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ concept, occasion }),
+      body: JSON.stringify({ concept }),
     })
     const json = (await response.json()) as SmartGenerateResponse
     if (!response.ok || !json.data) {
@@ -257,10 +255,7 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
     setLyrics('')
     setTitle('')
     setGenreData(null)
-    // Keep concept + occasion so user can tweak and try again easily?
-    // Tony's design: "Ny beskrivelse" should reset to a blank input.
     setConcept('')
-    setOccasion(undefined)
   }
 
   // ---------- Render ----------
@@ -270,8 +265,6 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
       <SmartInput
         concept={concept}
         onConceptChange={setConcept}
-        occasion={occasion}
-        onOccasionChange={setOccasion}
         onSubmit={handleSubmitInput}
         isGenerating={isGenerating}
       />

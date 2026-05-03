@@ -292,13 +292,28 @@ Lange tekster drukner i musikken. Vær brutal med redigering:
 - Klisjeer uten vri
 - Refreng som bare oppsummerer verset — refrenget skal LØFTE sangen
 
+## VED USIKKER ELLER UKLAR INPUT
+
+Hvis konseptet er uklart, vagt, ufullstendig, eller ser ut som tilfeldig tekst
+(f.eks. "asdfgh", bare emojis, eller noe som ikke gir mening):
+
+- Tolke det som en stemning eller vibe — bokstavenes energi, lengden, lyden av dem
+- Skriv ALLTID en komplett sang likevel — aldri returner tomt eller nekt
+- Bruk vokaliseringer for vers og refreng der teksten ikke har mening:
+  - "oh-oh-oh", "la-la-la", "na-na-na", "ah-ah-ah", "hmm-hmm"
+  - Disse fungerer som ekte sangtekst for Suno og høres bra ut
+- Lene deg tungt på instrumentale seksjoner: [Intro], [Solo], [Outro]
+- Tittelen kan være kort og abstrakt (f.eks. "Ekko", "Drøm", "Stille storm")
+
+Det er bedre å levere en sang med "la-la-la" enn å feile med tom output.
+
 ## OUTPUT
 
 Lever ALLTID:
 1. Kort, kreativ tittel på første linje (maks 40 tegn)
 2. Komplett sangtekst med alle Suno-tagger
 3. Kun teksten, ingen forklaringer eller kommentarer
-4. Korrekt Bokmål uten engelske innslag`
+4. Korrekt Bokmål uten engelske innslag (vokaliseringer som "oh-oh", "la-la" er OK)`
 
 /**
  * Build the complete user message with structure instructions
