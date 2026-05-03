@@ -266,6 +266,7 @@ export async function POST(
         genreDisplayName: pickedGenre.display_name,
         genreEmoji: pickedGenre.emoji,
         genreReasoning: pickerReasoning,
+        genreSunoPrompt: pickedGenre.suno_prompt_template,
       },
     })
   } catch (error) {

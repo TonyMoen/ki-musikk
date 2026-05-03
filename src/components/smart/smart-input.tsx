@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Loader2, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -9,6 +10,23 @@ interface SmartInputProps {
   onSubmit: () => Promise<void>
   isGenerating: boolean
 }
+
+// Curated Norwegian placeholder concepts. One is picked at random on mount
+// to show breadth and inspire users without anchoring them to a single template.
+const PLACEHOLDER_CONCEPTS = [
+  'Min farmor blir 90, hun samler på trolldukker og hører på hardingfele hver kveld',
+  'Pappa fyller 60, han griller selv når det øsregner og kaller alle kollegene "sjefen"',
+  'Bestemor mistet katten Mons, vi trenger noe trøstende men ikke for trist',
+  'Russebussen Kaboom 2026, vi er fra Stavanger og det meste går ofte galt',
+  'Polterabend for Karianne — hun går på kaffe etter spinning og dømmer ingen',
+  'En låt om vorspielet hvor Lars alltid glemmer pizzaen i ovnen',
+  'En sang om mandag morgen i Bergen når regnet treffer ansiktet ditt skrått',
+  'Hyttetur i februar, peisen virker ikke, vi har glemt brød og er litt for stille',
+  'Bryllup i Lofoten i juli, vi møttes på telttur og gikk oss vill første kveld',
+  'Sølvbryllup for foreldrene — 25 år sammen, fortsatt krangler de om radiokanalen',
+  'Sommerkvelden hvor ingenting skjedde, men jeg husker den fortsatt',
+  'Tromsø i januar når sola endelig kommer tilbake',
+]
 
 /**
  * Smart-modus input screen: helper copy + concept textarea + CTA.
@@ -21,6 +39,10 @@ export function SmartInput({
   onSubmit,
   isGenerating,
 }: SmartInputProps) {
+  // Pick one placeholder per mount — feels alive, suggests breadth.
+  const [placeholder] = useState(
+    () => PLACEHOLDER_CONCEPTS[Math.floor(Math.random() * PLACEHOLDER_CONCEPTS.length)]
+  )
   const isConceptValid = concept.length >= 10 && concept.length <= 500
 
   return (
@@ -35,7 +57,7 @@ export function SmartInput({
         <textarea
           value={concept}
           onChange={(e) => onConceptChange(e.target.value)}
-          placeholder="F.eks: En sang til min farmor som fyller 80 år, hun elsker å danse..."
+          placeholder={placeholder}
           maxLength={500}
           disabled={isGenerating}
           rows={5}

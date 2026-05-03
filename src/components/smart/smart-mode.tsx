@@ -49,8 +49,7 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
     id: string
     name: string
     displayName: string
-    emoji: string | null
-    reasoning: string
+    sunoPrompt: string
   } | null>(null)
 
   // Loading flags
@@ -89,8 +88,7 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
         id: data.genreId,
         name: data.genreName,
         displayName: data.genreDisplayName,
-        emoji: data.genreEmoji,
-        reasoning: data.genreReasoning,
+        sunoPrompt: data.genreSunoPrompt,
       })
       setStage('review')
     } catch (err) {
@@ -111,8 +109,7 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
         id: data.genreId,
         name: data.genreName,
         displayName: data.genreDisplayName,
-        emoji: data.genreEmoji,
-        reasoning: data.genreReasoning,
+        sunoPrompt: data.genreSunoPrompt,
       })
     } catch (err) {
       showError(err, { context: 'smart-regenerate' })
@@ -277,8 +274,7 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
       onLyricsChange={setLyrics}
       title={title}
       genreDisplayName={genreData.displayName}
-      genreEmoji={genreData.emoji}
-      genreReasoning={genreData.reasoning}
+      genreSunoPrompt={genreData.sunoPrompt}
       onReset={handleReset}
       onRegenerate={handleRegenerate}
       onSwitchToTilpass={handleSwitchToTilpass}

@@ -48,10 +48,12 @@ export interface SmartGenerateData {
   genreName: string
   /** Display name shown to the user (e.g., 'Country Rock') */
   genreDisplayName: string
-  /** Optional emoji for the picked genre */
+  /** Optional emoji for the picked genre (kept for API compat — UI uses Lucide icons) */
   genreEmoji: string | null
-  /** Why the AI picked this genre — short Norwegian explanation, surface in UI/analytics */
+  /** Why the AI picked this genre — short Norwegian explanation, kept for analytics */
   genreReasoning: string
+  /** The technical Suno prompt template for the picked genre — surfaced in UI to prove the choice is concrete */
+  genreSunoPrompt: string
 }
 
 export interface SmartGenerateResponse {

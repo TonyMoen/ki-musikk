@@ -2,14 +2,14 @@
 
 import { Loader2, RotateCcw, Dices, SlidersHorizontal, Music } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { getGenreIcon } from '@/lib/genre-icons'
 
 interface SmartReviewProps {
   lyrics: string
   onLyricsChange: (value: string) => void
   title: string
   genreDisplayName: string
-  genreEmoji: string | null
-  genreReasoning: string
+  genreSunoPrompt: string
   onReset: () => void
   onRegenerate: () => Promise<void>
   onSwitchToTilpass: () => void
@@ -31,8 +31,7 @@ export function SmartReview({
   onLyricsChange,
   title,
   genreDisplayName,
-  genreEmoji,
-  genreReasoning,
+  genreSunoPrompt,
   onReset,
   onRegenerate,
   onSwitchToTilpass,
@@ -41,22 +40,31 @@ export function SmartReview({
   isConfirming,
 }: SmartReviewProps) {
   const isBusy = isRegenerating || isConfirming
+  const GenreIcon = getGenreIcon(genreDisplayName)
+
+  // Show the leading slice of the technical Suno prompt as proof-of-work.
+  // Truncate long prompts but keep enough context to read as concrete.
+  const promptSnippet =
+    genreSunoPrompt.length > 110
+      ? `${genreSunoPrompt.slice(0, 110).trim()}…`
+      : genreSunoPrompt
 
   return (
     <div className="space-y-5">
       {/* Genre badge */}
-      <div className="flex flex-col items-center gap-1.5">
+      <div className="flex flex-col items-center gap-2">
         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(40,80,160,0.15)] border border-[rgba(90,140,255,0.1)]">
           <span className="text-xs uppercase tracking-wide text-[rgba(130,170,240,0.55)]">
             KI valgte
           </span>
-          <span className="text-sm font-medium text-white">
-            {genreEmoji ? `${genreEmoji} ` : ''}{genreDisplayName}
+          <span className="flex items-center gap-1.5 text-sm font-medium text-white">
+            <GenreIcon className="h-3.5 w-3.5 text-[#F26522]" />
+            {genreDisplayName}
           </span>
         </div>
-        {genreReasoning && (
-          <p className="text-xs text-[rgba(130,170,240,0.55)] text-center max-w-md">
-            {genreReasoning}
+        {promptSnippet && (
+          <p className="text-xs font-mono text-[rgba(130,170,240,0.55)] text-center max-w-md px-3">
+            {promptSnippet}
           </p>
         )}
       </div>
