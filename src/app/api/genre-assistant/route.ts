@@ -8,9 +8,15 @@ import {
 import { getClientIp } from '@/lib/lyrics-rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Lazy-init: avoid throwing during Next.js page-data collection on builds
+// where OPENAI_API_KEY is not present in the build environment.
+let _openai: OpenAI | null = null
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  }
+  return _openai
+}
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant'
@@ -105,7 +111,7 @@ export async function POST(
     ]
 
     // Call GPT-4 for conversational response
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: 'gpt-4',
       temperature: 0.7,
       messages: messagesWithSystem,

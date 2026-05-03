@@ -10,9 +10,14 @@ import {
 import { createClient } from '@/lib/supabase/server'
 import { checkLyricsRateLimit, recordLyricsUsage, getClientIp } from '@/lib/lyrics-rate-limit'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
+// Lazy-init: avoid throwing during Next.js page-data collection.
+let _openai: OpenAI | null = null
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  }
+  return _openai
+}
 
 export async function POST(request: NextRequest): Promise<NextResponse<LyricGenerationResponse>> {
   try {
@@ -86,7 +91,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
     const userMessage = buildUserMessage(concept, validGenre, structure, overrides)
 
     // Generate lyrics with GPT-4 using comprehensive song writer prompt
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       temperature: 0.7,
       messages: [

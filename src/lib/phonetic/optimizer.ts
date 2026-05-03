@@ -6,9 +6,15 @@ import OpenAI from 'openai'
 import { preservedWords } from './rules'
 import { applyAllRules, TransformationResult } from './rule-engine'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
+// Lazy-init: avoid throwing at module load when OPENAI_API_KEY is unavailable
+// (e.g., during Next.js page-data collection on builds without the env var).
+let _openai: OpenAI | null = null
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  }
+  return _openai
+}
 
 export interface PhoneticChange {
   original: string
@@ -92,7 +98,7 @@ export async function optimizeLyrics(
 
   // Step 2: Call GPT-4 for edge cases (vowels, consonant clusters, etc.)
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: 'gpt-4',
       temperature: 0.3,
       messages: [
