@@ -45,7 +45,7 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="relative z-10 flex min-h-screen flex-col items-center">
+    <main className="relative z-10 flex min-h-screen flex-col items-center pb-16 sm:pb-24">
       <BackgroundDecoration />
       <h1 className="text-2xl sm:text-3xl font-bold text-[var(--ink)] text-center pt-8 pb-2 px-4">
         Lag norske sanger med AI
