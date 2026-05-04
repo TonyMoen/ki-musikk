@@ -15,7 +15,7 @@
      * ============================================================ */
 
     /* --- shadcn HSL tokens (drive bg-background, bg-card, etc.) --- */
-    --background: 240 52% 6%;             /* matches --bg #070716 — near-black */
+    --background: 240 6% 4%;              /* matches --bg #0a0a0c — neutral dark, minimal blue */
     --foreground: 0 0% 100%;
     --card: 233 52% 21%;                  /* matches --surface — pops against darker bg */
     --card-foreground: 0 0% 100%;
@@ -55,9 +55,9 @@
     --radius: 0.75rem;
 
     /* --- New named hex tokens (use via bg-[var(--surface)] etc.) --- */
-    /* Background — near-black with slight blue cast; surfaces pop against it */
-    --bg:           #070716;
-    --bg-2:         #0c0c20;
+    /* Background — neutral dark, almost pure black; surfaces pop against it */
+    --bg:           #0a0a0c;
+    --bg-2:         #101012;
     --surface:      #1a2152;
     --surface-2:    #232c63;
     --surface-3:    #2d3878;
@@ -72,7 +72,7 @@
   }
   .dark {
     /* Dark mode uses same values as root (dark-first design) */
-    --background: 240 52% 6%;
+    --background: 240 6% 4%;
     --foreground: 0 0% 100%;
     --card: 233 52% 21%;
     --card-foreground: 0 0% 100%;
@@ -111,16 +111,15 @@
   body {
     @apply bg-background text-foreground;
   }
-  /* Ambient violet glow at opposite corners — gives the near-black bg
-     some life without competing with content. Uses the secondary purple
-     (#7C3AED ~ violet-500) at very low opacity. */
+  /* Ambient violet glow at opposite corners — kept very subtle so it
+     adds atmosphere without pulling the neutral dark bg toward blue. */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse at 0% 0%, rgba(124,58,237,0.13) 0%, transparent 55%),
-      radial-gradient(ellipse at 100% 100%, rgba(124,58,237,0.10) 0%, transparent 55%);
+      radial-gradient(ellipse at 0% 0%, rgba(124,58,237,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 100%, rgba(124,58,237,0.05) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
   }
