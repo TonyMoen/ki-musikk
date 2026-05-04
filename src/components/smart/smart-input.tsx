@@ -48,7 +48,7 @@ export function SmartInput({
   return (
     <div className="space-y-5">
       {/* Helper copy */}
-      <p className="text-sm text-center text-[rgba(180,200,240,0.55)] max-w-md mx-auto">
+      <p className="text-sm text-center text-[var(--ink-2)] max-w-md mx-auto">
         Vi gjør jobben — fortell oss hva sangen handler om, så finner KI sjanger og skriver tekst.
       </p>
 
@@ -62,13 +62,13 @@ export function SmartInput({
           disabled={isGenerating}
           rows={5}
           className={cn(
-            'w-full rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(8,16,35,0.7)] px-4 py-3',
-            'text-sm text-white placeholder:text-[rgba(130,170,240,0.25)] resize-none',
+            'w-full rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)] px-4 py-3',
+            'text-sm text-[var(--ink)] placeholder:text-[var(--ink-4)] resize-none',
             'focus:outline-none focus:border-[#F26522]/50 transition-colors',
             isGenerating && 'opacity-50'
           )}
         />
-        <span className="absolute bottom-2 right-3 text-xs text-gray-500">
+        <span className="absolute bottom-2 right-3 text-xs text-[var(--ink-4)]">
           {concept.length}/500
         </span>
       </div>
@@ -81,8 +81,8 @@ export function SmartInput({
         className={cn(
           'w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all',
           isConceptValid && !isGenerating
-            ? 'bg-[#F26522] text-white hover:bg-[#E05A1B] shadow-lg shadow-[#F26522]/20'
-            : 'bg-[rgba(40,80,160,0.15)] text-[rgba(180,200,240,0.5)] cursor-not-allowed'
+            ? 'bg-[#F26522] text-[var(--ink)] hover:bg-[#E05A1B] shadow-lg shadow-[#F26522]/20'
+            : 'bg-[var(--surface-2)] text-[var(--ink-2)] cursor-not-allowed'
         )}
       >
         {isGenerating ? (
@@ -98,7 +98,7 @@ export function SmartInput({
         )}
       </button>
 
-      <p className="text-xs text-center text-[rgba(130,170,240,0.45)]">
+      <p className="text-xs text-center text-[var(--ink-3)]">
         KI velger sjanger basert på konseptet — du kan endre alt etterpå
       </p>
     </div>

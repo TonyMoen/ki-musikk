@@ -408,7 +408,7 @@ export function WizardContainer() {
               <button
                 type="button"
                 onClick={resetWizard}
-                className="text-xs text-[rgba(180,200,240,0.4)] hover:text-[rgba(180,200,240,0.7)] transition-colors"
+                className="text-xs text-[var(--ink-4)] hover:text-[var(--ink-2)] transition-colors"
               >
                 Start på nytt
               </button>

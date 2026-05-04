@@ -17,15 +17,15 @@ interface ModeSwitcherProps {
  */
 export function ModeSwitcher({ mode, onChange }: ModeSwitcherProps) {
   return (
-    <div className="flex bg-[rgba(40,80,160,0.15)] rounded-full p-1 w-fit mx-auto">
+    <div className="flex bg-[var(--surface-2)] rounded-full p-1 w-fit mx-auto">
       <button
         type="button"
         onClick={() => onChange('smart')}
         className={cn(
           'flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200',
           mode === 'smart'
-            ? 'bg-[#F26522] text-white shadow-sm shadow-[#F26522]/30'
-            : 'text-[rgba(130,170,240,0.45)] hover:text-white'
+            ? 'bg-[#F26522] text-[var(--ink)] shadow-sm shadow-[#F26522]/30'
+            : 'text-[var(--ink-3)] hover:text-[var(--ink)]'
         )}
       >
         <Sparkles className="h-3.5 w-3.5" />
@@ -37,8 +37,8 @@ export function ModeSwitcher({ mode, onChange }: ModeSwitcherProps) {
         className={cn(
           'flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200',
           mode === 'tilpass'
-            ? 'bg-[#F26522] text-white shadow-sm shadow-[#F26522]/30'
-            : 'text-[rgba(130,170,240,0.45)] hover:text-white'
+            ? 'bg-[#F26522] text-[var(--ink)] shadow-sm shadow-[#F26522]/30'
+            : 'text-[var(--ink-3)] hover:text-[var(--ink)]'
         )}
       >
         <SlidersHorizontal className="h-3.5 w-3.5" />

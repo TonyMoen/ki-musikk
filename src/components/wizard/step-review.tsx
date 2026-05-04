@@ -34,8 +34,8 @@ export function StepReview({
   return (
     <div className="space-y-5">
       {/* Title field */}
-      <div className="rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] p-4 space-y-2">
-        <p className="text-xs font-semibold text-[rgba(130,170,240,0.45)] uppercase tracking-wider">
+      <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)] p-4 space-y-2">
+        <p className="text-xs font-semibold text-[var(--ink-3)] uppercase tracking-wider">
           Tittel
         </p>
         <input
@@ -44,14 +44,14 @@ export function StepReview({
           onChange={(e) => onSongTitleChange(e.target.value)}
           placeholder="Gi sangen din en tittel"
           maxLength={80}
-          className="w-full bg-transparent text-sm text-white placeholder:text-[rgba(180,200,240,0.3)] border-b border-[rgba(90,140,255,0.15)] focus:border-[#F26522]/50 outline-none pb-1 transition-colors"
+          className="w-full bg-transparent text-sm text-[var(--ink)] placeholder:text-[var(--ink-4)] border-b border-[var(--border-soft)] focus:border-[#F26522]/50 outline-none pb-1 transition-colors"
         />
       </div>
 
       {/* Lyrics summary card */}
-      <div className="rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] p-4 space-y-2">
+      <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)] p-4 space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-[rgba(130,170,240,0.45)] uppercase tracking-wider">
+          <p className="text-xs font-semibold text-[var(--ink-3)] uppercase tracking-wider">
             Sangtekst
           </p>
           <button
@@ -63,19 +63,19 @@ export function StepReview({
           </button>
         </div>
         <div className="relative">
-          <pre className="text-sm text-[rgba(180,200,240,0.5)] font-mono whitespace-pre-wrap leading-relaxed">
+          <pre className="text-sm text-[var(--ink-2)] font-mono whitespace-pre-wrap leading-relaxed">
             {previewLines}
           </pre>
           {hasMoreLines && (
-            <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[rgba(20,40,80,0.35)] to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[var(--surface)] to-transparent pointer-events-none" />
           )}
         </div>
       </div>
 
       {/* Style summary card */}
-      <div className="rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] p-4 space-y-2">
+      <div className="rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)] p-4 space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-[rgba(130,170,240,0.45)] uppercase tracking-wider">
+          <p className="text-xs font-semibold text-[var(--ink-3)] uppercase tracking-wider">
             Stil & sjanger
           </p>
           <button
@@ -92,7 +92,7 @@ export function StepReview({
           </span>
         )}
         {styleText && (
-          <p className="text-sm text-[rgba(180,200,240,0.5)]">{styleText}</p>
+          <p className="text-sm text-[var(--ink-2)]">{styleText}</p>
         )}
       </div>
 
@@ -101,7 +101,7 @@ export function StepReview({
         <button
           type="button"
           onClick={onBack}
-          className="px-5 py-2.5 text-sm font-medium text-[rgba(130,170,240,0.45)] hover:text-white transition-colors rounded-xl"
+          className="px-5 py-2.5 text-sm font-medium text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors rounded-xl"
         >
           ← Tilbake
         </button>
@@ -112,8 +112,8 @@ export function StepReview({
           className={cn(
             'relative px-8 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 overflow-hidden',
             isGeneratingSong
-              ? 'bg-[#F26522]/70 text-white cursor-wait'
-              : 'bg-[#F26522] text-white hover:bg-[#E05A1B] shadow-lg shadow-[#F26522]/20'
+              ? 'bg-[#F26522]/70 text-[var(--ink)] cursor-wait'
+              : 'bg-[#F26522] text-[var(--ink)] hover:bg-[#E05A1B] shadow-lg shadow-[#F26522]/20'
           )}
         >
           {/* Shimmer overlay when generating */}

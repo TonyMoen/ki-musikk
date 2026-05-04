@@ -73,7 +73,7 @@ export function StepLyrics({
   return (
     <div className="space-y-5">
       {/* Pill toggle */}
-      <div className="flex bg-[rgba(40,80,160,0.15)] rounded-full p-1 w-fit mx-auto">
+      <div className="flex bg-[var(--surface-2)] rounded-full p-1 w-fit mx-auto">
         <button
           type="button"
           onClick={() => onCustomTextModeChange(false)}
@@ -81,8 +81,8 @@ export function StepLyrics({
           className={cn(
             'px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200',
             !isCustomTextMode
-              ? 'bg-[#F26522] text-white'
-              : 'text-[rgba(130,170,240,0.45)] hover:text-white'
+              ? 'bg-[#F26522] text-[var(--ink)]'
+              : 'text-[var(--ink-3)] hover:text-[var(--ink)]'
           )}
         >
           Skriv med KI
@@ -94,8 +94,8 @@ export function StepLyrics({
           className={cn(
             'px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200',
             isCustomTextMode
-              ? 'bg-[#F26522] text-white'
-              : 'text-[rgba(130,170,240,0.45)] hover:text-white'
+              ? 'bg-[#F26522] text-[var(--ink)]'
+              : 'text-[var(--ink-3)] hover:text-[var(--ink)]'
           )}
         >
           Skriv selv
@@ -117,13 +117,13 @@ export function StepLyrics({
                   disabled={isGenerating}
                   rows={5}
                   className={cn(
-                    'w-full rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(8,16,35,0.7)] px-4 py-3',
-                    'text-sm text-white placeholder:text-[rgba(130,170,240,0.25)] resize-none',
+                    'w-full rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)] px-4 py-3',
+                    'text-sm text-[var(--ink)] placeholder:text-[var(--ink-4)] resize-none',
                     'focus:outline-none focus:border-[#F26522]/50 transition-colors',
                     isGenerating && 'opacity-50'
                   )}
                 />
-                <span className="absolute bottom-2 right-3 text-xs text-gray-500">
+                <span className="absolute bottom-2 right-3 text-xs text-[var(--ink-4)]">
                   {concept.length}/500
                 </span>
               </div>
@@ -136,8 +136,8 @@ export function StepLyrics({
                 className={cn(
                   'w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all',
                   isConceptValid && !isGenerating
-                    ? 'bg-[#F26522] text-white hover:bg-[#E05A1B] shadow-lg shadow-[#F26522]/20'
-                    : 'bg-[rgba(40,80,160,0.15)] text-[rgba(180,200,240,0.5)] cursor-not-allowed'
+                    ? 'bg-[#F26522] text-[var(--ink)] hover:bg-[#E05A1B] shadow-lg shadow-[#F26522]/20'
+                    : 'bg-[var(--surface-2)] text-[var(--ink-2)] cursor-not-allowed'
                 )}
               >
                 {isGenerating ? (
@@ -165,14 +165,14 @@ export function StepLyrics({
                   readOnly={isAnimating}
                   maxLength={2000}
                   className={cn(
-                    'w-full min-h-[280px] rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(8,16,35,0.7)] px-4 py-3',
-                    'text-sm text-white font-mono leading-relaxed resize-none whitespace-pre-wrap',
+                    'w-full min-h-[280px] rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)] px-4 py-3',
+                    'text-sm text-[var(--ink)] font-mono leading-relaxed resize-none whitespace-pre-wrap',
                     'focus:outline-none focus:border-[#F26522]/50 transition-colors',
                     isAnimating && 'cursor-pointer'
                   )}
                 />
                 {!isAnimating && (
-                  <span className="absolute bottom-2 right-3 text-xs text-gray-500">
+                  <span className="absolute bottom-2 right-3 text-xs text-[var(--ink-4)]">
                     {lyrics.length}/2000
                   </span>
                 )}
@@ -183,7 +183,7 @@ export function StepLyrics({
                 <button
                   type="button"
                   onClick={handleResetDescription}
-                  className="flex items-center gap-1.5 text-sm text-[rgba(130,170,240,0.45)] hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 text-sm text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   Ny beskrivelse
@@ -205,12 +205,12 @@ export function StepLyrics({
               maxLength={2000}
               rows={12}
               className={cn(
-                'w-full min-h-[280px] rounded-2xl border border-[rgba(90,140,255,0.1)] bg-[rgba(8,16,35,0.7)] px-4 py-3',
-                'text-sm text-white font-mono leading-relaxed resize-none whitespace-pre-wrap',
+                'w-full min-h-[280px] rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)] px-4 py-3',
+                'text-sm text-[var(--ink)] font-mono leading-relaxed resize-none whitespace-pre-wrap',
                 'focus:outline-none focus:border-[#F26522]/50 transition-colors'
               )}
             />
-            <span className="absolute bottom-2 right-3 text-xs text-gray-500">
+            <span className="absolute bottom-2 right-3 text-xs text-[var(--ink-4)]">
               {lyrics.length}/2000
             </span>
           </div>
