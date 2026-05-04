@@ -1,14 +1,12 @@
 /**
  * BackgroundDecoration
  *
- * Decorative-only background layer for the landing page. Renders:
- *   1. Six large SVG music icons positioned around the viewport edges
- *      so they sit behind the central content column (~640px wide).
- *      Each in a distinct accent color, slight rotation, ~7-9% opacity.
- *      Mobile: 3 of 6 visible, scaled smaller per design spec.
+ * Decorative-only background layer for the landing page. Renders six
+ * large SVG music icons positioned around the viewport edges so they sit
+ * behind the central content column (~640px wide). Each in a distinct
+ * accent color, slight rotation, ~7-9% opacity.
  *
- *   2. Two stacked feTurbulence noise layers for grain texture (fine +
- *      coarse). Encoded inline as data:image/svg+xml URLs.
+ * Mobile: 3 of 6 visible, scaled smaller per design spec.
  *
  * All elements:
  *   - position: fixed (don't scroll with content)
@@ -17,8 +15,7 @@
  *   - Static — no animation or transforms over time
  *
  * Mounted only on the homepage to avoid noise on app routes (/sanger,
- * /innstillinger, etc.). Body bg + grain wouldn't make sense behind a
- * dense list view.
+ * /innstillinger, etc.).
  */
 
 import {
@@ -122,79 +119,44 @@ const ICONS: IconConfig[] = [
   },
 ]
 
-// Inline SVG noise layers (fine grain + coarse grit) as data URIs.
-// feTurbulence params per spec; alpha matrix tightens contrast so the
-// noise reads as texture rather than haze.
-
-const FINE_NOISE_SVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.85 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>`
-const COARSE_NOISE_SVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.35' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>`
-
-const fineNoiseUrl = `url("data:image/svg+xml;utf8,${FINE_NOISE_SVG.replace(/"/g, "'")}")`
-const coarseNoiseUrl = `url("data:image/svg+xml;utf8,${COARSE_NOISE_SVG.replace(/"/g, "'")}")`
-
 export function BackgroundDecoration() {
   return (
-    <>
-      {/* Layer 0: music icons (z-0, behind everything) */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none select-none fixed inset-0 z-0 overflow-hidden"
-      >
-        {ICONS.map(
-          (
-            { Icon, color, position, desktopSize, mobileSize, rotation, opacity, mobileVisible },
-            idx
-          ) => (
-            <div
-              key={idx}
-              className={`absolute ${position} ${mobileVisible ? '' : 'hidden sm:block'}`}
-              style={{
-                transform: `rotate(${rotation}deg)`,
-                opacity,
-              }}
-            >
-              {/* Desktop size */}
+    <div
+      aria-hidden="true"
+      className="pointer-events-none select-none fixed inset-0 z-0 overflow-hidden"
+    >
+      {ICONS.map(
+        (
+          { Icon, color, position, desktopSize, mobileSize, rotation, opacity, mobileVisible },
+          idx
+        ) => (
+          <div
+            key={idx}
+            className={`absolute ${position} ${mobileVisible ? '' : 'hidden sm:block'}`}
+            style={{
+              transform: `rotate(${rotation}deg)`,
+              opacity,
+            }}
+          >
+            {/* Desktop size */}
+            <Icon
+              color={color}
+              className="hidden sm:block"
+              style={{ width: desktopSize, height: desktopSize }}
+              strokeWidth={1.4}
+            />
+            {/* Mobile size (only renders when mobileVisible is true via parent class) */}
+            {mobileVisible && (
               <Icon
                 color={color}
-                className="hidden sm:block"
-                style={{ width: desktopSize, height: desktopSize }}
+                className="sm:hidden"
+                style={{ width: mobileSize, height: mobileSize }}
                 strokeWidth={1.4}
               />
-              {/* Mobile size (only renders when mobileVisible is true via parent class) */}
-              {mobileVisible && (
-                <Icon
-                  color={color}
-                  className="sm:hidden"
-                  style={{ width: mobileSize, height: mobileSize }}
-                  strokeWidth={1.4}
-                />
-              )}
-            </div>
-          )
-        )}
-      </div>
-
-      {/* Layer 1: noise (z-1, above icons, below content) */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none select-none fixed inset-0 z-[1]"
-        style={{
-          backgroundImage: fineNoiseUrl,
-          backgroundRepeat: 'repeat',
-          opacity: 0.55,
-          mixBlendMode: 'overlay',
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none select-none fixed inset-0 z-[1]"
-        style={{
-          backgroundImage: coarseNoiseUrl,
-          backgroundRepeat: 'repeat',
-          opacity: 0.18,
-          mixBlendMode: 'soft-light',
-        }}
-      />
-    </>
+            )}
+          </div>
+        )
+      )}
+    </div>
   )
 }
