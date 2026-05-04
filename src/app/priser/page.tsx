@@ -228,7 +228,7 @@ export default function PricingPage() {
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
                 <Sparkles className="h-6 w-6 text-primary" />
               </div>
-              <p className="font-medium text-white">Nyeste KI-modell</p>
+              <p className="font-medium text-white">Nyeste AI-modell</p>
               <p>Drevet av siste Suno-teknologi</p>
             </div>
             <div className="flex flex-col items-center">

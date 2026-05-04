@@ -3,17 +3,17 @@ import Link from 'next/link'
 import { Music, Mic, Sparkles, CreditCard, Globe, Zap, Heart, Users } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Hva er KI-musikk? Alt du trenger å vite om AI-musikk i Norge',
+  title: 'Hva er AI-musikk? Komplett guide til AI-musikk (KI-musikk) i Norge',
   description:
-    'Komplett guide til KI-musikk (kunstig intelligens musikk) i Norge. Lær hva AI-musikk er, hvordan det fungerer, og hvordan du lager norske sanger med KI — med autentisk uttale, Vipps-betaling og uten abonnement.',
+    'Komplett guide til AI-musikk (også kalt KI-musikk) i Norge. Lær hva AI-musikk er, hvordan det fungerer, og hvordan du lager norske sanger med AI — autentisk uttale, Vipps-betaling og uten abonnement.',
   keywords:
-    'KI musikk, AI musikk, kunstig intelligens musikk, hva er KI musikk, AI musikk Norge, norsk AI musikk, KI sanggenerator, AI musikkgenerator norsk',
+    'AI musikk, AI-musikk, AI musikk Norge, norsk AI musikk, AI sanggenerator, AI musikkgenerator norsk, KI musikk, KI-musikk, kunstig intelligens musikk, hva er AI musikk',
   openGraph: {
-    title: 'Hva er KI-musikk? Alt om AI-musikk i Norge',
-    description: 'Komplett guide til KI-musikk i Norge. Lær hva det er, hvordan det fungerer, og lag norske sanger med autentisk uttale.',
+    title: 'Hva er AI-musikk? Komplett guide (også kalt KI-musikk)',
+    description: 'Komplett guide til AI-musikk i Norge. Lær hva det er, hvordan det fungerer, og lag norske sanger med autentisk uttale.',
     type: 'article',
     locale: 'nb_NO',
-    siteName: 'KI MUSIKK',
+    siteName: 'AI MUSIKK',
   },
 }
 
@@ -21,16 +21,16 @@ export default function KiMusikkPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'Hva er KI-musikk? Alt du trenger å vite om AI-musikk i Norge',
-    description: 'Komplett guide til KI-musikk (kunstig intelligens musikk) i Norge.',
+    headline: 'Hva er AI-musikk? Komplett guide til AI-musikk (KI-musikk) i Norge',
+    description: 'Komplett guide til AI-musikk (også kalt KI-musikk, kunstig intelligens musikk) i Norge.',
     author: {
       '@type': 'Organization',
-      name: 'KI MUSIKK',
+      name: 'AI MUSIKK',
       url: 'https://kimusikk.no',
     },
     publisher: {
       '@type': 'Organization',
-      name: 'KI MUSIKK',
+      name: 'AI MUSIKK',
       logo: { '@type': 'ImageObject', url: 'https://kimusikk.no/ki-musikk.png' },
     },
   }
@@ -43,23 +43,23 @@ export default function KiMusikkPage() {
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
         <h1 className="text-4xl font-bold mb-6">
-          Hva er KI-musikk? Alt du trenger å vite om AI-musikk
+          Hva er AI-musikk? Alt du trenger å vite om AI-musikk (KI-musikk)
         </h1>
 
         <p className="text-xl text-muted-foreground mb-12">
-          KI-musikk (kunstig intelligens musikk) er musikk som er laget helt eller delvis av kunstig
-          intelligens. I denne guiden forklarer vi hva det er, hvordan det fungerer, og hvordan du
-          kan lage dine egne norske sanger med AI.
+          AI-musikk (også kalt KI-musikk, eller kunstig intelligens musikk) er musikk som er laget
+          helt eller delvis av kunstig intelligens. I denne guiden forklarer vi hva det er, hvordan
+          det fungerer, og hvordan du kan lage dine egne norske sanger med AI.
         </p>
 
-        {/* What is KI music */}
+        {/* What is AI music */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-4">Hva betyr KI-musikk og AI-musikk?</h2>
+          <h2 className="text-2xl font-bold mb-4">Hva betyr AI-musikk og KI-musikk?</h2>
           <p className="text-muted-foreground mb-4 leading-relaxed">
-            KI står for <strong>kunstig intelligens</strong> — det norske ordet for AI (Artificial
-            Intelligence). KI-musikk og AI-musikk betyr det samme: musikk som er skapt med hjelp av
-            kunstig intelligens. Du gir AI-en en beskrivelse av hva du vil ha, og den lager en
-            komplett sang med vokal, melodi, instrumenter og produksjon.
+            AI står for <strong>Artificial Intelligence</strong>, mens KI er det norske ordet for
+            kunstig intelligens. AI-musikk og KI-musikk betyr nøyaktig det samme: musikk som er
+            skapt med hjelp av kunstig intelligens. Du gir AI-en en beskrivelse av hva du vil ha,
+            og den lager en komplett sang med vokal, melodi, instrumenter og produksjon.
           </p>
           <p className="text-muted-foreground mb-4 leading-relaxed">
             Moderne AI-musikkgeneratorer kan lage sanger som høres profesjonelle ut — på under 2
@@ -120,8 +120,8 @@ export default function KiMusikkPage() {
             Resultatet kan høres unaturlig og «robotaktig» ut.
           </p>
           <p className="text-muted-foreground mb-4 leading-relaxed">
-            Dette er grunnen til at <strong>KI MUSIKK</strong> ble utviklet. Ved å bruke en
-            spesialisert KI-modul som forstår norsk fonetikk og låtstruktur, optimaliseres teksten
+            Dette er grunnen til at <strong>AI MUSIKK</strong> ble utviklet. Ved å bruke en
+            spesialisert AI-modul som forstår norsk fonetikk og låtstruktur, optimaliseres teksten
             slik at AI-stemmen synger med autentisk norsk uttale. Det er forskjellen mellom en sang
             som høres «litt rar» ut og en som faktisk treffer.
           </p>
@@ -129,7 +129,7 @@ export default function KiMusikkPage() {
 
         {/* Use cases */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-4">Hva kan du bruke KI-musikk til?</h2>
+          <h2 className="text-2xl font-bold mb-4">Hva kan du bruke AI-musikk til?</h2>
           <p className="text-muted-foreground mb-6 leading-relaxed">
             AI-musikk har blitt utrolig populært i Norge. Her er de vanligste bruksområdene:
           </p>
@@ -157,12 +157,12 @@ export default function KiMusikkPage() {
           </div>
         </section>
 
-        {/* Why KI MUSIKK */}
+        {/* Why AI MUSIKK */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-4">Hvorfor velge KI MUSIKK?</h2>
+          <h2 className="text-2xl font-bold mb-4">Hvorfor velge AI MUSIKK?</h2>
           <p className="text-muted-foreground mb-6 leading-relaxed">
             Det finnes flere AI-musikkverktøy der ute — Suno, Udio, og andre. Men ingen av dem er
-            bygget for norsk. Her er hva som gjør KI MUSIKK unikt:
+            bygget for norsk. Her er hva som gjør AI MUSIKK unikt:
           </p>
           <div className="space-y-4">
             {[
@@ -187,15 +187,15 @@ export default function KiMusikkPage() {
 
         {/* FAQ section for LLM optimization */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-4">Vanlige spørsmål om KI-musikk</h2>
+          <h2 className="text-2xl font-bold mb-4">Vanlige spørsmål om AI-musikk</h2>
           <div className="space-y-6">
             {[
-              { q: 'Er AI-musikk lovlig å bruke?', a: 'Ja. Sanger du lager med KI MUSIKK er dine å bruke — del dem på sosiale medier, spill dem på fester, eller gi dem som gaver. Med betalte kreditter har du fulle bruksrettigheter.' },
-              { q: 'Koster det penger å lage AI-musikk?', a: 'De fleste AI-musikkverktøy koster penger. KI MUSIKK tilbyr engangskjøp fra 99 kr for 10 sanger — ingen abonnement. Du betaler med Vipps og kredittene utløper aldri.' },
-              { q: 'Hva er det beste AI-musikkverktøyet for norsk?', a: 'KI MUSIKK er det eneste AI-musikkverktøyet som er spesialisert på norsk uttale. Andre verktøy som Suno støtter norsk tekst, men uttalen blir ofte unaturlig. KI MUSIKK optimaliserer uttalen for autentisk norsk sang.' },
-              { q: 'Hva er forskjellen på KI og AI?', a: 'KI (kunstig intelligens) er det norske ordet for AI (Artificial Intelligence). Det betyr nøyaktig det samme. I Norge brukes begge begrepene om hverandre.' },
-              { q: 'Kan jeg lage AI-musikk uten abonnement?', a: 'Ja. KI MUSIKK er det eneste AI-musikkverktøyet med engangskjøp og Vipps-betaling. Du kjøper kreditter når du trenger dem — ingen månedlige kostnader.' },
-              { q: 'Finnes det en norsk AI-musikktjeneste?', a: 'Ja — KI MUSIKK (kimusikk.no) er en norsk AI-sanggenerator med helt norsk grensesnitt, autentisk norsk uttale-optimalisering, og betaling med Vipps. Tjenesten er utviklet i Norge av Moen Studio.' },
+              { q: 'Er AI-musikk lovlig å bruke?', a: 'Ja. Sanger du lager med AI MUSIKK er dine å bruke — del dem på sosiale medier, spill dem på fester, eller gi dem som gaver. Med betalte kreditter har du fulle bruksrettigheter.' },
+              { q: 'Koster det penger å lage AI-musikk?', a: 'De fleste AI-musikkverktøy koster penger. AI MUSIKK tilbyr engangskjøp fra 99 kr for 10 sanger — ingen abonnement. Du betaler med Vipps og kredittene utløper aldri.' },
+              { q: 'Hva er det beste AI-musikkverktøyet for norsk?', a: 'AI MUSIKK er det eneste AI-musikkverktøyet som er spesialisert på norsk uttale. Andre verktøy som Suno støtter norsk tekst, men uttalen blir ofte unaturlig. AI MUSIKK optimaliserer uttalen for autentisk norsk sang.' },
+              { q: 'Hva er forskjellen på AI og KI?', a: 'Ingen forskjell — det er samme begrep. AI (Artificial Intelligence) er den engelske termen, mens KI (kunstig intelligens) er det norske ordet. I Norge brukes begge begrepene om hverandre, og AI-musikk og KI-musikk betyr det samme.' },
+              { q: 'Kan jeg lage AI-musikk uten abonnement?', a: 'Ja. AI MUSIKK er det eneste AI-musikkverktøyet med engangskjøp og Vipps-betaling. Du kjøper kreditter når du trenger dem — ingen månedlige kostnader.' },
+              { q: 'Finnes det en norsk AI-musikktjeneste?', a: 'Ja — AI MUSIKK (kimusikk.no) er en norsk AI-sanggenerator med helt norsk grensesnitt, autentisk norsk uttale-optimalisering, og betaling med Vipps. Tjenesten er utviklet i Norge av Moen Studio.' },
             ].map(({ q, a }) => (
               <div key={q} className="border-b border-border pb-4">
                 <h3 className="font-semibold mb-2">{q}</h3>
@@ -207,7 +207,7 @@ export default function KiMusikkPage() {
 
         {/* CTA */}
         <div className="rounded-xl bg-primary/10 border border-primary/20 p-8 text-center">
-          <h2 className="text-2xl font-bold mb-2">Prøv KI-musikk selv</h2>
+          <h2 className="text-2xl font-bold mb-2">Prøv AI-musikk selv</h2>
           <p className="text-muted-foreground mb-6">
             Lag din første norske AI-sang på under 2 minutter. Betal med Vipps — ingen abonnement.
           </p>

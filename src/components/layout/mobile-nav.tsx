@@ -78,7 +78,7 @@ export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: Mobile
         <SheetHeader className="px-6 py-4 border-b">
           <SheetTitle className="flex items-center gap-2">
             <AppLogo size={24} />
-            <span>KI MUSIKK</span>
+            <span>AI MUSIKK</span>
           </SheetTitle>
         </SheetHeader>
 

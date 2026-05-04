@@ -18,26 +18,26 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kimusikk.no"),
-  title: "KI MUSIKK - Lag norske sanger med KI",
+  title: "AI MUSIKK - Lag norske sanger med AI",
   description: "Norges beste AI-sanggenerator. Lag personlige norske sanger med autentisk norsk uttale — perfekt til bursdager, bryllup, russefeiring og fester. Betal enkelt med Vipps, ingen abonnement.",
-  keywords: "AI sanggenerator norsk, KI musikk, lag sang med AI, norsk AI musikkgenerator, personlig bursdagssang AI, russelåt AI, kunstig intelligens musikk, suno alternativ norsk, KI sanggenerator, Vipps betaling, ingen abonnement",
-  authors: [{ name: "KI MUSIKK" }],
+  keywords: "AI musikk, AI sanggenerator norsk, AI musikk norsk, lag sang med AI, norsk AI musikkgenerator, personlig bursdagssang AI, russelåt AI, AI sanggenerator, kunstig intelligens musikk, KI musikk, suno alternativ norsk, Vipps betaling, ingen abonnement",
+  authors: [{ name: "AI MUSIKK" }],
   icons: {
     icon: "/ki-musikk.png",
     apple: "/ki-musikk.png",
   },
   openGraph: {
-    title: "KI MUSIKK - Lag norske sanger med KI",
-    description: "Lag personlige norske sanger med KI og autentisk norsk uttale. Betal med Vipps — ingen abonnement.",
-    siteName: "KI MUSIKK",
+    title: "AI MUSIKK - Lag norske sanger med AI",
+    description: "Lag personlige norske sanger med AI og autentisk norsk uttale. Betal med Vipps — ingen abonnement.",
+    siteName: "AI MUSIKK",
     locale: "nb_NO",
     type: "website",
     url: "https://kimusikk.no",
   },
   twitter: {
     card: "summary_large_image",
-    title: "KI MUSIKK - Lag norske sanger med KI",
-    description: "Lag personlige norske sanger med KI og autentisk norsk uttale. Betal med Vipps — ingen abonnement.",
+    title: "AI MUSIKK - Lag norske sanger med AI",
+    description: "Lag personlige norske sanger med AI og autentisk norsk uttale. Betal med Vipps — ingen abonnement.",
   },
 };
 

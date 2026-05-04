@@ -85,7 +85,7 @@ export function StepLyrics({
               : 'text-[var(--ink-3)] hover:text-[var(--ink)]'
           )}
         >
-          Skriv med KI
+          Skriv med AI
         </button>
         <button
           type="button"

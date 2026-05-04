@@ -55,7 +55,7 @@ export function SmartReview({
       <div className="flex flex-col items-center gap-2">
         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface-2)] border border-[var(--border-soft)]">
           <span className="text-xs uppercase tracking-wide text-[var(--ink-3)]">
-            KI valgte
+            AI valgte
           </span>
           <span className="flex items-center gap-1.5 text-sm font-medium text-[var(--ink)]">
             <GenreIcon className="h-3.5 w-3.5 text-[#F26522]" />

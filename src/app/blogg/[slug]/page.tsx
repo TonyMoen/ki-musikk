@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   if (!post) return {}
 
   return {
-    title: `${post.title} - KI MUSIKK`,
+    title: `${post.title} - AI MUSIKK`,
     description: post.description,
     keywords: post.keywords.join(', '),
     openGraph: {
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       type: 'article',
       publishedTime: post.date,
       locale: 'nb_NO',
-      siteName: 'KI MUSIKK',
+      siteName: 'AI MUSIKK',
       url: `${BASE_URL}/blogg/${post.slug}`,
     },
   }
@@ -47,12 +47,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     datePublished: post.date,
     author: {
       '@type': 'Organization',
-      name: 'KI MUSIKK',
+      name: 'AI MUSIKK',
       url: BASE_URL,
     },
     publisher: {
       '@type': 'Organization',
-      name: 'KI MUSIKK',
+      name: 'AI MUSIKK',
       logo: {
         '@type': 'ImageObject',
         url: `${BASE_URL}/ki-musikk.png`,
@@ -123,7 +123,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               Klar for å lage din egen sang?
             </h2>
             <p className="text-muted-foreground mb-6">
-              Prøv KI MUSIKK — lag norske sanger med autentisk uttale på under 2 minutter. Betal med Vipps, ingen abonnement.
+              Prøv AI MUSIKK — lag norske sanger med autentisk uttale på under 2 minutter. Betal med Vipps, ingen abonnement.
             </p>
             <Link
               href="/auth/logg-inn"

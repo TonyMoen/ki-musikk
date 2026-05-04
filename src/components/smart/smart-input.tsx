@@ -49,7 +49,7 @@ export function SmartInput({
     <div className="space-y-5">
       {/* Helper copy */}
       <p className="text-sm text-center text-[var(--ink-2)] max-w-md mx-auto">
-        Vi gjør jobben — fortell oss hva sangen handler om, så finner KI sjanger og skriver tekst.
+        Vi gjør jobben — fortell oss hva sangen handler om, så finner AI sjanger og skriver tekst.
       </p>
 
       {/* Concept textarea */}
@@ -88,7 +88,7 @@ export function SmartInput({
         {isGenerating ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            KI velger sjanger og skriver tekst...
+            AI velger sjanger og skriver tekst...
           </>
         ) : (
           <>
@@ -99,7 +99,7 @@ export function SmartInput({
       </button>
 
       <p className="text-xs text-center text-[var(--ink-3)]">
-        KI velger sjanger basert på konseptet — du kan endre alt etterpå
+        AI velger sjanger basert på konseptet — du kan endre alt etterpå
       </p>
     </div>
   )

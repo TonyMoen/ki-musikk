@@ -10,7 +10,7 @@ export function AppLogo({ className, size = 24 }: AppLogoProps) {
   return (
     <Image
       src="/ki-musikk.png"
-      alt="KI MUSIKK"
+      alt="AI MUSIKK"
       width={size}
       height={size}
       className={cn('inline-block', className)}

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Vilkår og betingelser - KI MUSIKK',
-  description: 'Salgsbetingelser og vilkår for bruk av KI MUSIKK. Les om angrerett, kreditter, opphavsrett og bruksvilkår.',
+  title: 'Vilkår og betingelser - AI MUSIKK',
+  description: 'Salgsbetingelser og vilkår for bruk av AI MUSIKK. Les om angrerett, kreditter, opphavsrett og bruksvilkår.',
 }
 
 export default function VilkaarPage() {
@@ -53,7 +53,7 @@ export default function VilkaarPage() {
             som selger før kjøpet ikke har informert om, skal kjøper ikke bære.
           </p>
           <p className="text-muted-foreground mt-4">
-            KI MUSIKK selger kreditter som brukes til å generere sanger. 10 kreditter = 1 sang. Prisene er:
+            AI MUSIKK selger kreditter som brukes til å generere sanger. 10 kreditter = 1 sang. Prisene er:
           </p>
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground mt-2">
             <li>10 sanger: 99 kr for 100 kreditter</li>
@@ -90,7 +90,7 @@ export default function VilkaarPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">6. Levering</h2>
           <p className="text-muted-foreground">
-            KI MUSIKK er en digital tjeneste. Levering skjer ved at kreditter blir tilgjengelige
+            AI MUSIKK er en digital tjeneste. Levering skjer ved at kreditter blir tilgjengelige
             på kjøperens brukerkonto umiddelbart etter bekreftet betaling. Sanger som genereres
             ved bruk av kreditter leveres digitalt og er tilgjengelige for nedlasting i 30 dager.
           </p>
@@ -241,13 +241,13 @@ export default function VilkaarPage() {
 
           <h3 className="text-xl font-semibold mt-6 mb-3">Opphavsrett og bruksrett</h3>
           <p className="text-muted-foreground mb-2">
-            Innhold generert gjennom KI MUSIKK:
+            Innhold generert gjennom AI MUSIKK:
           </p>
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
             <li>Du får en ikke-eksklusiv, verdensomspennende lisens til å bruke sangene du genererer</li>
             <li>Du kan dele, publisere og bruke sangene til personlige og kommersielle formål</li>
             <li>Du kan ikke hevde eksklusiv opphavsrett til AI-generert innhold</li>
-            <li>KI MUSIKK og våre teknologipartnere beholder visse rettigheter til det genererte innholdet</li>
+            <li>AI MUSIKK og våre teknologipartnere beholder visse rettigheter til det genererte innholdet</li>
           </ul>
 
           <h3 className="text-xl font-semibold mt-6 mb-3">Innholdsbegrensninger</h3>

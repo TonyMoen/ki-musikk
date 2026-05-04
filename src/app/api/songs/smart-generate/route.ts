@@ -193,7 +193,7 @@ export async function POST(
       console.error('Smart-generate: genre picker failed', err)
       // Graceful degradation: use first genre rather than failing the whole request
       pickedGenre = genres[0]
-      pickerReasoning = 'Standardvalg (KI-valg feilet)'
+      pickerReasoning = 'Standardvalg (AI-valg feilet)'
     }
 
     // 5. Lyric generator call (mirrors /api/lyrics/generate logic with picked genre)

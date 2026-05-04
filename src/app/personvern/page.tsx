@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Personvernerklæring - KI MUSIKK',
-  description: 'Les KI MUSIKKs personvernerklæring. Vi forklarer hvordan vi samler inn, bruker og beskytter dine personopplysninger.',
+  title: 'Personvernerklæring - AI MUSIKK',
+  description: 'Les AI MUSIKKs personvernerklæring. Vi forklarer hvordan vi samler inn, bruker og beskytter dine personopplysninger.',
 }
 
 export default function PrivacyPage() {
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">1. Introduksjon</h2>
           <p className="text-muted-foreground">
-            KI MUSIKK tar ditt personvern på alvor. Denne personvernerklæringen
+            AI MUSIKK tar ditt personvern på alvor. Denne personvernerklæringen
             forklarer hvordan vi samler inn, bruker, lagrer og beskytter dine personopplysninger
             når du bruker vår tjeneste.
           </p>
@@ -95,7 +95,7 @@ export default function PrivacyPage() {
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
             <li><strong>Supabase:</strong> Database og autentisering (USA, EU Standard Contractual Clauses)</li>
             <li><strong>Vipps:</strong> Betalingsbehandling og innlogging (Norge)</li>
-            <li><strong>KI-tjenester:</strong> Musikkgenerering (USA)</li>
+            <li><strong>AI-tjenester:</strong> Musikkgenerering (USA)</li>
             <li><strong>Vercel:</strong> Hosting (USA, EU Standard Contractual Clauses)</li>
             <li><strong>OpenAI:</strong> Tekstgenerering og optimalisering (USA)</li>
           </ul>
@@ -166,7 +166,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">11. Barn</h2>
           <p className="text-muted-foreground">
-            KI MUSIKK er ikke rettet mot barn under 13 år. Vi samler ikke bevisst
+            AI MUSIKK er ikke rettet mot barn under 13 år. Vi samler ikke bevisst
             inn personopplysninger fra barn. Hvis du blir oppmerksom på at et barn har
             gitt oss personopplysninger, kontakt oss så vi kan slette informasjonen.
           </p>

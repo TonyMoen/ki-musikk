@@ -327,7 +327,7 @@ export async function POST(request: NextRequest) {
     try {
       // Add watermark to preview lyrics
       const finalLyricsWithWatermark = previewMode
-        ? `${finalLyrics}\n\nCreated with KI MUSIKK`
+        ? `${finalLyrics}\n\nCreated with AI MUSIKK`
         : finalLyrics
 
       // Use user-edited style text if provided, otherwise fall back to DB prompt

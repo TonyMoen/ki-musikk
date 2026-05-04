@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'KI MUSIKK - Lag norske sanger med KI'
+export const alt = 'AI MUSIKK - Lag norske sanger med AI'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -58,7 +58,7 @@ export default async function OgImage() {
               letterSpacing: '-1px',
             }}
           >
-            KI MUSIKK
+            AI MUSIKK
           </div>
         </div>
 
@@ -71,7 +71,7 @@ export default async function OgImage() {
             marginBottom: '32px',
           }}
         >
-          Lag norske sanger med KI
+          Lag norske sanger med AI
         </div>
 
         {/* Orange accent line */}

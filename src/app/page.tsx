@@ -48,7 +48,7 @@ export default function Home() {
     <main className="relative z-10 flex min-h-screen flex-col items-center">
       <BackgroundDecoration />
       <h1 className="text-2xl sm:text-3xl font-bold text-[var(--ink)] text-center pt-8 pb-2 px-4">
-        Lag norske sanger med KI
+        Lag norske sanger med AI
       </h1>
       <div className="w-full max-w-[640px] mx-auto pt-12 px-5">
         <div className="space-y-8">
@@ -70,7 +70,7 @@ export default function Home() {
                 <div className="w-10 h-10 rounded-full bg-[#F26522]/10 flex items-center justify-center mx-auto">
                   <Music className="h-5 w-5 text-[#F26522]" />
                 </div>
-                <p className="text-sm font-medium text-[var(--ink)]">Nyeste KI-teknologi</p>
+                <p className="text-sm font-medium text-[var(--ink)]">Nyeste AI-teknologi</p>
                 <p className="text-xs text-[var(--ink-3)]">
                   Drevet av den nyeste Suno-modellen for profesjonell musikkproduksjon
                 </p>

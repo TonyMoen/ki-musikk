@@ -4,11 +4,11 @@ import { blogPosts } from '@/lib/blog-data'
 import { CalendarDays, ArrowRight } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Blogg - KI MUSIKK',
+  title: 'Blogg - AI MUSIKK',
   description:
     'Tips, guider og nyheter om AI-musikk på norsk. Lær hvordan du lager personlige sanger med kunstig intelligens — bursdagssanger, russelåter og mer.',
   keywords:
-    'AI musikk blogg, KI musikk guide, lage sang med AI, norsk AI sanggenerator, kunstig intelligens musikk',
+    'AI musikk blogg, AI musikk guide, KI musikk guide, lage sang med AI, norsk AI sanggenerator, kunstig intelligens musikk',
 }
 
 export default function BlogPage() {

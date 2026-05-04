@@ -77,7 +77,7 @@ export function Header() {
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <AppLogo size={32} />
             <span className="text-xl font-bold text-foreground hidden sm:inline">
-              KI MUSIKK
+              AI MUSIKK
             </span>
           </Link>
 

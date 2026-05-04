@@ -22,6 +22,7 @@ export const blogPosts: BlogPost[] = [
     date: '2026-03-25',
     keywords: [
       'bursdagssang AI',
+      'AI bursdagssang',
       'lag bursdagssang',
       'personlig bursdagssang',
       'AI sang bursdag',
@@ -30,7 +31,7 @@ export const blogPosts: BlogPost[] = [
     content: [
       {
         paragraphs: [
-          'Leter du etter en helt unik bursdagsgave? Med KI MUSIKK kan du lage en personlig bursdagssang med kunstig intelligens — ferdig på under 2 minutter. Sangen synges med autentisk norsk uttale, noe som gjør den ekstra morsom og treffende.',
+          'Leter du etter en helt unik bursdagsgave? Med AI MUSIKK kan du lage en personlig bursdagssang med kunstig intelligens — ferdig på under 2 minutter. Sangen synges med autentisk norsk uttale, noe som gjør den ekstra morsom og treffende.',
           'Enten det er til mamma, bestekompisen, kollegaen eller barnet ditt — en personlig sang er en gave som garantert skaper latter og gode minner.',
         ],
       },
@@ -49,12 +50,12 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
-        heading: 'Slik lager du bursdagssang med KI MUSIKK',
+        heading: 'Slik lager du bursdagssang med AI MUSIKK',
         paragraphs: [
           'Det er superenkelt å komme i gang. Du trenger ingen musikkkunnskaper eller teknisk erfaring.',
         ],
         list: [
-          'Gå til KI MUSIKK og lag en konto (tar 30 sekunder)',
+          'Gå til AI MUSIKK og lag en konto (tar 30 sekunder)',
           'Velg sjangeren du vil ha — pop for noe catchy, vise for noe rørende, rap for noe morsomt',
           'Beskriv hvem sangen er til og hva den skal handle om. For eksempel: «En morsom bursdagssang til Ola som fyller 40, elsker fotball og er redd for edderkopper»',
           'Trykk generer og vent i ca. 1-2 minutter',
@@ -76,16 +77,16 @@ export const blogPosts: BlogPost[] = [
       {
         heading: 'Perfekt til alle typer bursdager',
         paragraphs: [
-          'KI MUSIKK fungerer like bra for barnebursdager som for 50-årsfesten. Du kan lage alt fra søte barnesanger til humoristiske roast-sanger for voksne. Mange bruker det også til milepælsårene — 18, 30, 40, 50 og 60-årsdager.',
-          'Og det beste? Du betaler kun for sangene du lager — ingen abonnement eller månedlige kostnader. Betal enkelt med Vipps, og sangen er din. KI MUSIKK er det eneste norske AI-musikkverktøyet med Vipps-betaling og engangskjøp.',
-          'Klar for å lage en bursdagssang som ingen glemmer? Prøv KI MUSIKK i dag — det er raskt, morsomt og garantert et samtaleemne på festen.',
+          'AI MUSIKK fungerer like bra for barnebursdager som for 50-årsfesten. Du kan lage alt fra søte barnesanger til humoristiske roast-sanger for voksne. Mange bruker det også til milepælsårene — 18, 30, 40, 50 og 60-årsdager.',
+          'Og det beste? Du betaler kun for sangene du lager — ingen abonnement eller månedlige kostnader. Betal enkelt med Vipps, og sangen er din. AI MUSIKK er det eneste norske AI-musikkverktøyet med Vipps-betaling og engangskjøp.',
+          'Klar for å lage en bursdagssang som ingen glemmer? Prøv AI MUSIKK i dag — det er raskt, morsomt og garantert et samtaleemne på festen.',
         ],
       },
     ],
   },
   {
     slug: 'ai-russelat-gratis-alternativ',
-    title: 'AI russelåt — lag din egen russemusikk med KI (billig og raskt)',
+    title: 'AI russelåt — lag din egen russemusikk med AI (billig og raskt)',
     description:
       'Spar tusenvis av kroner på russelåten. Lag profesjonell russemusikk med AI på norsk — ferdig på minutter, ikke uker. Det rimelige alternativet til dyre artister.',
     date: '2026-03-25',
@@ -100,7 +101,7 @@ export const blogPosts: BlogPost[] = [
     content: [
       {
         paragraphs: [
-          'Russelåter kan koste alt fra 10 000 til over 100 000 kroner når du bestiller fra artister. Men visste du at du kan lage en kul russelåt med kunstig intelligens — for en brøkdel av prisen? Med KI MUSIKK får du en profesjonell sang med ekte norsk uttale, ferdig på minutter.',
+          'Russelåter kan koste alt fra 10 000 til over 100 000 kroner når du bestiller fra artister. Men visste du at du kan lage en kul russelåt med kunstig intelligens — for en brøkdel av prisen? Med AI MUSIKK får du en profesjonell sang med ekte norsk uttale, ferdig på minutter.',
           'NRK har allerede skrevet om trenden: russ over hele landet bruker AI for å lage russemusikk som faktisk låter bra, uten å tømme russekassen.',
         ],
       },
@@ -113,13 +114,13 @@ export const blogPosts: BlogPost[] = [
           'Spar 90-99% sammenlignet med å bestille fra artister',
           'Ferdig på 2 minutter — ikke 2 måneder',
           'Lag så mange versjoner du vil til du er fornøyd',
-          'Perfekt norsk uttale med KI MUSIKK',
+          'Perfekt norsk uttale med AI MUSIKK',
           'Betal med Vipps — engangskjøp, ingen abonnement å huske på',
           'Velg sjanger: EDM, rap, pop eller hva som passer russebussen',
         ],
       },
       {
-        heading: 'Slik lager du russelåt med KI MUSIKK',
+        heading: 'Slik lager du russelåt med AI MUSIKK',
         paragraphs: [
           'Prosessen er enkel og krever null musikkerfaring:',
         ],
@@ -134,23 +135,23 @@ export const blogPosts: BlogPost[] = [
       {
         heading: 'Kan AI-russelåter måle seg med «ekte» russelåter?',
         paragraphs: [
-          'AI-generert musikk har blitt overraskende bra de siste årene. Kvaliteten er absolutt god nok for russefester og sosiale medier. Den største fordelen med KI MUSIKK er at sangen synges med norsk uttale — noe de fleste internasjonale AI-verktøy sliter med.',
+          'AI-generert musikk har blitt overraskende bra de siste årene. Kvaliteten er absolutt god nok for russefester og sosiale medier. Den største fordelen med AI MUSIKK er at sangen synges med norsk uttale — noe de fleste internasjonale AI-verktøy sliter med.',
           'Dessuten: det handler om å ha det gøy. En russelåt som hele bussen har laget sammen med AI er minst like kul som en dyr bestillingsjobb. Og med Vipps-betaling slipper dere kredittkort — bare spleis via Vipps og dere er i gang.',
         ],
       },
       {
         heading: 'Kom i gang med russelåten',
         paragraphs: [
-          'Russefeiringen er kort — ikke bruk uker på å vente på en sang. Med KI MUSIKK kan hele bussen ha sin egen russelåt i dag. Prøv det ut og se hvor enkelt det er.',
+          'Russefeiringen er kort — ikke bruk uker på å vente på en sang. Med AI MUSIKK kan hele bussen ha sin egen russelåt i dag. Prøv det ut og se hvor enkelt det er.',
         ],
       },
     ],
   },
   {
     slug: 'suno-alternativ-norsk',
-    title: 'Beste Suno-alternativ for norsk musikk — KI MUSIKK',
+    title: 'Beste Suno-alternativ for norsk musikk — AI MUSIKK',
     description:
-      'Leter du etter et norsk alternativ til Suno AI? KI MUSIKK er bygget for norsk uttale og gir bedre resultater på norske sanger. Sammenlign selv.',
+      'Leter du etter et norsk alternativ til Suno AI? AI MUSIKK er bygget for norsk uttale og gir bedre resultater på norske sanger. Sammenlign selv.',
     date: '2026-03-25',
     keywords: [
       'suno alternativ',
@@ -163,26 +164,26 @@ export const blogPosts: BlogPost[] = [
       {
         paragraphs: [
           'Suno AI er verdens mest populære AI-musikkgenerator med over 2 millioner betalende brukere. Men hvis du vil lage sanger på norsk, er Suno kanskje ikke det beste valget. Uttalen av norske ord kan bli unaturlig — spesielt r-lyder, sammensatte ord og norsk intonasjon.',
-          'KI MUSIKK er bygget fra grunnen av for norsk. Vi optimaliserer teksten slik at AI-stemmen synger med autentisk norsk uttale. Det er forskjellen mellom en sang som høres «litt rar» ut og en som faktisk treffer.',
+          'AI MUSIKK er bygget fra grunnen av for norsk. Vi optimaliserer teksten slik at AI-stemmen synger med autentisk norsk uttale. Det er forskjellen mellom en sang som høres «litt rar» ut og en som faktisk treffer.',
         ],
       },
       {
-        heading: 'KI MUSIKK vs. Suno — hva er forskjellen?',
+        heading: 'AI MUSIKK vs. Suno — hva er forskjellen?',
         paragraphs: [
           'Begge bruker AI til å generere musikk, men tilnærmingen er forskjellig:',
         ],
         list: [
-          'Norsk uttale: KI MUSIKK optimaliserer for autentisk norsk, Suno bruker generisk uttale som ofte bommer på r-lyder og sammensatte ord',
-          'Ingen abonnement: KI MUSIKK er engangskjøp fra 99 kr — Suno krever månedlig abonnement fra 88 kr/mnd',
-          'Vipps-betaling: KI MUSIKK er det eneste AI-musikkverktøyet med Vipps — Suno krever kredittkort',
-          'Norsk grensesnitt: Hele KI MUSIKK er på norsk, Suno er på engelsk',
-          'Fokus: KI MUSIKK er spesialisert på norske sanger, Suno er en generell plattform for alle språk',
+          'Norsk uttale: AI MUSIKK optimaliserer for autentisk norsk, Suno bruker generisk uttale som ofte bommer på r-lyder og sammensatte ord',
+          'Ingen abonnement: AI MUSIKK er engangskjøp fra 99 kr — Suno krever månedlig abonnement fra 88 kr/mnd',
+          'Vipps-betaling: AI MUSIKK er det eneste AI-musikkverktøyet med Vipps — Suno krever kredittkort',
+          'Norsk grensesnitt: Hele AI MUSIKK er på norsk, Suno er på engelsk',
+          'Fokus: AI MUSIKK er spesialisert på norske sanger, Suno er en generell plattform for alle språk',
         ],
       },
       {
-        heading: 'Når bør du velge KI MUSIKK over Suno?',
+        heading: 'Når bør du velge AI MUSIKK over Suno?',
         paragraphs: [
-          'Hvis du primært vil lage sanger på norsk — til bursdager, bryllup, russefeiring, firmafester eller bare for moro skyld — er KI MUSIKK det bedre valget. Uttalen gjør en enorm forskjell i opplevelsen.',
+          'Hvis du primært vil lage sanger på norsk — til bursdager, bryllup, russefeiring, firmafester eller bare for moro skyld — er AI MUSIKK det bedre valget. Uttalen gjør en enorm forskjell i opplevelsen.',
         ],
         list: [
           'Du vil ha sanger med naturlig norsk uttale',
@@ -196,7 +197,7 @@ export const blogPosts: BlogPost[] = [
         heading: 'Når kan Suno fortsatt være et godt valg?',
         paragraphs: [
           'Suno er en god plattform for engelskspråklige sanger og har et større utvalg av stemmer og sjangere. Hvis du primært lager musikk på engelsk, er Suno et solid alternativ.',
-          'Men for norske sanger? Da er KI MUSIKK skreddersydd for deg. Prøv begge og hør forskjellen selv.',
+          'Men for norske sanger? Da er AI MUSIKK skreddersydd for deg. Prøv begge og hør forskjellen selv.',
         ],
       },
     ],
@@ -235,7 +236,7 @@ export const blogPosts: BlogPost[] = [
           'Her er hvordan du kommer i gang med AI-musikk:',
         ],
         list: [
-          'Velg et AI-musikkverktøy — for norske sanger anbefaler vi KI MUSIKK som er optimalisert for norsk uttale, med Vipps-betaling og ingen abonnement',
+          'Velg et AI-musikkverktøy — for norske sanger anbefaler vi AI MUSIKK som er optimalisert for norsk uttale, med Vipps-betaling og ingen abonnement',
           'Velg sjanger — pop, rock, vise, rap, EDM, country eller noe helt annet',
           'Skriv en god beskrivelse (prompt) — jo mer detaljer, jo bedre resultat',
           'Generer sangen — dette tar vanligvis 1-2 minutter',
@@ -252,7 +253,7 @@ export const blogPosts: BlogPost[] = [
           'Nevn sjanger og tempo: «rolig akustisk vise» vs. «rask EDM-låt»',
           'Inkluder detaljer om temaet: hvem sangen er til, hva den handler om, spesielle hendelser',
           'Eksperimenter med forskjellige sjangere — samme tekst kan låte helt forskjellig som pop vs. country',
-          'For norske sanger: bruk KI MUSIKK som optimaliserer for norsk uttale',
+          'For norske sanger: bruk AI MUSIKK som optimaliserer for norsk uttale',
         ],
       },
       {
@@ -271,7 +272,7 @@ export const blogPosts: BlogPost[] = [
       {
         heading: 'Kom i gang med AI-musikk i dag',
         paragraphs: [
-          'Du trenger ikke å vente eller lese mer — prøv det selv. Med KI MUSIKK kan du lage din første norske AI-sang på under 2 minutter. Betal enkelt med Vipps, ingen abonnement — bare betal for sangene du lager. Det er den beste måten å forstå hvor morsomt og enkelt det er.',
+          'Du trenger ikke å vente eller lese mer — prøv det selv. Med AI MUSIKK kan du lage din første norske AI-sang på under 2 minutter. Betal enkelt med Vipps, ingen abonnement — bare betal for sangene du lager. Det er den beste måten å forstå hvor morsomt og enkelt det er.',
         ],
       },
     ],

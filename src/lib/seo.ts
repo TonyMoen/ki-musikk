@@ -1,5 +1,5 @@
 /**
- * Shared SEO constants and JSON-LD helpers for KI MUSIKK
+ * Shared SEO constants and JSON-LD helpers for AI MUSIKK
  * Used by sitemap.ts, robots.ts, layout metadata, and page-level JSON-LD
  */
 
@@ -7,7 +7,7 @@ import type { FAQCategory } from '@/lib/faq-data'
 import type { CreditPackage } from '@/lib/constants'
 
 export const BASE_URL = 'https://kimusikk.no'
-export const SITE_NAME = 'KI MUSIKK'
+export const SITE_NAME = 'AI MUSIKK'
 export const DEFAULT_OG_IMAGE = '/opengraph-image'
 
 export function getOrganizationJsonLd() {
@@ -45,8 +45,8 @@ export function getProductJsonLd(packages: CreditPackage[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: 'KI MUSIKK - Kredittpakker',
-    description: 'Lag norske sanger med KI',
+    name: 'AI MUSIKK - Kredittpakker',
+    description: 'Lag norske sanger med AI',
     offers: packages.map(pkg => ({
       '@type': 'Offer',
       name: pkg.name,
@@ -62,7 +62,7 @@ export function getSoftwareApplicationJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'KI MUSIKK',
+    name: 'AI MUSIKK',
     description: 'Norges eneste AI-sanggenerator med autentisk norsk uttale, Vipps-betaling og engangskjøp uten abonnement.',
     url: BASE_URL,
     applicationCategory: 'MultimediaApplication',

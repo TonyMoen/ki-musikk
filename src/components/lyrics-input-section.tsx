@@ -76,7 +76,7 @@ export function LyricsInputSection({
               "data-[state=active]:bg-surface data-[state=active]:text-text-primary data-[state=active]:shadow-sm"
             )}
           >
-            Skriv med KI
+            Skriv med AI
           </TabsTrigger>
           <TabsTrigger
             value="own"
@@ -104,7 +104,7 @@ export function LyricsInputSection({
                     </span>
                     <span className="pointer-events-auto">
                       <InfoTooltip
-                        content="KI lager både melodi og tekst basert på din beskrivelse. Jo mer detaljer, jo bedre resultat!"
+                        content="AI lager både melodi og tekst basert på din beskrivelse. Jo mer detaljer, jo bedre resultat!"
                         side="right"
                       />
                     </span>
@@ -141,7 +141,7 @@ export function LyricsInputSection({
                     ) : (
                       <>
                         <Sparkles className="h-3 w-3" />
-                        Lag tekst med KI
+                        Lag tekst med AI
                       </>
                     )}
                   </button>

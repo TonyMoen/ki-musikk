@@ -13,7 +13,7 @@ function convertToSong(row: Record<string, unknown>): Song {
 }
 
 export const metadata = {
-  title: 'Mine sanger - KI MUSIKK',
+  title: 'Mine sanger - AI MUSIKK',
   description: 'Se alle dine genererte norske sanger'
 }
 

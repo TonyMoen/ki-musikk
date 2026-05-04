@@ -3,8 +3,8 @@ import { Mail, MessageCircle, Clock, Building2 } from 'lucide-react'
 import { getLocalBusinessJsonLd } from '@/lib/seo'
 
 export const metadata: Metadata = {
-  title: 'Kontakt oss - KI MUSIKK',
-  description: 'Ta kontakt med KI MUSIKK for spørsmål eller hjelp. Send e-post til hei@kimusikk.no. Vi svarer vanligvis innen 24 timer.',
+  title: 'Kontakt oss - AI MUSIKK',
+  description: 'Ta kontakt med AI MUSIKK for spørsmål eller hjelp. Send e-post til hei@kimusikk.no. Vi svarer vanligvis innen 24 timer.',
 }
 
 export default function ContactPage() {

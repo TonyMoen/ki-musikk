@@ -3,18 +3,18 @@ import { Sparkles, Heart, Globe } from 'lucide-react'
 import { AppLogo } from '@/components/app-logo'
 
 export const metadata: Metadata = {
-  title: 'Om oss - KI MUSIKK',
-  description: 'KI MUSIKK er Norges første AI-drevne plattform for personlige sanger med autentisk norsk uttale. Les om vår visjon og teknologi.',
+  title: 'Om oss - AI MUSIKK',
+  description: 'AI MUSIKK er Norges første AI-drevne plattform for personlige sanger med autentisk norsk uttale. Les om vår visjon og teknologi.',
 }
 
 export default function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
-      <h1 className="text-4xl font-bold mb-6">Om KI MUSIKK</h1>
+      <h1 className="text-4xl font-bold mb-6">Om AI MUSIKK</h1>
 
       <div className="prose prose-lg max-w-none">
         <p className="text-xl text-muted-foreground mb-8">
-          KI MUSIKK er Norges første AI-drevne plattform for å lage personlige sanger
+          AI MUSIKK er Norges første AI-drevne plattform for å lage personlige sanger
           med autentisk norsk uttale. Vi gjør det enkelt for alle å skape unike musikkopplevelser.
         </p>
 
@@ -58,7 +58,7 @@ export default function AboutPage() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Laget med kjærlighet</h3>
               <p className="text-muted-foreground">
-                KI MUSIKK er utviklet av norske musikk- og teknologientusiaster som
+                AI MUSIKK er utviklet av norske musikk- og teknologientusiaster som
                 ønsker å gjøre musikkskaping tilgjengelig for alle.
               </p>
             </div>

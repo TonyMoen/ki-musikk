@@ -13,10 +13,10 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <AppLogo size={24} />
-              <span className="text-lg font-bold">KI MUSIKK</span>
+              <span className="text-lg font-bold">AI MUSIKK</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Lag norske sanger med KI - autentisk norsk uttale!
+              Lag norske sanger med AI - autentisk norsk uttale!
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <svg className="h-4 w-4 text-[#1DB954]" viewBox="0 0 24 24" fill="currentColor">
@@ -78,7 +78,7 @@ export function Footer() {
         <div className="mt-10 pt-6 border-t border-border">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground">
-              © {currentYear} KI MUSIKK. Alle rettigheter reservert.
+              © {currentYear} AI MUSIKK. Alle rettigheter reservert.
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="#FF5B24">

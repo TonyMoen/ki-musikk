@@ -102,17 +102,17 @@ function LoginContent() {
           <span>Lagd av <strong className="text-white">Grøftefyll</strong></span>
         </div>
         <p className="text-xs text-[rgba(130,170,240,0.45)] mt-1">
-          Norsk KI-artist med over 3 millioner streams på Spotify
+          Norsk AI-artist med over 3 millioner streams på Spotify
         </p>
       </div>
 
       {/* Tagline */}
       <div className="text-center mb-8 relative z-10">
         <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-          Velkommen til KI MUSIKK
+          Velkommen til AI MUSIKK
         </h1>
         <p className="text-[rgba(180,200,240,0.5)]">
-          Lag norske sanger med KI – helt gratis å prøve
+          Lag norske sanger med AI – helt gratis å prøve
         </p>
       </div>
 
