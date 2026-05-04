@@ -111,15 +111,14 @@
   body {
     @apply bg-background text-foreground;
   }
-  /* Ambient violet glow at opposite corners — kept very subtle so it
-     adds atmosphere without pulling the neutral dark bg toward blue. */
+  /* Top-to-bottom gradient: deep navy blue fading to near-black.
+     No violet — uses the existing surface navy (#1a2152) as the blue
+     end so it ties to the rest of the palette. */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background:
-      radial-gradient(ellipse at 0% 0%, rgba(124,58,237,0.07) 0%, transparent 50%),
-      radial-gradient(ellipse at 100% 100%, rgba(124,58,237,0.05) 0%, transparent 50%);
+    background: linear-gradient(180deg, #1a2152 0%, #0a0a0c 100%);
     pointer-events: none;
     z-index: 0;
   }
