@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { BASE_URL } from '@/lib/seo'
 import { blogPosts } from '@/lib/blog-data'
+import { niches } from '@/lib/niches'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
@@ -10,11 +11,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }))
 
+  const nicheEntries: MetadataRoute.Sitemap = niches.map((niche) => ({
+    url: `${BASE_URL}/ai-${niche.slug}`,
+    changeFrequency: 'weekly',
+    priority: 0.8,
+  }))
+
   return [
     { url: BASE_URL, changeFrequency: 'weekly', priority: 1.0 },
     { url: `${BASE_URL}/priser`, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE_URL}/blogg`, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${BASE_URL}/ki-musikk`, changeFrequency: 'monthly', priority: 0.9 },
+    ...nicheEntries,
     { url: `${BASE_URL}/om-oss`, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${BASE_URL}/hjelp`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/kontakt`, changeFrequency: 'monthly', priority: 0.5 },

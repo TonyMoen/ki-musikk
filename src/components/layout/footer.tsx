@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { AppLogo } from '@/components/app-logo'
+import { niches } from '@/lib/niches'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -7,8 +8,8 @@ export function Footer() {
   return (
     <footer className="border-t bg-muted/30 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        {/* 3-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+        {/* 4-Column Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {/* Column 1: Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -26,7 +27,23 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Column 2: Navigation */}
+          {/* Column 2: Lag sang til */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wider">Lag sang til</h3>
+            <nav className="flex flex-col gap-2" aria-label="AI-musikk-sjangre">
+              {niches.map((niche) => (
+                <Link
+                  key={niche.slug}
+                  href={`/ai-${niche.slug}`}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {niche.brand}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Column 3: Navigation */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider">Navigasjon</h3>
             <nav className="flex flex-col gap-2" aria-label="Bunntekst navigasjon">
@@ -35,6 +52,9 @@ export function Footer() {
               </Link>
               <Link href="/om-oss" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Om oss
+              </Link>
+              <Link href="/ki-musikk" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Hva er AI-musikk?
               </Link>
               <Link href="/hjelp" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Hjelp & FAQ
@@ -51,7 +71,7 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Column 3: Legal & Company Info */}
+          {/* Column 4: Legal & Company Info */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider">Juridisk</h3>
             <nav className="flex flex-col gap-2">
