@@ -146,8 +146,8 @@ export async function generateSong(
   }
 
   // Validate lyrics length (Suno limits: 3000-5000 depending on model)
-  if (lyrics.length < 10) {
-    throw new SunoApiError('Lyrics must be at least 10 characters', 400)
+  if (lyrics.length < 1) {
+    throw new SunoApiError('Lyrics cannot be empty', 400)
   }
 
   if (lyrics.length > 5000) {

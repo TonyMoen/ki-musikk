@@ -36,12 +36,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
       )
     }
 
-    if (concept.length < 10) {
+    if (concept.length < 1) {
       return NextResponse.json(
         {
           error: {
-            code: 'CONCEPT_TOO_SHORT',
-            message: 'Konseptet må være minst 10 tegn'
+            code: 'CONCEPT_EMPTY',
+            message: 'Konsept kan ikke være tomt'
           }
         },
         { status: 400 }

@@ -201,11 +201,11 @@ export function WizardContainer() {
   // ------- Step 1 handlers -------
 
   const handleGenerateLyrics = async () => {
-    if (concept.length < 10) {
+    if (concept.length < 1) {
       toast({
         variant: 'destructive',
-        title: 'Konsept for kort',
-        description: 'Konseptet må være minst 10 tegn',
+        title: 'Konsept mangler',
+        description: 'Skriv noe for å lage en sang',
       })
       return
     }

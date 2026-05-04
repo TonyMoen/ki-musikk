@@ -11,7 +11,7 @@ interface ConceptInputProps {
   className?: string
 }
 
-const MIN_CHARS = 10
+const MIN_CHARS = 1
 const MAX_CHARS = 500
 
 export function ConceptInput({

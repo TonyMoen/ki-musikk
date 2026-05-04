@@ -37,7 +37,7 @@ export function LyricsInputSection({
   onCustomTextModeChange
 }: LyricsInputSectionProps) {
   const hasGeneratedLyrics = lyrics.trim().length > 0
-  const isConceptValid = concept.length >= 10 && concept.length <= 500
+  const isConceptValid = concept.length >= 1 && concept.length <= 500
   const canGenerate = selectedGenre && isConceptValid && !isGenerating && !isOptimizing
 
   // Show generated lyrics in AI mode after generation

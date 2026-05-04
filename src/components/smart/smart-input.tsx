@@ -43,7 +43,7 @@ export function SmartInput({
   const [placeholder] = useState(
     () => PLACEHOLDER_CONCEPTS[Math.floor(Math.random() * PLACEHOLDER_CONCEPTS.length)]
   )
-  const isConceptValid = concept.length >= 10 && concept.length <= 500
+  const isConceptValid = concept.length >= 1 && concept.length <= 500
 
   return (
     <div className="space-y-5">

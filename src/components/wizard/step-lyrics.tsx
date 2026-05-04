@@ -40,7 +40,7 @@ export function StepLyrics({
   })
 
   const hasLyrics = lyrics.trim().length > 0
-  const isConceptValid = concept.length >= 10 && concept.length <= 500
+  const isConceptValid = concept.length >= 1 && concept.length <= 500
   const showGeneratedLyrics = !isCustomTextMode && hasLyrics
 
   // Only trigger typewriter when user explicitly clicks generate
