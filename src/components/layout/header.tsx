@@ -110,12 +110,6 @@ export function Header() {
             >
               Priser
             </Link>
-            <Link
-              href="/blogg"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Blogg
-            </Link>
           </nav>
 
           {/* User Area */}
