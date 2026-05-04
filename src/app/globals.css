@@ -108,20 +108,15 @@
     overflow-y: scroll;
     scrollbar-gutter: stable;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   /* Top-to-bottom gradient: deep navy blue fading to near-black.
-     z-index: -1 keeps it behind every layout sibling (Header, Footer,
-     children) regardless of their explicit z-index. No violet — uses
-     the existing surface navy (#1a2152) as the blue end. */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(180deg, #1a2152 0%, #0a0a0c 100%);
-    pointer-events: none;
-    z-index: -1;
+     Applied directly to body (no pseudo-element) so it isn't hidden
+     behind the body bg color. background-attachment: fixed keeps the
+     gradient steady during scroll. */
+  body {
+    @apply text-foreground;
+    background: linear-gradient(180deg, #2d3878 0%, #0a0a0c 70%);
+    background-attachment: fixed;
+    background-color: #0a0a0c;
   }
   /* Prevent body shift when dialogs add overflow:hidden */
   body[style*="overflow: hidden"] {
