@@ -20,7 +20,7 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
     priceNOK: 99,
     priceOre: 9900,
     credits: 100,
-    description: '10 sanger',
+    description: '20 sanger',
   },
   {
     id: 'pro',
@@ -28,21 +28,21 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
     priceNOK: 199,
     priceOre: 19900,
     credits: 250,
-    description: '25 sanger',
+    description: '50 sanger',
     badge: 'MEST POPULÆR',
   },
   {
     id: 'premium',
-    name: 'Headliner',
-    priceNOK: 499,
-    priceOre: 49900,
-    credits: 1000,
+    name: 'Studio',
+    priceNOK: 349,
+    priceOre: 34900,
+    credits: 500,
     description: '100 sanger',
   },
 ]
 
 export const CREDIT_COSTS = {
-  SONG_GENERATION: 10, // 10 credits per song
+  SONG_GENERATION: 10, // 10 credits per generation — yields 2 song variants
   FREE_PREVIEW: 0, // 30-second previews are free
 } as const
 
@@ -54,7 +54,7 @@ export type CreditCostType = keyof typeof CREDIT_COSTS
  */
 export const TOOLTIPS = {
   pronunciation: 'Forbedrer automatisk norsk uttale for Suno AI',
-  credits: '10 kreditter = 1 sang. Kjøp kreditter under Innstillinger.',
+  credits: '10 kreditter = 1 generering, og du får 2 versjoner av sangen. Kjøp kreditter under Innstillinger.',
   freePreview: '30-sekunders forhåndsvisning for å høre sangen din før kjøp',
   download: 'Last ned hele sangen som MP3 (tilgjengelig i 14 dager)',
 } as const

@@ -16,8 +16,9 @@ const PENDING_SONG_KEY = 'kimusikk_pending_song'
 
 const MODE_DESCRIPTIONS: Record<WizardMode, string> = {
   smart:
-    'Vi gjør jobben — fortell oss hva sangen handler om, så finner AI sjanger og skriver tekst.',
-  tilpass: 'Velg sjanger, stemning og lengde — du har full kontroll.',
+    'Vi gjør jobben — fortell oss hva sangen handler om, så finner AI sjanger og skriver tekst. Du får 2 versjoner per generering.',
+  tilpass:
+    'Velg sjanger, stemning og lengde — du har full kontroll. Hver generering gir 2 versjoner.',
 }
 
 export default function Home() {
@@ -63,7 +64,7 @@ export default function Home() {
           sanger med AI
         </h1>
         <p className="text-sm sm:text-base text-[var(--ink-2)]">
-          Skriv teksten, velg stil — ferdig på minutter.
+          Skriv teksten, velg stil — to ferdige versjoner på minutter.
         </p>
       </section>
 

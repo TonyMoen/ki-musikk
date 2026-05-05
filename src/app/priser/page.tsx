@@ -65,9 +65,10 @@ export default function PricingPage() {
     }
   }
 
-  // Calculate per-song price
+  // Calculate per-song price. Each generation costs 10 credits and yields
+  // 2 song variants — so total songs = (credits / 10) * 2.
   const getPerSongPrice = (pkg: CreditPackage) => {
-    const songs = pkg.credits / 10
+    const songs = (pkg.credits / 10) * 2
     return (pkg.priceNOK / songs).toFixed(2).replace('.', ',')
   }
 
@@ -83,6 +84,9 @@ export default function PricingPage() {
           </h1>
           <p className="text-lg text-[rgba(180,200,240,0.5)]">
             Engangskjøp, ingen abonnement
+          </p>
+          <p className="mt-2 text-sm text-[#F26522] font-medium">
+            Hver generering gir 2 versjoner — du beholder begge.
           </p>
         </div>
 
