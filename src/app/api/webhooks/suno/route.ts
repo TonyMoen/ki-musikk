@@ -14,6 +14,7 @@ import { headers } from 'next/headers'
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 import { logInfo, logError } from '@/lib/utils/logger'
+import { captureSecondVariantIfPresent } from '@/lib/suno/variant'
 
 export const dynamic = 'force-dynamic'
 
@@ -524,6 +525,11 @@ export async function POST(request: Request) {
       imageUrl: imageUrl?.substring(0, 50), // Log first 50 chars for debugging
     })
 
+    // Suno returns 2 variants per generation. Kick off variant #2's capture
+    // (insert clone row + download + upload) in parallel with the primary
+    // row update so the webhook stays close to its <10s target.
+    const variantCapture = captureSecondVariantIfPresent(supabase, song.id, sunoData)
+
     const { error: updateError } = await supabase
       .from('song')
       .update({
@@ -558,6 +564,16 @@ export async function POST(request: Request) {
         { status: 500 }
       )
     }
+
+    // Variant capture is best-effort — primary already succeeded. Surface
+    // failures in logs but don't fail the webhook (Suno would retry, and the
+    // primary row's idempotency check would short-circuit on retry).
+    await variantCapture.catch((err) => {
+      logError('Variant #2 capture failed (non-fatal)', err as Error, {
+        primarySongId: song.id,
+        taskId,
+      })
+    })
 
     const totalTime = Date.now() - startTime
 

@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { logError, logInfo } from '@/lib/utils/logger'
+import { captureSecondVariantIfPresent } from '@/lib/suno/variant'
 
 export const dynamic = 'force-dynamic'
 
@@ -445,6 +446,18 @@ export async function GET(
                 }
                 break
               }
+
+              // Suno returns 2 variants per generation. Capture variant #2 here
+              // when the polling fallback is the path that finalizes the song.
+              // Best-effort — primary already succeeded, variant failure is logged.
+              await captureSecondVariantIfPresent(
+                adminClient,
+                songId,
+                sunoStatus.data.response?.sunoData
+              ).catch((err) => {
+                logError('Variant #2 capture failed in polling fallback (non-fatal)',
+                  err as Error, { primarySongId: songId })
+              })
 
               // Generate signed URL for the response
               let responseAudioUrl2: string = storagePath
