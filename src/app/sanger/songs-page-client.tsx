@@ -205,7 +205,7 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
           {/* Track list */}
           {sortedSongs.length > 0 ? (
             <div className="rounded-xl border border-[rgba(90,140,255,0.08)] bg-[rgba(20,40,80,0.15)] overflow-hidden">
-              <TrackListHeader />
+              <TrackListHeader showMoreMenu />
               <div className="divide-y divide-[rgba(90,140,255,0.05)]">
                 {sortedSongs.map((song, index) => (
                   <TrackRow
@@ -218,6 +218,7 @@ export function SongsPageClient({ initialSongs, userId }: SongsPageClientProps) 
                     onPause={togglePlayPause}
                     onDownload={() => handleDownload(song)}
                     onDelete={() => setDeletingSong(song)}
+                    showMoreMenu
                   />
                 ))}
               </div>

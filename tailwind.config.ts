@@ -129,13 +129,25 @@ const config: Config = {
   				'100%': {
   					transform: 'translateX(100%)'
   				}
+  			},
+  			shake: {
+  				'0%,100%': { transform: 'translateX(0)' },
+  				'20%,60%': { transform: 'translateX(-6px)' },
+  				'40%,80%': { transform: 'translateX(6px)' }
+  			},
+  			'pulse-ring': {
+  				'0%': { transform: 'scale(0.6)', opacity: '0.85' },
+  				'80%': { opacity: '0' },
+  				'100%': { transform: 'scale(3)', opacity: '0' }
   			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
   			'fade-up': 'fade-up 0.4s ease-out',
-  			shimmer: 'shimmer 1.5s infinite'
+  			shimmer: 'shimmer 1.5s infinite',
+  			shake: 'shake 0.4s ease-in-out',
+  			'pulse-ring': 'pulse-ring 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite'
   		}
   	}
   },

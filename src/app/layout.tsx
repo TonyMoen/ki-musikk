@@ -60,7 +60,7 @@ export default function RootLayout({
         <TooltipProvider delayDuration={400}>
           <AudioPlayerProvider>
             <Header />
-            <main className="flex-1 pt-16">
+            <main className="flex-1 pt-16 md:pt-20">
               {children}
             </main>
             <Footer />

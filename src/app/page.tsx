@@ -14,6 +14,12 @@ import Link from 'next/link'
 
 const PENDING_SONG_KEY = 'kimusikk_pending_song'
 
+const MODE_DESCRIPTIONS: Record<WizardMode, string> = {
+  smart:
+    'Vi gjør jobben — fortell oss hva sangen handler om, så finner AI sjanger og skriver tekst.',
+  tilpass: 'Velg sjanger, stemning og lengde — du har full kontroll.',
+}
+
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [mode, setMode] = useState<WizardMode>('smart')
@@ -47,13 +53,30 @@ export default function Home() {
   return (
     <main className="relative z-10 flex min-h-screen flex-col items-center pb-16 sm:pb-24">
       <BackgroundDecoration />
-      <h1 className="text-2xl sm:text-3xl font-bold text-[var(--ink)] text-center pt-8 pb-2 px-4">
-        Lag norske sanger med AI
-      </h1>
-      <div className="w-full max-w-[640px] mx-auto pt-12 px-5">
-        <div className="space-y-8">
-          <WizardHeader />
+
+      {/* Hero — trust badge + headline + subtitle */}
+      <section className="w-full max-w-[720px] mx-auto px-5 pt-10 sm:pt-14 text-center space-y-4">
+        <WizardHeader />
+        <h1 className="font-serif text-4xl sm:text-5xl font-bold leading-[1.1] tracking-tight text-[var(--ink)]">
+          Lag <em className="font-serif italic text-[#F26522]">norske</em>
+          <br className="hidden sm:block" />{' '}
+          sanger med AI
+        </h1>
+        <p className="text-sm sm:text-base text-[var(--ink-2)]">
+          Skriv teksten, velg stil — ferdig på minutter.
+        </p>
+      </section>
+
+      {/* Creation card */}
+      <div className="w-full max-w-[720px] mx-auto px-5 pt-10">
+        <div className="studio-card p-7 sm:p-10 space-y-7">
           <ModeSwitcher mode={mode} onChange={setMode} />
+          <p
+            className="text-sm sm:text-base text-center text-[var(--ink-2)] max-w-md mx-auto"
+            aria-live="polite"
+          >
+            {MODE_DESCRIPTIONS[mode]}
+          </p>
           {modeReady && mode === 'smart' && (
             <SmartMode onHandoffToTilpass={() => setMode('tilpass')} />
           )}
@@ -106,10 +129,13 @@ export default function Home() {
       )}
 
       {/* My Songs Section */}
-      <div className="w-full max-w-[640px] mx-auto px-5 mt-12 pt-8 border-t border-[var(--border-soft)]">
-        <h2 className="text-2xl font-semibold mb-6 text-center">
-          Mine sanger
-        </h2>
+      <section className="w-full max-w-[720px] mx-auto px-5 mt-16 sm:mt-20">
+        <div className="space-y-3 mb-6">
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-[var(--ink)]">
+            Mine <em className="font-serif italic text-[#F26522]">sanger</em>
+          </h2>
+          <div className="h-px bg-[var(--border-soft)]" />
+        </div>
         {isLoggedIn ? (
           <HomepageSongs />
         ) : (
@@ -132,7 +158,7 @@ export default function Home() {
             </Link>
           </div>
         )}
-      </div>
+      </section>
     </main>
   )
 }

@@ -16,12 +16,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   Menu,
   Home,
-  CreditCard,
   Settings,
   LogOut,
   LogIn,
   Sparkles,
-  BookOpen,
 } from 'lucide-react'
 import { AppLogo } from '@/components/app-logo'
 
@@ -60,7 +58,6 @@ export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: Mobile
   // Items that don't require auth
   const publicItems = [
     { href: '/priser', icon: Sparkles, label: 'Priser' },
-    { href: '/blogg', icon: BookOpen, label: 'Blogg' },
   ]
 
   // Settings only for logged in users

@@ -15,7 +15,6 @@ import { Settings, CreditCard, LogOut, ChevronDown } from 'lucide-react'
 
 interface UserMenuProps {
   user: User
-  credits: number
   onSignOut: () => void
 }
 
@@ -30,17 +29,18 @@ function getInitials(user: User): string {
   return name.substring(0, 2).toUpperCase()
 }
 
-export function UserMenu({ user, credits, onSignOut }: UserMenuProps) {
+export function UserMenu({ user, onSignOut }: UserMenuProps) {
   const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2 px-2 hover:bg-transparent">
-          <span className="text-sm font-semibold text-primary">
-            {credits} kreditter
-          </span>
-          <Avatar className="h-8 w-8">
+        <Button
+          variant="ghost"
+          className="flex items-center gap-1 px-1 hover:bg-transparent"
+          aria-label="Brukermeny"
+        >
+          <Avatar className="h-9 w-9">
             <AvatarImage src={avatarUrl} alt={user.user_metadata?.full_name || 'Bruker'} />
             <AvatarFallback className="bg-secondary text-secondary-foreground text-xs">
               {getInitials(user)}

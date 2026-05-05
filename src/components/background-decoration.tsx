@@ -54,13 +54,13 @@ interface IconConfig {
   mobileVisible: boolean
 }
 
-// Six icons positioned around the edges, avoiding the central 640-880px column.
-// Hard-coded values for SSR/CSR consistency (no Math.random).
+// Six icons framing the central content column, sitting just outside the
+// 720px card on desktop. Hard-coded for SSR/CSR consistency (no Math.random).
 const ICONS: IconConfig[] = [
   {
     Icon: Music,
     color: ACCENT.orange,
-    position: 'top-[5%] left-[2%]',
+    position: 'top-[5%] left-[7%]',
     desktopSize: 220,
     mobileSize: 110,
     rotation: -8,
@@ -70,7 +70,7 @@ const ICONS: IconConfig[] = [
   {
     Icon: Music2,
     color: ACCENT.violet,
-    position: 'top-[8%] right-[3%]',
+    position: 'top-[7%] right-[7%]',
     desktopSize: 200,
     mobileSize: 100,
     rotation: 6,
@@ -80,7 +80,7 @@ const ICONS: IconConfig[] = [
   {
     Icon: Disc3,
     color: ACCENT.cyan,
-    position: 'top-[42%] left-[-4%]',
+    position: 'top-[42%] left-[5%]',
     desktopSize: 240,
     mobileSize: 110,
     rotation: -15,
@@ -90,7 +90,7 @@ const ICONS: IconConfig[] = [
   {
     Icon: Mic,
     color: ACCENT.magenta,
-    position: 'top-[48%] right-[-3%]',
+    position: 'top-[48%] right-[5%]',
     desktopSize: 180,
     mobileSize: 90,
     rotation: 4,
@@ -100,7 +100,7 @@ const ICONS: IconConfig[] = [
   {
     Icon: Headphones,
     color: ACCENT.peach,
-    position: 'bottom-[8%] left-[5%]',
+    position: 'bottom-[10%] left-[9%]',
     desktopSize: 190,
     mobileSize: 100,
     rotation: -12,
@@ -110,7 +110,7 @@ const ICONS: IconConfig[] = [
   {
     Icon: AudioLines,
     color: ACCENT.orange,
-    position: 'bottom-[12%] right-[4%]',
+    position: 'bottom-[10%] right-[7%]',
     desktopSize: 210,
     mobileSize: 100,
     rotation: 8,

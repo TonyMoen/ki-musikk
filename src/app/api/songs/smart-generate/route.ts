@@ -59,12 +59,36 @@ const VALID_OCCASIONS: ReadonlyArray<Occasion> = [
   'annet',
 ]
 
+/**
+ * Smart-modus quick-pick chips that map directly to a DB `genre.name`.
+ * When the user picks one of these, the picker LLM is bypassed and the
+ * matching genre is used as-is — same prompt template Tilpass step 2/3
+ * applies, so the audio output is consistent across both flows.
+ *
+ * 'Bursdag' is intentionally NOT mapped: it's an occasion, not a genre,
+ * and the picker is allowed to choose the most fitting genre for it.
+ */
+const QUICK_PICK_GENRE_NAME: Record<string, string> = {
+  Russ: 'russelaat',
+  Festmusikk: 'festlaat',
+  Country: 'country',
+  Rock: 'rock',
+}
+
+const VALID_QUICK_PICKS: ReadonlyArray<string> = [
+  'Bursdag',
+  'Russ',
+  'Festmusikk',
+  'Country',
+  'Rock',
+]
+
 export async function POST(
   request: NextRequest
 ): Promise<NextResponse<SmartGenerateResponse>> {
   try {
     const body = (await request.json()) as Partial<SmartGenerateRequest>
-    const { concept, occasion } = body
+    const { concept, occasion, quickPick } = body
 
     // 1. Validate concept
     if (!concept || typeof concept !== 'string') {
@@ -108,6 +132,16 @@ export async function POST(
         )
       }
       validOccasion = occasion as Occasion
+    }
+
+    // Validate quickPick if provided. Unknown values are dropped silently —
+    // we don't want a stale frontend to break generation; the picker will
+    // just run as fallback.
+    let validQuickPick: string | undefined
+    if (quickPick !== undefined) {
+      if (typeof quickPick === 'string' && VALID_QUICK_PICKS.includes(quickPick)) {
+        validQuickPick = quickPick
+      }
     }
 
     // 2. Rate limit (shared bucket with manual lyrics endpoint)
@@ -155,45 +189,59 @@ export async function POST(
 
     const genres = genreRows as PickerGenreOption[]
 
-    // 4. Genre picker call
+    // 4. Genre selection — quick-pick shortcut OR picker LLM call.
+    // If the user clicked a chip that maps to a concrete DB genre, skip the
+    // picker entirely and use that row's prompt template directly. Mirrors
+    // Tilpass step 2/3, where selecting a genre auto-fills the same template.
     let pickedGenre: PickerGenreOption
     let pickerReasoning: string
-    try {
-      const pickerCompletion = await getOpenAI().chat.completions.create({
-        model: 'gpt-4o-mini',
-        temperature: 0.3,
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: SMART_GENRE_PICKER_PROMPT },
-          {
-            role: 'user',
-            content: buildGenrePickerMessage(concept, validOccasion, genres),
-          },
-        ],
-        max_tokens: 200,
-      })
 
-      const rawPickerOutput = pickerCompletion.choices[0]?.message?.content || '{}'
-      const parsed = JSON.parse(rawPickerOutput)
-      const validated = validatePickerResult(parsed, genres)
+    const directGenreName = validQuickPick ? QUICK_PICK_GENRE_NAME[validQuickPick] : undefined
+    const directMatch = directGenreName
+      ? genres.find((g) => g.name.toLowerCase() === directGenreName.toLowerCase())
+      : undefined
 
-      if (!validated) {
-        // Picker hallucinated or returned invalid output — fall back to first genre
-        // (sort_order 1, typically the most "default" genre).
-        console.warn('Smart-generate: picker returned invalid genre, falling back', {
-          rawPickerOutput,
+    if (directMatch) {
+      pickedGenre = directMatch
+      pickerReasoning = `Valgt av bruker via hurtigvalg: ${validQuickPick}`
+    } else {
+      try {
+        const pickerCompletion = await getOpenAI().chat.completions.create({
+          model: 'gpt-4o-mini',
+          temperature: 0.3,
+          response_format: { type: 'json_object' },
+          messages: [
+            { role: 'system', content: SMART_GENRE_PICKER_PROMPT },
+            {
+              role: 'user',
+              content: buildGenrePickerMessage(concept, validOccasion, genres),
+            },
+          ],
+          max_tokens: 200,
         })
+
+        const rawPickerOutput = pickerCompletion.choices[0]?.message?.content || '{}'
+        const parsed = JSON.parse(rawPickerOutput)
+        const validated = validatePickerResult(parsed, genres)
+
+        if (!validated) {
+          // Picker hallucinated or returned invalid output — fall back to first genre
+          // (sort_order 1, typically the most "default" genre).
+          console.warn('Smart-generate: picker returned invalid genre, falling back', {
+            rawPickerOutput,
+          })
+          pickedGenre = genres[0]
+          pickerReasoning = 'Standardvalg basert på konseptet'
+        } else {
+          pickedGenre = validated.genre
+          pickerReasoning = validated.reasoning
+        }
+      } catch (err) {
+        console.error('Smart-generate: genre picker failed', err)
+        // Graceful degradation: use first genre rather than failing the whole request
         pickedGenre = genres[0]
-        pickerReasoning = 'Standardvalg basert på konseptet'
-      } else {
-        pickedGenre = validated.genre
-        pickerReasoning = validated.reasoning
+        pickerReasoning = 'Standardvalg (AI-valg feilet)'
       }
-    } catch (err) {
-      console.error('Smart-generate: genre picker failed', err)
-      // Graceful degradation: use first genre rather than failing the whole request
-      pickedGenre = genres[0]
-      pickerReasoning = 'Standardvalg (AI-valg feilet)'
     }
 
     // 5. Lyric generator call (mirrors /api/lyrics/generate logic with picked genre)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/hooks/use-toast'
@@ -12,10 +12,27 @@ import {
 import { useCreditsStore } from '@/stores/credits-store'
 import { SmartInput } from './smart-input'
 import { SmartReview } from './smart-review'
+import type { QuickPick } from './hurtigvalg-chips'
 import type {
   SmartGenerateData,
+  SmartGenerateRequest,
   SmartGenerateResponse,
+  Occasion,
 } from '@/types/smart'
+
+/**
+ * Frontend-only mapping from quickPick chip → existing API params.
+ * Bursdag/Russ map to the backend's `occasion` field; the genre-style chips
+ * (Festmusikk/Country/Rock) ride along as a quickPick payload field that the
+ * backend currently ignores — captured for future genre-bias support.
+ */
+const QUICK_PICK_OCCASION: Partial<Record<QuickPick, Occasion>> = {
+  Bursdag: 'bursdag',
+  Russ: 'russ',
+}
+
+const STAGE_VELGER = 'Velger sjanger…'
+const STAGE_SKRIVER = 'Skriver tekst…'
 
 const PENDING_SONG_KEY = 'kimusikk_pending_song'
 
@@ -41,6 +58,9 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
 
   // Input stage state
   const [concept, setConcept] = useState('')
+  const [quickPick, setQuickPick] = useState<QuickPick | null>(null)
+  const [generationStage, setGenerationStage] = useState<string | null>(null)
+  const stageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Review stage state (populated by /api/songs/smart-generate)
   const [lyrics, setLyrics] = useState('')
@@ -62,13 +82,45 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
   const { showError } = useErrorToast()
   const { addGeneratingSong, canAddMoreSongs } = useGeneratingSongStore()
 
+  // ---------- Stage cycler (UX progress) ----------
+
+  // Cycles "Velger sjanger…" → "Skriver tekst…" while smart-generate runs.
+  // Backend doesn't stream — fallback timer is the spec's prescribed mechanism.
+  const startStageTimer = () => {
+    setGenerationStage(STAGE_VELGER)
+    stageTimerRef.current = setTimeout(() => {
+      setGenerationStage(STAGE_SKRIVER)
+    }, 4000)
+  }
+
+  const stopStageTimer = () => {
+    if (stageTimerRef.current) {
+      clearTimeout(stageTimerRef.current)
+      stageTimerRef.current = null
+    }
+    setGenerationStage(null)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (stageTimerRef.current) clearTimeout(stageTimerRef.current)
+    }
+  }, [])
+
   // ---------- API: smart-generate ----------
 
   const callSmartGenerate = async (): Promise<SmartGenerateData | null> => {
+    const payload: SmartGenerateRequest = {
+      concept,
+      ...(quickPick ? { quickPick } : {}),
+      ...(quickPick && QUICK_PICK_OCCASION[quickPick]
+        ? { occasion: QUICK_PICK_OCCASION[quickPick] }
+        : {}),
+    }
     const response = await fetch('/api/songs/smart-generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ concept }),
+      body: JSON.stringify(payload),
     })
     const json = (await response.json()) as SmartGenerateResponse
     if (!response.ok || !json.data) {
@@ -79,6 +131,7 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
 
   const handleSubmitInput = async () => {
     setIsGenerating(true)
+    startStageTimer()
     try {
       const data = await callSmartGenerate()
       if (!data) return
@@ -94,12 +147,14 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
     } catch (err) {
       showError(err, { context: 'smart-generate' })
     } finally {
+      stopStageTimer()
       setIsGenerating(false)
     }
   }
 
   const handleRegenerate = async () => {
     setIsRegenerating(true)
+    startStageTimer()
     try {
       const data = await callSmartGenerate()
       if (!data) return
@@ -114,6 +169,7 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
     } catch (err) {
       showError(err, { context: 'smart-regenerate' })
     } finally {
+      stopStageTimer()
       setIsRegenerating(false)
     }
   }
@@ -253,6 +309,7 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
     setTitle('')
     setGenreData(null)
     setConcept('')
+    setQuickPick(null)
   }
 
   // ---------- Render ----------
@@ -262,8 +319,11 @@ export function SmartMode({ onHandoffToTilpass }: SmartModeProps) {
       <SmartInput
         concept={concept}
         onConceptChange={setConcept}
+        quickPick={quickPick}
+        onQuickPickChange={setQuickPick}
         onSubmit={handleSubmitInput}
         isGenerating={isGenerating}
+        generationStage={generationStage}
       />
     )
   }

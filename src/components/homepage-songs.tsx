@@ -4,8 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { TrackListHeader } from '@/components/track-list/track-list-header'
 import { TrackRow } from '@/components/track-list/track-row'
 import { Button } from '@/components/ui/button'
-import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
-import { AppLogo } from '@/components/app-logo'
+import { Loader2, ChevronLeft, ChevronRight, ArrowUp, Music } from 'lucide-react'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { useToast } from '@/hooks/use-toast'
 import { useAudioPlayer } from '@/contexts/audio-player-context'
@@ -221,16 +220,22 @@ export function HomepageSongs() {
     )
   }
 
-  // Empty state (wait for store hydration to avoid flash)
+  // Empty state (wait for store hydration to avoid flash) — upward cue points
+  // back to the studio card above, turning the empty library into a soft prompt.
   if (!isLoading && _hasHydrated && songs.length === 0 && currentPage === 0 && generatingSongs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-          <AppLogo size={32} />
+      <div className="flex flex-col items-center justify-center py-14 px-4 text-center">
+        <div className="relative mb-5">
+          <div className="w-16 h-16 rounded-full bg-[#F26522]/10 flex items-center justify-center">
+            <Music className="h-7 w-7 text-[#F26522]" />
+          </div>
+          <ArrowUp
+            className="absolute -top-3 left-1/2 -translate-x-1/2 h-5 w-5 text-[#F26522] animate-bounce"
+            aria-hidden="true"
+          />
         </div>
-        <h3 className="text-lg font-semibold mb-2">Ingen sanger ennå</h3>
-        <p className="text-[rgba(180,200,240,0.5)] text-sm">
-          Lag din første sang ovenfor, så vises den her!
+        <p className="text-base text-[var(--ink-2)] max-w-[340px]">
+          Du har ikke laget noen sanger ennå — start din første over.
         </p>
       </div>
     )
@@ -262,11 +267,11 @@ export function HomepageSongs() {
         </div>
       )}
 
-      {/* Track list */}
+      {/* Track list — header alone defines the start; no heavy container */}
       {songs.length > 0 && (
-        <div className="rounded-xl border border-[rgba(90,140,255,0.08)] bg-[rgba(20,40,80,0.15)] overflow-hidden">
+        <div>
           <TrackListHeader />
-          <div className="divide-y divide-[rgba(90,140,255,0.05)]">
+          <div className="divide-y divide-[var(--border-soft)]/40">
             {songs.map((song, index) => (
               <TrackRow
                 key={song.id}

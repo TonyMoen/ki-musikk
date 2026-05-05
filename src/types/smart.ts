@@ -35,6 +35,12 @@ export const OCCASION_LABELS: Record<Occasion, string> = {
 export interface SmartGenerateRequest {
   concept: string
   occasion?: Occasion
+  /**
+   * UI-level quick-pick chip selection. Bursdag/Russ map to `occasion` on the
+   * client; the genre-style chips (Festmusikk/Country/Rock) flow through here
+   * for future genre-bias support — backend currently ignores the field.
+   */
+  quickPick?: 'Bursdag' | 'Russ' | 'Festmusikk' | 'Country' | 'Rock'
 }
 
 export interface SmartGenerateData {
