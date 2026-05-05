@@ -113,7 +113,7 @@ export function StepStyle({
             value={styleText}
             onChange={(e) => onStyleTextChange(e.target.value)}
             placeholder="Beskriv stilen du ønsker, f.eks: pop, akustisk gitar, rolig, norsk vokal..."
-            maxLength={1000}
+            maxLength={500}
             rows={3}
             className={cn(
               'w-full rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)] px-4 py-3',
@@ -122,11 +122,11 @@ export function StepStyle({
             )}
           />
           <span className="absolute bottom-2 right-3 text-xs text-[var(--ink-4)]">
-            {styleText.length}/1000
+            {styleText.length}/500
           </span>
         </div>
         <p className="text-xs text-[var(--ink-2)]">
-          Tips: Beskriv instrumenter, tempo, stemning og stil
+          Tips: Beskriv instrumenter, tempo, stemning og stil. Velg en sjanger over <em>eller</em> skriv en helt egen stil.
         </p>
       </div>
 
@@ -147,7 +147,7 @@ export function StepStyle({
         onBack={onBack}
         onNext={onNext}
         nextLabel="Neste: Se oppsummering →"
-        nextDisabled={!selectedGenre}
+        nextDisabled={!selectedGenre && !styleText.trim()}
       />
     </div>
   )

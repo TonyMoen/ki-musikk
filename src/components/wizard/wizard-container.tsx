@@ -292,11 +292,20 @@ export function WizardContainer() {
       return
     }
 
-    if (!selectedGenre) {
+    // Synthesize a custom-inline genre when the user supplied only a free-form
+    // style prompt (no chip selected). The backend's "genre starts with custom-"
+    // branch then uses customGenrePrompt as the Suno template directly.
+    const effectiveGenre = selectedGenre ?? (
+      styleText.trim()
+        ? { id: 'custom-inline', name: 'Egendefinert' }
+        : null
+    )
+
+    if (!effectiveGenre) {
       toast({
         variant: 'destructive',
         title: 'Ingen sjanger valgt',
-        description: 'Vennligst velg en sjanger før du genererer sang',
+        description: 'Velg en sjanger eller skriv en egen stil før du genererer sang',
       })
       return
     }
@@ -332,16 +341,22 @@ export function WizardContainer() {
     const baseLyrics = isCustomTextMode ? lyrics : originalLyrics || lyrics
 
     try {
-      const customPrompt = isCustomGenre(selectedGenre.id)
-        ? getGenreSunoPrompt(selectedGenre.id)
-        : null
+      // Resolve the customGenrePrompt: stored prompt for saved custom genres,
+      // OR the inline styleText for a synthesized custom-inline genre,
+      // OR null for a known DB genre.
+      const isInlineCustom = effectiveGenre.id === 'custom-inline'
+      const customPrompt = isInlineCustom
+        ? styleText.trim()
+        : isCustomGenre(effectiveGenre.id)
+          ? getGenreSunoPrompt(effectiveGenre.id)
+          : null
 
       const response = await fetch('/api/songs/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: finalTitle,
-          genre: isCustomGenre(selectedGenre.id) ? selectedGenre.id : selectedGenre.name,
+          genre: isCustomGenre(effectiveGenre.id) ? effectiveGenre.id : effectiveGenre.name,
           concept: songConcept,
           lyrics: baseLyrics,
           optimizedLyrics: null,
@@ -361,7 +376,7 @@ export function WizardContainer() {
       addGeneratingSong({
         id: data.data.songId,
         title: finalTitle,
-        genre: selectedGenre.name,
+        genre: effectiveGenre.name,
         startedAt: new Date(),
       })
 
