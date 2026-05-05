@@ -20,7 +20,7 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
     priceNOK: 99,
     priceOre: 9900,
     credits: 100,
-    description: '20 sanger',
+    description: '10 sanger',
   },
   {
     id: 'pro',
@@ -28,16 +28,16 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
     priceNOK: 199,
     priceOre: 19900,
     credits: 250,
-    description: '50 sanger',
+    description: '25 sanger',
     badge: 'MEST POPULÆR',
   },
   {
     id: 'premium',
     name: 'Studio',
-    priceNOK: 349,
-    priceOre: 34900,
+    priceNOK: 299,
+    priceOre: 29900,
     credits: 500,
-    description: '100 sanger',
+    description: '50 sanger',
   },
 ]
 

@@ -65,13 +65,6 @@ export default function PricingPage() {
     }
   }
 
-  // Calculate per-song price. Each generation costs 10 credits and yields
-  // 2 song variants — so total songs = (credits / 10) * 2.
-  const getPerSongPrice = (pkg: CreditPackage) => {
-    const songs = (pkg.credits / 10) * 2
-    return (pkg.priceNOK / songs).toFixed(2).replace('.', ',')
-  }
-
   const isBestValue = (pkg: CreditPackage) => pkg.id === 'premium'
 
   return (
@@ -112,9 +105,11 @@ export default function PricingPage() {
                 onClick={() => setSelectedPlan(pkg.id)}
                 className={`
                   relative rounded-2xl transition-all duration-200 cursor-pointer
+                  bg-[var(--card)]/85 backdrop-blur-sm
+                  shadow-[0_16px_40px_-12px_rgba(0,0,0,0.55),0_4px_12px_-6px_rgba(0,0,0,0.4)]
                   ${isSelected
-                    ? 'md:scale-105 md:z-10 border-2 border-[#FF5B24] bg-[rgba(20,40,80,0.35)] shadow-[0_0_30px_rgba(242,101,34,0.12)]'
-                    : 'border border-[rgba(90,140,255,0.1)] bg-[rgba(20,40,80,0.35)] hover:border-[rgba(90,140,255,0.2)]'
+                    ? 'md:scale-105 md:z-10 border-2 border-[#FF5B24] shadow-[0_0_40px_rgba(242,101,34,0.18),0_16px_40px_-12px_rgba(0,0,0,0.55)]'
+                    : 'border border-[var(--border-soft)] hover:border-[var(--border-strong)] hover:bg-[var(--card)]/95'
                   }
                 `}
               >
@@ -130,15 +125,15 @@ export default function PricingPage() {
                   </Badge>
                 )}
 
-                <div className="p-6 pt-8 text-center">
+                <div className="p-7 pt-9 text-center">
                   {/* Plan name */}
                   <h3 className="text-lg font-semibold text-white mb-4">
                     {pkg.name}
                   </h3>
 
                   {/* Price */}
-                  <div className="mb-1">
-                    <span className="text-4xl font-bold text-white">
+                  <div className="mb-6">
+                    <span className="text-5xl font-bold text-white">
                       {pkg.priceNOK}
                     </span>
                     <span className="text-lg text-[rgba(180,200,240,0.5)] ml-1">
@@ -146,18 +141,16 @@ export default function PricingPage() {
                     </span>
                   </div>
 
-                  {/* Per-song price */}
-                  <p className="text-sm text-[rgba(180,200,240,0.5)] mb-6">
-                    {getPerSongPrice(pkg)} kr per sang
-                  </p>
-
-                  {/* Credits + songs */}
-                  <div className="py-4 px-3 mb-6">
+                  {/* Credits + songs + variant bonus */}
+                  <div className="py-4 px-3 mb-6 space-y-2">
                     <div className="text-2xl font-bold text-white">
                       {pkg.description}
                     </div>
-                    <div className="text-xs text-[rgba(130,170,240,0.45)] mt-1">
+                    <div className="text-xs text-[rgba(130,170,240,0.45)]">
                       {pkg.credits.toLocaleString()} kreditter
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F26522]/10 border border-[#F26522]/30 text-[10px] uppercase tracking-[0.12em] text-[#F26522] font-medium mt-1">
+                      Hver sang i 2 versjoner
                     </div>
                   </div>
 

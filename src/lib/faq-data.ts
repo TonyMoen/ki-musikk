@@ -49,7 +49,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'credit-packages',
         question: 'Hvilke kredittpakker finnes?',
-        answer: 'Vi tilbyr tre pakker: Allsang (99 kr — 20 sanger), Hitmaker (199 kr — 50 sanger) og Studio (349 kr — 100 sanger). Du får to versjoner per generering, så pakkene gir dobbelt så mange sanger som tidligere. Kredittene utløper aldri og er knyttet til din konto.'
+        answer: 'Vi tilbyr tre pakker: Allsang (99 kr — 10 sanger), Hitmaker (199 kr — 25 sanger) og Studio (299 kr — 50 sanger). Hver sang lages i to versjoner, så du får dobbelt så mange filer i biblioteket. Kredittene utløper aldri og er knyttet til din konto.'
       },
       {
         id: 'payment-methods',
@@ -59,7 +59,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'song-cost',
         question: 'Hva koster det å lage en sang?',
-        answer: 'Hver generering koster 10 kreditter og gir deg to versjoner av sangen. Med vår største pakke (Studio, 349 kr for 500 kreditter) ender du på under 3,50 kr per sang.'
+        answer: 'Med Studio-pakken (299 kr for 50 generasjoner) blir det 5,98 kr per generering — og siden hver generering gir deg to versjoner, ender du på under 3 kr per sang.'
       },
       {
         id: 'refunds',
@@ -137,7 +137,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'no-subscription',
         question: 'Kan jeg lage AI-musikk uten abonnement?',
-        answer: 'Ja! AI MUSIKK er det eneste AI-musikkverktøyet med engangskjøp. Du kjøper kreditter når du trenger dem — fra 99 kr for 20 sanger (du får to versjoner per generering). Ingen månedlige kostnader, ingen automatisk fornyelse. Betal enkelt med Vipps.'
+        answer: 'Ja! AI MUSIKK er det eneste AI-musikkverktøyet med engangskjøp. Du kjøper kreditter når du trenger dem — fra 99 kr for 10 sanger, og hver sang lages i to versjoner. Ingen månedlige kostnader, ingen automatisk fornyelse. Betal enkelt med Vipps.'
       },
       {
         id: 'norwegian-ai-music',
