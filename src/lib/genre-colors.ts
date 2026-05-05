@@ -4,6 +4,8 @@ export interface GradientColors {
 }
 
 export const GENRE_GRADIENTS: Record<string, GradientColors> = {
+  // Internal slugs (legacy data — songs created before genre.display_name
+  // was the stored value still match here)
   'elektronisk': { from: '#06D6A0', to: '#3B82F6' },
   'festlaat': { from: '#FFC93C', to: '#E94560' },
   'rap-hiphop': { from: '#0F3460', to: '#8B5CF6' },
@@ -12,6 +14,15 @@ export const GENRE_GRADIENTS: Record<string, GradientColors> = {
   'rock': { from: '#8B5CF6', to: '#E94560' },
   'country': { from: '#E94560', to: '#FFC93C' },
   'akustisk': { from: '#FB923C', to: '#92400E' },
+  // Display names — what we now store for newly generated songs
+  'Elektronisk': { from: '#06D6A0', to: '#3B82F6' },
+  'Festlåt': { from: '#FFC93C', to: '#E94560' },
+  'Rap/Hip-Hop': { from: '#0F3460', to: '#8B5CF6' },
+  'Russelåt': { from: '#E94560', to: '#8B5CF6' },
+  'Pop': { from: '#0F3460', to: '#E94560' },
+  'Rock': { from: '#8B5CF6', to: '#E94560' },
+  'Country': { from: '#E94560', to: '#FFC93C' },
+  'Akustisk': { from: '#FB923C', to: '#92400E' },
   // Legacy keys for existing songs in DB
   'country-rock': { from: '#E94560', to: '#FFC93C' },
   'norwegian-pop': { from: '#0F3460', to: '#E94560' },

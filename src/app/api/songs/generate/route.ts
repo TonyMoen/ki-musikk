@@ -431,7 +431,10 @@ console.log('🔔 Webhook URL sent to Suno:', `${(process.env.NEXT_PUBLIC_APP_UR
       .insert({
         user_id: user.id,
         title: songTitle,
-        genre: genreData.name,
+        // Store the human-readable display name (e.g. "Festlåt") rather than
+        // the internal slug ("festlaat") so the library shows users the same
+        // label they picked. Backend lookups still join via genre.name elsewhere.
+        genre: genreData.display_name,
         concept,
         original_lyrics: originalLyricsForDb,
         optimized_lyrics: optimizedLyricsForDb,

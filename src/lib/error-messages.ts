@@ -92,8 +92,8 @@ export const ERROR_MESSAGES: Record<ErrorCode, ErrorMessage> = {
   [ErrorCode.INSUFFICIENT_CREDITS]: {
     code: ErrorCode.INSUFFICIENT_CREDITS,
     title: 'Ikke nok kreditter',
-    description: 'Du trenger 10 kreditter for a generere en sang. Kjop en pakke for a fortsette.',
-    recoveryAction: { label: 'Kjop kreditter', action: 'buy-credits' },
+    description: 'Du trenger 10 kreditter for å generere en sang. Kjøp en pakke for å fortsette.',
+    recoveryAction: { label: 'Kjøp kreditter', action: 'buy-credits' },
     severity: 'warning'
   },
 

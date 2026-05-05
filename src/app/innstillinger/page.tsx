@@ -224,7 +224,7 @@ function SettingsContent() {
                     Du har {balance} kreditter igjen. Kjøp flere kreditter for å fortsette å lage sanger.
                   </p>
                   <Button
-                    className="bg-red-600 hover:bg-red-700 text-white"
+                    className="bg-[#F26522] hover:bg-[#E05A1B] text-white"
                     onClick={() => setIsPurchaseModalOpen(true)}
                   >
                     Kjøp kreditter nå
@@ -249,7 +249,7 @@ function SettingsContent() {
                     Du må kjøpe kreditter for å kunne generere sanger.
                   </p>
                   <Button
-                    className="bg-red-600 hover:bg-red-700 text-white font-semibold"
+                    className="bg-[#F26522] hover:bg-[#E05A1B] text-white font-semibold"
                     onClick={() => setIsPurchaseModalOpen(true)}
                   >
                     Kjøp kreditter for å fortsette
@@ -277,10 +277,10 @@ function SettingsContent() {
             </div>
 
             <Button
-              className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white"
+              className="w-full mt-4 bg-[#F26522] hover:bg-[#E05A1B] text-white"
               onClick={() => setIsPurchaseModalOpen(true)}
             >
-              Kjop kreditter
+              Kjøp kreditter
             </Button>
           </CardContent>
         </Card>
