@@ -17,6 +17,84 @@ const SONGS_PER_PAGE = 10
 const POLLING_INTERVAL = 3000
 const MAX_POLLING_ATTEMPTS = 100
 
+/**
+ * Placeholder row shown during generation. Each generation produces 2 song
+ * variants, so the caller renders two of these per in-flight generation —
+ * the variantIndex differentiates the gradient seed and the progress label.
+ */
+function GeneratingPlaceholderRow({
+  genSong,
+  variantIndex,
+}: {
+  genSong: GeneratingSong
+  variantIndex: number
+}) {
+  // Vary the thumbnail gradient by suffixing the id, so the two placeholders
+  // don't look identical while we wait for Suno's real cover images.
+  const placeholderSong = {
+    id: `${genSong.id}-${variantIndex}`,
+    title: genSong.title,
+    genre: genSong.genre,
+  }
+
+  return (
+    <div className="rounded-md">
+      {/* Desktop */}
+      <div
+        className="hidden sm:grid items-center gap-3 px-4 py-3"
+        style={{ gridTemplateColumns: '32px 1fr 60px 120px 36px 36px' }}
+      >
+        <span className="text-sm font-mono tabular-nums text-[var(--ink-4)] text-center opacity-60">
+          —
+        </span>
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="relative">
+            <SongThumbnail song={placeholderSong} size={44} />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
+              <Loader2 className="h-4 w-4 animate-spin text-white" />
+            </div>
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium truncate text-[var(--ink-2)]">
+              {genSong.title}
+            </p>
+            <p className="mt-0.5 text-[10px] uppercase tracking-[0.12em] text-[var(--ink-4)]">
+              Lager versjon {variantIndex} av 2…
+            </p>
+          </div>
+        </div>
+        <span className="text-sm tabular-nums text-right text-[var(--ink-4)]">—</span>
+        <span className="text-sm text-right text-[var(--ink-4)]">Akkurat nå</span>
+        <div className="w-9 h-9" aria-hidden="true" />
+        <div className="w-9 h-9" aria-hidden="true" />
+      </div>
+
+      {/* Mobile */}
+      <div
+        className="sm:hidden grid items-center gap-2 px-3 py-3"
+        style={{ gridTemplateColumns: '24px 1fr auto' }}
+      >
+        <span className="text-xs font-mono tabular-nums text-[var(--ink-4)] text-center">—</span>
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="relative">
+            <SongThumbnail song={placeholderSong} size={40} />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
+              <Loader2 className="h-4 w-4 animate-spin text-white" />
+            </div>
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium truncate text-[var(--ink-2)]">{genSong.title}</p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--ink-4)] truncate">
+              Lager versjon {variantIndex} av 2…
+            </p>
+          </div>
+        </div>
+        <Loader2 className="h-4 w-4 animate-spin text-[#F26522]" />
+      </div>
+    </div>
+  )
+}
+
 export function HomepageSongs() {
   const [songs, setSongs] = useState<Song[]>([])
   const [currentPage, setCurrentPage] = useState(0)
@@ -241,37 +319,32 @@ export function HomepageSongs() {
     )
   }
 
-  const hasContent = songs.length > 0 || generatingSongs.length > 0
+  // Show in-flight generations at the top of the same list — each generation
+  // produces 2 variants, so we double up the placeholder rows.
+  const showGeneratingRows = currentPage === 0 && generatingSongs.length > 0
+  const hasContent = songs.length > 0 || showGeneratingRows
 
   return (
     <>
-      {/* Generating songs indicator */}
-      {currentPage === 0 && generatingSongs.length > 0 && (
-        <div className="space-y-2 mb-4">
-          {generatingSongs.map((genSong) => (
-            <div
-              key={`generating-${genSong.id}`}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[rgba(90,140,255,0.08)] bg-[rgba(20,40,80,0.15)] animate-pulse"
-            >
-              <SongThumbnail
-                song={{ id: genSong.id, title: genSong.title, genre: genSong.genre }}
-                size={40}
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{genSong.title}</p>
-                <p className="text-xs text-[rgba(130,170,240,0.45)]">Skaper sang – 2–5 min. Du kan gjøre andre ting i mellomtiden</p>
-              </div>
-              <Loader2 className="h-4 w-4 animate-spin text-[#F26522] flex-shrink-0" />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Track list — header alone defines the start; no heavy container */}
-      {songs.length > 0 && (
+      {/* Track list — header alone defines the start; no heavy container.
+          Generating placeholders sit at the top, real rows below. */}
+      {hasContent && (
         <div>
           <TrackListHeader />
           <div className="divide-y divide-[var(--border-soft)]/40">
+            {showGeneratingRows &&
+              generatingSongs.flatMap((genSong) => [
+                <GeneratingPlaceholderRow
+                  key={`gen-${genSong.id}-1`}
+                  genSong={genSong}
+                  variantIndex={1}
+                />,
+                <GeneratingPlaceholderRow
+                  key={`gen-${genSong.id}-2`}
+                  genSong={genSong}
+                  variantIndex={2}
+                />,
+              ])}
             {songs.map((song, index) => (
               <TrackRow
                 key={song.id}

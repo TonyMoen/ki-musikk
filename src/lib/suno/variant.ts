@@ -36,7 +36,9 @@ export interface VariantSongData {
   title?: string
 }
 
-const VARIANT_TITLE_SUFFIX = ' · alternativ'
+// Both variant rows keep the original title — Suno's per-variant cover image
+// (canvas_url) is what visually differentiates them in the library.
+const VARIANT_TITLE_SUFFIX = ''
 const AUDIO_DOWNLOAD_TIMEOUT_MS = 30_000
 
 interface PrimarySongRow {

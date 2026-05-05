@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Play, Pause, Download, Loader2 } from 'lucide-react'
+import { SongThumbnail } from './song-thumbnail'
 import { TrackMoreMenu } from './track-more-menu'
 import { cn } from '@/lib/utils'
 import type { Song } from '@/types/song'
@@ -130,20 +131,23 @@ export function TrackRow({
           {trackNumber}
         </span>
 
-        {/* Title + tags */}
-        <div className="min-w-0">
-          <p
-            className={cn(
-              'text-sm font-medium truncate',
-              isActive ? 'text-[#F26522]' : 'text-[var(--ink)]'
-            )}
-          >
-            {song.title}
-          </p>
-          <div className="mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-[var(--ink-4)]">
-            {song.genre && <span className="truncate max-w-[200px]">{song.genre}</span>}
-            {song.genre && <span aria-hidden="true">·</span>}
-            <span>Norsk</span>
+        {/* Thumbnail + title + tags */}
+        <div className="flex items-center gap-3 min-w-0">
+          <SongThumbnail song={song} size={44} />
+          <div className="min-w-0">
+            <p
+              className={cn(
+                'text-sm font-medium truncate',
+                isActive ? 'text-[#F26522]' : 'text-[var(--ink)]'
+              )}
+            >
+              {song.title}
+            </p>
+            <div className="mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-[var(--ink-4)]">
+              {song.genre && <span className="truncate max-w-[200px]">{song.genre}</span>}
+              {song.genre && <span aria-hidden="true">·</span>}
+              <span>Norsk</span>
+            </div>
           </div>
         </div>
 
@@ -199,23 +203,26 @@ export function TrackRow({
       </div>
 
       {/* Mobile layout */}
-      <div className="sm:hidden grid items-center gap-2 px-3 py-3" style={{ gridTemplateColumns: '28px 1fr auto auto' + (showMoreMenu ? ' auto' : '') }}>
+      <div className="sm:hidden grid items-center gap-2 px-3 py-3" style={{ gridTemplateColumns: '24px 1fr auto auto' + (showMoreMenu ? ' auto' : '') }}>
         <span className="text-xs font-mono tabular-nums text-[var(--ink-4)] text-center">
           {trackNumber}
         </span>
 
-        <div className="min-w-0">
-          <p
-            className={cn(
-              'text-sm font-medium truncate',
-              isActive ? 'text-[#F26522]' : 'text-[var(--ink)]'
-            )}
-          >
-            {song.title}
-          </p>
-          <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--ink-4)] truncate">
-            {song.genre ? `${song.genre} · Norsk` : 'Norsk'} · {durationStr} · {dateStr}
-          </p>
+        <div className="flex items-center gap-2.5 min-w-0">
+          <SongThumbnail song={song} size={40} />
+          <div className="min-w-0">
+            <p
+              className={cn(
+                'text-sm font-medium truncate',
+                isActive ? 'text-[#F26522]' : 'text-[var(--ink)]'
+              )}
+            >
+              {song.title}
+            </p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--ink-4)] truncate">
+              {song.genre ? `${song.genre} · Norsk` : 'Norsk'} · {durationStr} · {dateStr}
+            </p>
+          </div>
         </div>
 
         <button
